@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Food Page</h1>
+    <h1>Ordering Page</h1>
   </div>
 </template>
 
