@@ -117,7 +117,6 @@
       <!-- Title -->
       <section class="hero">
         <h1 class="title">EINSTEIN BRO’S</h1>
-        <p class="subtitle">Main Page</p>
       </section>
 
       <!-- Best Seller -->
@@ -511,6 +510,7 @@ const classics = ref([
   display: block;
   text-decoration: none;
   color: var(--brown);
+  font-size: 16px;
   font-weight: 800;
   border-radius: 14px;
   padding: 12px 12px;
