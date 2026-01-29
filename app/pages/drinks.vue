@@ -11,11 +11,6 @@
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
 
-        <button class="navItem reviewBtn" type="button" @click="toggleReview">
-          Review
-          <span class="chev" :class="{ open: showReview }">▾</span>
-        </button>
-
         <div v-if="showReview" class="reviewPanel">
           <div class="starsRow">
             <button
@@ -38,8 +33,7 @@
           <label class="commentLabel">Comment</label>
           <textarea v-model="comment" class="commentBox" rows="4" />
 
-          <button class="primaryBtn" @click="submitReview">Submit</button>
-          <p v-if="submitted" class="submitted">Thanks! Review saved locally.</p>
+
         </div>
       </nav>
     </aside>
