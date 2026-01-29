@@ -49,30 +49,7 @@
       <!-- Topbar (UNCHANGED) -->
       <header class="topbar">
         <div class="topbarLeft">
-          <div class="locationWrap">
-            <div class="locationPill">
-              <span>📍</span>
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                placeholder="Search a city…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
-              <span class="locationSelected">{{ location }}</span>
-            </div>
-
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
-            </div>
-          </div>
+          
         </div>
 
         <div class="topbarRight">
@@ -132,7 +109,7 @@
         </div>
       </section>
 
-      <!-- CART PANEL (UNCHANGED) -->
+      <!-- CART PANEL -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
       <aside class="cartPanel" :class="{ open: showCart }">
         <div class="cartHeader">
@@ -160,27 +137,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/* LOCATION */
-const location = ref("Dubuque, IA");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-const locations = ["Chicago", "New York", "Boston", "Denver", "Seattle"];
 
-const filteredLocations = computed(() =>
-  locations.filter(l => l.toLowerCase().includes(locationQuery.value.toLowerCase()))
-);
-
-function selectLocation(opt) {
-  location.value = opt;
-  showLocationDropdown.value = false;
-}
-
-function handleDocClick(e) {
-  if (!e.target.closest(".locationWrap")) showLocationDropdown.value = false;
-}
-
-onMounted(() => document.addEventListener("click", handleDocClick));
-onBeforeUnmount(() => document.removeEventListener("click", handleDocClick));
 
 
 
