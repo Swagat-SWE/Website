@@ -40,7 +40,7 @@
 
     <!-- Main -->
     <main class="main">
-      <!-- Topbar (UNCHANGED) -->
+      <!-- Topbar  -->
       <header class="topbar">
         <div class="topbarLeft">
           
@@ -130,10 +130,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-
-
-
-
 /* CART */
 const showCart = ref(false);
 const cartItems = ref([]);
@@ -190,9 +186,6 @@ const coldDrinks = ref([
   color: var(--brown);
 }
 
-/* Sidebar */
-
-
 /* Main */
 .main {
   position: relative;
@@ -210,89 +203,6 @@ const coldDrinks = ref([
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-/* Location (simple prototype) */
-.locationWrap {
-  position: relative;
-}
-
-.locationPill {
-  display: inline-flex;
-  gap: 12px;
-  align-items: center;
-  background: rgba(75, 52, 41, 0.06);
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-weight: 900;
-}
-
-.locationInput {
-  width: 200px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  font-weight: 900;
-  color: var(--brown);
-}
-
-.locationSelected {
-  opacity: 0.75;
-  font-weight: 900;
-  border-left: 1px solid rgba(75, 52, 41, 0.18);
-  padding-left: 12px;
-}
-
-/* dropdown container */
-.locationDropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-
-  width: 320px;
-  max-height: 312px;       /* fixed box height */
-  overflow-y: auto;       /* scroll */
-  overflow-x: hidden;
-
-  background: #fff;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 8px;
-
-  z-index: 50;
-}
-
-/* each row */
-.locationOption {
-  width: 100%;
-  height: 44px;           /* fixed row height */
-  display: flex;
-  align-items: center;
-
-  text-align: left;
-  border: none;
-  background: transparent;
-
-  padding: 0 12px;
-  border-radius: 12px;
-  cursor: pointer;
-
-  font-weight: 900;
-  color: #4b3429;
-}
-
-.locationOption:hover {
-  background: rgba(244, 179, 22, 0.18);
-}
-
-
-.locationEmpty {
-  padding: 10px;
-  opacity: 0.75;
-  font-weight: 800;
 }
 
 .cartBtn {
@@ -509,9 +419,6 @@ const coldDrinks = ref([
   background: rgba(75, 52, 41, 0.03);
 }
 
-.cartItemName {
-  font-weight: 900;
-}
 
 .removeBtn {
   border: none;
