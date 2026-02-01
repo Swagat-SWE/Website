@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <!-- Sidebar (UNCHANGED) -->
+    <!-- Sidebar  -->
     <aside class="sidebar">
       <div class="sidebarTop">
         <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
@@ -102,6 +102,50 @@
         </div>
       </section>
 
+      <!-- Hot Drinks -->
+       <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Hot Drinks</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="tileGrid">
+          <article v-for="item in hotDrinks" :key="item.id" class="tileCard">
+            <div class="tileImg">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <span class="tileName">{{ item.name }}</span>
+                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Others -->
+       <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Tea And Smoothies</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="tileGrid">
+          <article v-for="item in TeaAndSmoothies" :key="item.id" class="tileCard">
+            <div class="tileImg">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <span class="tileName">{{ item.name }}</span>
+                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- CART PANEL -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
       <aside class="cartPanel" :class="{ open: showCart }">
@@ -143,7 +187,25 @@ const coldDrinks = ref([
   { id: "c1", name: "Classic Cold Brew", img: "ClassicColdBrew.png" },
   { id: "c2", name: "Chocolate Cream Cold Brew", img: "ChocolateCreamColdBrew.png" },
   { id: "c3", name: "Vanilla Cream Cold Brew", img: "VanillaCreamColdBrew.png" },
+  { id: "c4", name: "Caramel Cream Cold Brew", img: "CaramelCreamColdBrew.png" },
+  { id: "c5", name: "Chocolate Cold Brew Shake", img: "ChocolateColdBrewShake.png" },
+  { id: "c6", name: "Vanilla Cold Brew Shake", img: "VanillaColdBrewShake.png" },
+  { id: "c7", name: "Caramel Cold Brew Shake", img: "CaramelColdBrewShake.png" },
 ]);
+
+const hotDrinks = ref([
+  { id: "h1", name: "Mocha", img: "Mocha.png" },
+  { id: "h2", name: "Latte", img: "Latte.png" },
+  { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png" },
+  { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png" },
+  { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png" },
+])
+
+const TeaAndSmoothies = ref ([
+  { id: "o1", name: "Hot Tea", img: "HotTea.png" },
+  { id: "o2", name: "Iced Tea", img: "IcedTea.png" },
+  { id: "o3", name: "Strawberry Banana Smoothie", img: "Strawberry Banana Smoothie.png" },
+])
 </script>
 
 <style scoped>
