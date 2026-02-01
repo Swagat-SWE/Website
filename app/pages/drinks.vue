@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <!-- Sidebar  -->
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
         <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
@@ -10,6 +10,12 @@
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+
+        <!-- Review Toggle -->
+        <button class="navItem reviewBtn" type="button" @click="toggleReview">
+          Review
+          <span class="chev" :class="{ open: showReview }">▾</span>
+        </button>
 
         <div v-if="showReview" class="reviewPanel">
           <div class="starsRow">
@@ -31,22 +37,53 @@
           </div>
 
           <label class="commentLabel">Comment</label>
-          <textarea v-model="comment" class="commentBox" rows="4" />
+          <textarea v-model="comment" class="commentBox" placeholder="Tell us what you liked..." rows="4" />
 
-
+          <button class="primaryBtn" @click="submitReview">Submit</button>
+          <p v-if="submitted" class="submitted">Thanks! Review saved locally.</p>
         </div>
       </nav>
     </aside>
 
     <!-- Main -->
     <main class="main">
-      <!-- Topbar  -->
+      <!-- Topbar -->
       <header class="topbar">
         <div class="topbarLeft">
-          
+          <div class="locationWrap">
+            <div class="locationPill">
+              <span class="pin">📍</span>
+              <input
+                v-model="locationQuery"
+                class="locationInput"
+                type="text"
+                placeholder="Search a city…"
+                @focus="showLocationDropdown = true"
+                @input="showLocationDropdown = true"
+              />
+              <span class="locationSelected">{{ location }}</span>
+            </div>
+
+            <div v-if="showLocationDropdown" class="locationDropdown">
+              <div v-if="filteredLocations.length === 0" class="locationEmpty">
+                No matches. Try "Chicago" or "Boston"
+              </div>
+
+              <button
+                v-for="opt in filteredLocations"
+                :key="opt"
+                class="locationOption"
+                @click="selectLocation(opt)"
+              >
+                {{ opt }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="topbarRight">
+          <button class="signInBtn">Sign In</button>
+
           <button class="cartBtn" @click="toggleCart">
             🛒 <span class="cartCount">{{ cartItems.length }}</span>
           </button>
@@ -102,51 +139,7 @@
         </div>
       </section>
 
-      <!-- Hot Drinks -->
-       <section class="section">
-        <div class="sectionHeader">
-          <h2 class="sectionTitle">Hot Drinks</h2>
-          <div class="sectionLine" />
-        </div>
-
-        <div class="tileGrid">
-          <article v-for="item in hotDrinks" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- Others -->
-       <section class="section">
-        <div class="sectionHeader">
-          <h2 class="sectionTitle">Tea And Smoothies</h2>
-          <div class="sectionLine" />
-        </div>
-
-        <div class="tileGrid">
-          <article v-for="item in TeaAndSmoothies" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- CART PANEL -->
+      <!-- CART -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
       <aside class="cartPanel" :class="{ open: showCart }">
         <div class="cartHeader">
@@ -154,9 +147,7 @@
           <button class="xBtn" @click="showCart = false">✕</button>
         </div>
 
-        <div v-if="cartItems.length === 0" class="emptyCart">
-          No items yet.
-        </div>
+        <div v-if="cartItems.length === 0" class="emptyCart">No items yet.</div>
 
         <ul v-else class="cartList">
           <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
@@ -174,13 +165,36 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/* CART */
+/* Location */
+const location = ref("Dubuque, IA");
+const locationQuery = ref("");
+const showLocationDropdown = ref(false);
+const locations = ["Iowa","Illinois","Wisconsin","California","Texas","Florida","New York"];
+const filteredLocations = computed(() => {
+  const q = locationQuery.value.toLowerCase();
+  return locations.filter(l => l.toLowerCase().includes(q));
+});
+function selectLocation(opt){ location.value = opt; showLocationDropdown.value = false; }
+function handleDocClick(e){ if(!e.target.closest(".locationWrap")) showLocationDropdown.value=false; }
+onMounted(()=>document.addEventListener("click",handleDocClick));
+onBeforeUnmount(()=>document.removeEventListener("click",handleDocClick));
+
+/* Review */
+const showReview = ref(false);
+const rating = ref(0);
+const hoverRating = ref(0);
+const comment = ref("");
+const submitted = ref(false);
+function toggleReview(){ showReview.value=!showReview.value; }
+function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=false,2000); }
+
+/* Cart */
 const showCart = ref(false);
 const cartItems = ref([]);
-function toggleCart() { showCart.value = !showCart.value; }
-function addToCart(name) { cartItems.value.push(name); showCart.value = true; }
-function removeFromCart(i) { cartItems.value.splice(i, 1); }
-function goToCheckout() { navigateTo("/checkout"); }
+function toggleCart(){ showCart.value=!showCart.value; }
+function addToCart(name){ cartItems.value.push(name); showCart.value=true; }
+function removeFromCart(i){ cartItems.value.splice(i,1); }
+function goToCheckout(){ navigateTo("/checkout"); }
 
 /* DRINK DATA */
 const coldDrinks = ref([
@@ -209,13 +223,14 @@ const TeaAndSmoothies = ref ([
 </script>
 
 <style scoped>
+/* Einstein-ish warm palette */
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
   --brown: #4b3429;
   --brown2: #6a4a3a;
 
-  /* Plus button orange */
+  /* Your plus button orange */
   --orange: #f4a51c;
   --orangeHover: #ffb42f;
 
@@ -229,7 +244,23 @@ const TeaAndSmoothies = ref ([
   gap: 12px;
 }
 
+.signInBtn {
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 900;
+  color: var(--brown);
+  box-shadow: var(--cardShadow);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
 
+.signInBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+  border-color: rgba(244, 179, 22, 0.5);
+}
 
 .logoImg {
   width: 100%;
@@ -246,6 +277,173 @@ const TeaAndSmoothies = ref ([
   grid-template-columns: 260px 1fr;
   background: linear-gradient(180deg, var(--cream2), var(--cream));
   color: var(--brown);
+}
+
+/* Sidebar */
+.sidebar {
+  border-right: 1px solid rgba(75, 52, 41, 0.12);
+  padding: 18px 14px;
+  background: #fff8ee;
+}
+
+.sidebarTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* centers the logo */
+  margin-bottom: 14px;
+  overflow: hidden;         /* prevents it from spilling */
+}
+
+.dotsBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(75, 52, 41, 0.18);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--brown);
+  opacity: 0.9;
+}
+
+.badge {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--brown);
+  background: rgba(244, 179, 22, 0.22);
+  border: 1px solid rgba(244, 179, 22, 0.35);
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navItem {
+  display: block;
+  text-decoration: none;
+  color: var(--brown);
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 14px;
+  padding: 12px 12px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
+}
+
+.navItem:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--cardShadow);
+  border-color: rgba(244, 179, 22, 0.55);
+}
+
+.reviewBtn {
+  text-align: left;
+  cursor: pointer;
+}
+
+.chev {
+  float: right;
+  opacity: 0.7;
+  transform: rotate(0deg);
+  transition: transform 0.15s ease;
+}
+.chev.open {
+  transform: rotate(180deg);
+}
+
+.reviewPanel {
+  margin-top: -4px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  box-shadow: var(--cardShadow);
+}
+
+.starsRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.starBtn {
+  font-size: 22px;
+  line-height: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.35;
+  transform: translateY(0);
+  transition: opacity 0.08s ease, transform 0.08s ease;
+}
+
+.starBtn.on {
+  opacity: 1;
+  color: var(--yellow);
+  text-shadow: 0 2px 8px rgba(244, 179, 22, 0.25);
+}
+
+.starBtn:hover {
+  transform: translateY(-1px);
+}
+
+.ratingText {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+
+.commentLabel {
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.commentBox {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(75, 52, 41, 0.18);
+  padding: 10px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+.primaryBtn {
+  width: 100%;
+  background: var(--yellow);
+  border: none;
+  color: #2c1b12;
+  font-weight: 900;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.primaryBtn:hover {
+  background: #ffbe21;
+}
+
+.submitted {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 
 /* Main */
@@ -265,6 +463,89 @@ const TeaAndSmoothies = ref ([
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+/* Location (simple prototype) */
+.locationWrap {
+  position: relative;
+}
+
+.locationPill {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  background: rgba(75, 52, 41, 0.06);
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.locationInput {
+  width: 200px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 900;
+  color: var(--brown);
+}
+
+.locationSelected {
+  opacity: 0.75;
+  font-weight: 900;
+  border-left: 1px solid rgba(75, 52, 41, 0.18);
+  padding-left: 12px;
+}
+
+/* dropdown container */
+.locationDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+
+  width: 320px;
+  max-height: 312px;       /* fixed box height */
+  overflow-y: auto;       /* scroll */
+  overflow-x: hidden;
+
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 8px;
+
+  z-index: 50;
+}
+
+/* each row */
+.locationOption {
+  width: 100%;
+  height: 44px;           /* fixed row height */
+  display: flex;
+  align-items: center;
+
+  text-align: left;
+  border: none;
+  background: transparent;
+
+  padding: 0 12px;
+  border-radius: 12px;
+  cursor: pointer;
+
+  font-weight: 900;
+  color: #4b3429;
+}
+
+.locationOption:hover {
+  background: rgba(244, 179, 22, 0.18);
+}
+
+
+.locationEmpty {
+  padding: 10px;
+  opacity: 0.75;
+  font-weight: 800;
 }
 
 .cartBtn {
@@ -355,9 +636,9 @@ const TeaAndSmoothies = ref ([
 
 .tileImg {
   width: 80%;
-  aspect-ratio: 1 / 1;      /*  makes the box the same shape (square like Einstein tiles) */
+  aspect-ratio: 1 / 1;      /* ✅ makes the box the same shape (square like Einstein tiles) */
   border-radius: 22px;
-  overflow: hidden;         /*  prevents overflow outside rounded corners */
+  overflow: hidden;         /* ✅ prevents overflow outside rounded corners */
   box-shadow: var(--cardShadow);
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
@@ -366,7 +647,7 @@ const TeaAndSmoothies = ref ([
 .tileImg img {
   width: 100%;
   height: 100%;
-  object-fit: cover;        /*  fills the box perfectly */
+  object-fit: cover;        /* ✅ fills the box perfectly */
   display: block;
 }
 
@@ -481,6 +762,9 @@ const TeaAndSmoothies = ref ([
   background: rgba(75, 52, 41, 0.03);
 }
 
+.cartItemName {
+  font-weight: 900;
+}
 
 .removeBtn {
   border: none;
@@ -506,8 +790,21 @@ const TeaAndSmoothies = ref ([
   .page {
     grid-template-columns: 1fr;
   }
-
- 
- 
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-right: none;
+    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+  }
+  .tileGrid {
+    grid-template-columns: 1fr;
+  }
+  .locationInput {
+    width: 150px;
+  }
+  .locationDropdown {
+    min-width: 260px;
+  }
 }
 </style>
