@@ -338,7 +338,7 @@ const MENU = [
 /** =========================
  *  Location prototype (simple)
  *  ========================= */
-const location = ref("Dubuque, IA");
+const location = ref("Iowa");
 const locationQuery = ref("");
 const showLocationDropdown = ref(false);
 
