@@ -122,7 +122,7 @@
       <!-- Breakfest -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Breakfest</h2>
+          <h2 class="sectionTitle">Breakfast</h2>
           <div class="sectionLine" />
         </div>
 
