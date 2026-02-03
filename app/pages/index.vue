@@ -470,22 +470,29 @@ function goToCheckout() {
   navigateTo("/checkout");       // or "/Checkout" depending on your filename
 }
 
-function addToCart(name) {
+function addToCart(input) {
+  // allow passing either the whole object OR just a name string
+  const menuItem =
+    typeof input === "string"
+      ? MENU.find((m) => m.name === input) || { name: input, price: 0 }
+      : input;
+
   const existing = cart.value.find((x) => x.name === menuItem.name);
 
   if (existing) {
-    existing.qty += 1
+    existing.qty += 1;
   } else {
     cart.value.push({
       name: menuItem.name,
       qty: 1,
-      priceEach: menuItem.price,
-      details: ""
-    })
+      priceEach: menuItem.price ?? 0,
+      details: "",
+    });
   }
 
-  showCart.value = true
+  showCart.value = true;
 }
+
 
 
 function removeFromCart(index) {
