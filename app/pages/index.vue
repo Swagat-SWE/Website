@@ -485,8 +485,10 @@ function addToCart(input) {
     cart.value.push({
       name: menuItem.name,
       qty: 1,
-      priceEach: menuItem.price ?? 0,
-      details: "",
+      img: menuItem.img,
+      basePrice: menuItem.price,
+      priceEach: menuItem.price,
+      custom: null,
     });
   }
 
