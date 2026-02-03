@@ -72,7 +72,7 @@
                 v-model="locationQuery"
                 class="locationInput"
                 type="text"
-                placeholder="Search a city…"
+                placeholder="Search a state…"
                 @focus="showLocationDropdown = true"
                 @input="showLocationDropdown = true"
               />
@@ -537,7 +537,7 @@ const classics = ref([
   },
   {
     id: "c2",
-    name: "Avacado Veg Out Sandwich",
+    name: "Avocado Veg Out Sandwich",
     img: "/Veg.png",
   },
   {
