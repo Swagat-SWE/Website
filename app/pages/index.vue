@@ -128,7 +128,7 @@
 
         <!-- Einstein-style image tiles (3 across) -->
         <div class="tileGrid">
-          <article v-for="item in bestSellers" :key="item?.id" v-if="item" class="tileCard">
+          <article v-for="item in bestSellers" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -140,7 +140,7 @@
                 </div>
 
                 <!-- ONLY this button adds to cart -->
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -222,7 +222,7 @@ const MENU = [
     calories: "900",
     bagel: "Cheesy Hash",
     ingredients: ["Eggs", "Bacon", "American Cheese", "Chipotle Aioli"],
-    img: "/AllNight.png",
+    img: "/AllNIght.png",
   },
   {
     id: 2,
@@ -285,7 +285,7 @@ const MENU = [
     calories: "510",
     bagel: "Asiago",
     ingredients: ["Turkey", "Spinach", "Cucumber", "Lettuce", "Tomato", "Onion"],
-    img: "/Tasty.png",
+    img: "/Tastey.png",
   },
   {
     id: 10,
@@ -471,15 +471,15 @@ function goToCheckout() {
 }
 
 function addToCart(name) {
-  const existing = cart.value.find((x) => x.name === name)
+  const existing = cart.value.find((x) => x.name === menuItem.name);
 
   if (existing) {
     existing.qty += 1
   } else {
     cart.value.push({
-      name,
+      name: menuItem.name,
       qty: 1,
-      priceEach: 5.00,  // placeholder price
+      priceEach: menuItem.price,
       details: ""
     })
   }
@@ -497,13 +497,27 @@ function removeFromCart(index) {
  *  Replace URLs later with your own images in /public
  *  ========================= */
 // ===== Best Sellers (from MENU) =====
-const bestSellers = computed(() => [
-  MENU.find((i) => i.name === "Farm House Egg Sandwich"),
-  MENU.find((i) => i.name === "All Nighter Egg Sandwich"),
-  MENU.find((i) => i.name === "Garden Avocado Egg Sandwich"),
-].filter(Boolean))
-
-
+const bestSellers = ref([
+  {
+    id: 1,
+    name: "Farm House Egg Sandwich",
+    price: 6.99,
+    img: "/Farmhouse.png",
+  },
+  {
+    id: 2,
+    name: "All Nighter Egg Sandwich",
+    price: 6.99,
+    // IMPORTANT: your file in /public is AllNIght.png (capital I)
+    img: "/AllNIght.png",
+  },
+  {
+    id: 3,
+    name: "Garden Avocado Egg Sandwich",
+    price: 6.39,
+    img: "/Garden.png",
+  },
+]);
 
 
 const classics = ref([
