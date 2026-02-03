@@ -9,19 +9,19 @@
       <td>Review Cart</td>
     </tr>
     <tr>
-      Item one
+      <td>Item one</td>
     </tr>
     <tr>
-      Item two
+      <td>Item two</td>
     </tr>
     <tr>
-      Item three
+      <td>Item three</td>
     </tr>
     <tr>
-      Track Order  
+      <td>Track Order</td> 
     </tr>
     <tr>
-      Put images here
+      <td>Put images here</td>
     </tr>
     <tr>
       <td>Recived</td>
