@@ -128,7 +128,7 @@
 
         <!-- Einstein-style image tiles (3 across) -->
         <div class="tileGrid">
-          <article v-for="item in bestSellers" :key="item.id" class="tileCard">
+          <article v-for="item in Breakfest" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -154,7 +154,7 @@
         </div>
 
         <div class="tileGrid">
-          <article v-for="item in classics" :key="item.id" class="tileCard">
+          <article v-for="item in Lunch" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -204,7 +204,7 @@
         </div>
 
         <div class="tileGrid">
-          <article v-for="item in classics" :key="item.id" class="tileCard">
+          <article v-for="item in Smears" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -229,7 +229,7 @@
         </div>
 
         <div class="tileGrid">
-          <article v-for="item in classics" :key="item.id" class="tileCard">
+          <article v-for="item in Other" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -420,7 +420,7 @@ function removeFromCart(index) {
  *  Page Content (images)
  *  Replace URLs later with your own images in /public
  *  ========================= */
-const bestSellers = ref([
+const Breakfest = ref([
   {
     id: "bs1",
     name: "Farm House Egg Sandwich",
@@ -436,9 +436,44 @@ const bestSellers = ref([
     name: "Garden Avacado Egg Sandwich",
     img: "/Garden.png",
   },
+  {
+    id: "bs4",
+    name: "Farm House Egg Sandwich",
+    img: "/Farmhouse.png",
+  },
+  {
+    id: "bs5",
+    name: "All Nighter Egg Sandwich",
+    img: "/AllNight.png",
+  },
+  {
+    id: "bs6",
+    name: "Garden Avacado Egg Sandwich",
+    img: "/Garden.png",
+  },
+  {
+    id: "bs7",
+    name: "Farm House Egg Sandwich",
+    img: "/Farmhouse.png",
+  },
+  {
+    id: "bs8",
+    name: "All Nighter Egg Sandwich",
+    img: "/AllNight.png",
+  },
+  {
+    id: "bs9",
+    name: "Garden Avacado Egg Sandwich",
+    img: "/Garden.png",
+  },
+  {
+    id: "bs10",
+    name: "Farm House Egg Sandwich",
+    img: "/Farmhouse.png",
+  },
 ]);
 
-const classics = ref([
+const Lunch = ref([
   {
     id: "c1",
     name: "Tastey Turkey Sandwich",
@@ -471,6 +506,70 @@ const classics = ref([
   },
 ]);
 const Bagels = ref([
+  {
+    id: "c1",
+    name: "Tastey Turkey Sandwich",
+    img: "/Tastey.png",
+  },
+  {
+    id: "c2",
+    name: "Avacado Veg Out Sandwich",
+    img: "/Veg.png",
+  },
+  {
+    id: "c3",
+    name: "Nova Lox Sandwich",
+    img: "/Nova.png",
+  },
+  {
+    id: "c4",
+    name: "Nova Lux Brunch Special",
+    img: "/Special.png",
+  },
+  {
+    id: "c5",
+    name: "Ham & Swiss Sandwich",
+    img: "/Ham.png",
+  },
+  {
+    id: "c6",
+    name: "Turkey, Bacon & Avacado Sandwich",
+    img: "/TT.png",
+  },
+]);
+const Smears = ref([
+  {
+    id: "c1",
+    name: "Tastey Turkey Sandwich",
+    img: "/Tastey.png",
+  },
+  {
+    id: "c2",
+    name: "Avacado Veg Out Sandwich",
+    img: "/Veg.png",
+  },
+  {
+    id: "c3",
+    name: "Nova Lox Sandwich",
+    img: "/Nova.png",
+  },
+  {
+    id: "c4",
+    name: "Nova Lux Brunch Special",
+    img: "/Special.png",
+  },
+  {
+    id: "c5",
+    name: "Ham & Swiss Sandwich",
+    img: "/Ham.png",
+  },
+  {
+    id: "c6",
+    name: "Turkey, Bacon & Avacado Sandwich",
+    img: "/TT.png",
+  },
+]);
+const Other = ref([
   {
     id: "c1",
     name: "Tastey Turkey Sandwich",
@@ -906,8 +1005,8 @@ const Bagels = ref([
 /* === Einstein-style big tiles === */
 .tileGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(240px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
   align-items: start;
 }
 
