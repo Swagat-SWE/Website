@@ -109,7 +109,7 @@
           <!-- Cart button -->
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
             <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartItems.length }}</span>
+            <span class="cartCount">{{ cartCount }}</span>
           </button>
         </div>
         </header>
@@ -179,13 +179,13 @@
           <button class="xBtn" type="button" @click="showCart = false">✕</button>
         </div>
 
-        <div v-if="cartItems.length === 0" class="emptyCart">
+        <div v-if="cart.length === 0" class="emptyCart">
           No items yet. Use the <b>+</b> button to add items.
         </div>
 
         <ul v-else class="cartList">
-          <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
-            <span class="cartItemName">{{ item }}</span>
+          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+            <span class="cartItemName">{{ item.name }} (x{{ item.qty }})</span>
             <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
           </li>
         </ul>
@@ -321,7 +321,11 @@ function submitReview() {
  *  Cart
  *  ========================= */
 const showCart = ref(false);
-const cartItems = ref([]);
+const cart = useState("cart", () => []);
+const cartCount = computed(() =>
+  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
+)
+
 
 function toggleCart() {
   showCart.value = !showCart.value;
@@ -333,12 +337,25 @@ function goToCheckout() {
 }
 
 function addToCart(name) {
-  cartItems.value.push(name);
-  showCart.value = true;
+  const existing = cart.value.find((x) => x.name === name)
+
+  if (existing) {
+    existing.qty += 1
+  } else {
+    cart.value.push({
+      name,
+      qty: 1,
+      priceEach: 5.00,  // placeholder price
+      details: ""
+    })
+  }
+
+  showCart.value = true
 }
 
+
 function removeFromCart(index) {
-  cartItems.value.splice(index, 1);
+  cart.value.splice(index, 1)
 }
 
 /** =========================
