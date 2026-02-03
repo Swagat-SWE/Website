@@ -438,69 +438,69 @@ const Breakfest = ref([
   },
   {
     id: "bs4",
-    name: "Farm House Egg Sandwich",
+    name: "Bacon Chedder Egg Sandwich",
     img: "/Farmhouse.png",
   },
   {
     id: "bs5",
-    name: "All Nighter Egg Sandwich",
+    name: "Chedder Egg Sandwich",
     img: "/AllNight.png",
   },
   {
     id: "bs6",
-    name: "Garden Avacado Egg Sandwich",
+    name: "Ham Swiss Egg Sandwich",
     img: "/Garden.png",
   },
   {
     id: "bs7",
-    name: "Farm House Egg Sandwich",
+    name: "Turky Sausage Egg Sandwich",
     img: "/Farmhouse.png",
   },
   {
     id: "bs8",
-    name: "All Nighter Egg Sandwich",
+    name: "Bacon Avocoado Tomato Sandwich",
     img: "/AllNight.png",
   },
   {
     id: "bs9",
-    name: "Garden Avacado Egg Sandwich",
+    name: "Stanta Fe Egg White Sandwich",
     img: "/Garden.png",
   },
   {
     id: "bs10",
-    name: "Farm House Egg Sandwich",
+    name: "Texas Brisket Egg Sandwich",
     img: "/Farmhouse.png",
   },
 ]);
 
 const Lunch = ref([
   {
-    id: "c1",
+    id: "l1",
     name: "Tastey Turkey Sandwich",
     img: "/Tastey.png",
   },
   {
-    id: "c2",
+    id: "l2",
     name: "Avacado Veg Out Sandwich",
     img: "/Veg.png",
   },
   {
-    id: "c3",
+    id: "l3",
     name: "Nova Lox Sandwich",
     img: "/Nova.png",
   },
   {
-    id: "c4",
+    id: "l4",
     name: "Nova Lux Brunch Special",
     img: "/Special.png",
   },
   {
-    id: "c5",
+    id: "l5",
     name: "Ham & Swiss Sandwich",
     img: "/Ham.png",
   },
   {
-    id: "c6",
+    id: "l6",
     name: "Turkey, Bacon & Avacado Sandwich",
     img: "/TT.png",
   },
@@ -508,97 +508,112 @@ const Lunch = ref([
 const Bagels = ref([
   {
     id: "c1",
-    name: "Tastey Turkey Sandwich",
+    name: "Plain Bagel",
     img: "/Tastey.png",
   },
   {
     id: "c2",
-    name: "Avacado Veg Out Sandwich",
+    name: "Cinnamon Rasin Bagel",
     img: "/Veg.png",
   },
   {
     id: "c3",
-    name: "Nova Lox Sandwich",
+    name: "Everything Bagel",
     img: "/Nova.png",
   },
   {
     id: "c4",
-    name: "Nova Lux Brunch Special",
+    name: "Ancient Grain Bagel",
     img: "/Special.png",
   },
   {
     id: "c5",
-    name: "Ham & Swiss Sandwich",
+    name: "Sesame Seed Bagel",
     img: "/Ham.png",
   },
   {
     id: "c6",
-    name: "Turkey, Bacon & Avacado Sandwich",
+    name: "Cheesy Hashbrown Bagel",
     img: "/TT.png",
+  },
+    {
+    id: "c7",
+    name: "Six Cheese Bagel",
+    img: "/Tastey.png",
+  },
+  {
+    id: "c8",
+    name: "Aisago Bagle",
+    img: "/Veg.png",
+  },
+  {
+    id: "c9",
+    name: "Blueberry Bagel",
+    img: "/Nova.png",
+  },
+  {
+    id: "c10",
+    name: "Chocolate Chip Bagel",
+    img: "/Special.png",
   },
 ]);
 const Smears = ref([
   {
-    id: "c1",
+    id: "s1",
     name: "Tastey Turkey Sandwich",
     img: "/Tastey.png",
   },
   {
-    id: "c2",
+    id: "s2",
     name: "Avacado Veg Out Sandwich",
     img: "/Veg.png",
   },
   {
-    id: "c3",
+    id: "s3",
     name: "Nova Lox Sandwich",
     img: "/Nova.png",
   },
   {
-    id: "c4",
+    id: "s4",
     name: "Nova Lux Brunch Special",
     img: "/Special.png",
   },
   {
-    id: "c5",
+    id: "s5",
     name: "Ham & Swiss Sandwich",
     img: "/Ham.png",
   },
   {
-    id: "c6",
+    id: "s6",
     name: "Turkey, Bacon & Avacado Sandwich",
     img: "/TT.png",
   },
 ]);
 const Other = ref([
   {
-    id: "c1",
-    name: "Tastey Turkey Sandwich",
+    id: "o1",
+    name: "Cinnamon Chip Muffin",
     img: "/Tastey.png",
   },
   {
-    id: "c2",
-    name: "Avacado Veg Out Sandwich",
+    id: "o2",
+    name: "Cinnamon Bliss Rolls",
     img: "/Veg.png",
   },
   {
-    id: "c3",
-    name: "Nova Lox Sandwich",
+    id: "o3",
+    name: "Blueberry Muffin",
     img: "/Nova.png",
   },
   {
-    id: "c4",
-    name: "Nova Lux Brunch Special",
+    id: "o4",
+    name: "Chocolate Chip Cooke",
     img: "/Special.png",
   },
   {
-    id: "c5",
-    name: "Ham & Swiss Sandwich",
+    id: "o5",
+    name: "Twice Baked Hashbrown",
     img: "/Ham.png",
-  },
-  {
-    id: "c6",
-    name: "Turkey, Bacon & Avacado Sandwich",
-    img: "/TT.png",
   },
 ]);
 </script>
