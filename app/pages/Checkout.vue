@@ -55,6 +55,11 @@
         </div>
       </section>
 
+      <label class="confirmRow">
+        <input type="checkbox" v-model="confirmed" />
+          I confirm my order is correct
+      </label>
+
       <!-- RIGHT: totals + place order -->
       <aside class="right">
         <div class="summary">
@@ -75,16 +80,27 @@
           </div>
         </div>
 
-        <button class="btn primary" type="button" :disabled="cart.length === 0" @click="placeOrder">
-          Add payment + place order
+        <label class="confirmRow">
+          <input type="checkbox" v-model="confirmed" />
+            I confirm my order is correct
+        </label>
+
+        <button
+          class="btn primary"
+          type="button"
+          :disabled="cart.length === 0 || !confirmed"
+          @click="placeOrder"
+        >
+        Add payment + place order
         </button>
+
       </aside>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 
 /**
  * Shared cart state across pages.
@@ -94,6 +110,7 @@ import { computed } from "vue"
  * { name: "All Nighter", qty: 1, priceEach: 8.99, details: "bagel, cheese, meat" }
  */
 const cart = useState("cart", () => [])
+const confirmed = ref(false)
 
 const TAX_RATE = 0.08
 
@@ -124,7 +141,7 @@ function editItem(i) {
 }
 
 function goAddItems() {
-  navigateTo("/ordering")
+  navigateTo("/")
 }
 
 function placeOrder() {
