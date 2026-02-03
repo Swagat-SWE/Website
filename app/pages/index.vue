@@ -134,7 +134,10 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
+                <div class="namePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span class="tilePrice">${{ item.price.toFixed(2) }}</span>
+                </div>
 
                 <!-- ONLY this button adds to cart -->
                 <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
@@ -205,7 +208,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 const MENU = [
   {
     id: 1,
-    name: "Farmhouse",
+    name: "Farm House Egg Sandwich",
     price: 6.99,
     calories: "680/770",
     bagel: "Cheesy Hash",
@@ -213,22 +216,22 @@ const MENU = [
     img: "/Farmhouse.png",
   },
   {
-    id: 2,
-    name: "Garden Avocado",
-    price: 6.39,
-    calories: "510/600",
-    bagel: "Everything",
-    ingredients: ["Eggs", "Avocado", "Tomato", "Spinach", "Roasted Tomato Spread"],
-    img: "/Garden.png",
-  },
-  {
     id: 3,
-    name: "All-Nighter",
+    name: "All Nighter Egg Sandwich",
     price: 6.99,
     calories: "900",
     bagel: "Cheesy Hash",
     ingredients: ["Eggs", "Bacon", "American Cheese", "Chipotle Aioli"],
     img: "/AllNight.png",
+  },
+  {
+    id: 2,
+    name: "Garden Avocado Egg Sandwich",
+    price: 6.39,
+    calories: "510/600",
+    bagel: "Everything",
+    ingredients: ["Eggs", "Avocado", "Tomato", "Spinach", "Roasted Tomato Spread"],
+    img: "/Garden.png",
   },
   {
     id: 4,
@@ -495,10 +498,11 @@ function removeFromCart(index) {
  *  ========================= */
 // ===== Best Sellers (from MENU) =====
 const bestSellers = computed(() => [
-  MENU.find(item => item.name === "Farmhouse"),
-  MENU.find(item => item.name === "All-Nighter"),
-  MENU.find(item => item.name === "Garden Avocado"),
-]);
+  MENU.find((i) => i.name === "Farm House Egg Sandwich"),
+  MENU.find((i) => i.name === "All Nighter Egg Sandwich"),
+  MENU.find((i) => i.name === "Garden Avocado Egg Sandwich"),
+].filter(Boolean))
+
 
 
 
@@ -1092,6 +1096,18 @@ const classics = ref([
 .checkoutBtn:hover {
   background: #ffbe21;
 }
+
+.namePrice {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.tilePrice {
+  font-weight: 1000;
+  opacity: 0.85;
+}
+
 
 /* Responsive */
 @media (max-width: 980px) {
