@@ -93,11 +93,7 @@ import { computed } from "vue"
  * Each cart item should look like:
  * { name: "All Nighter", qty: 1, priceEach: 8.99, details: "bagel, cheese, meat" }
  */
-const cart = useState("cart", () => [
-  // demo items so you SEE the layout right away (delete later if you want)
-  { name: "All Nighter", qty: 1, priceEach: 8.99, details: "bagel, cheese, meat" },
-  { name: "Caramel Cream Cold Brew", qty: 1, priceEach: 4.75, details: "size: SM" },
-])
+const cart = useState("cart", () => [])
 
 const TAX_RATE = 0.08
 
