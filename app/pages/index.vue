@@ -128,7 +128,7 @@
 
         <!-- Einstein-style image tiles (3 across) -->
         <div class="tileGrid">
-          <article v-for="item in bestSellers" :key="item.id" class="tileCard">
+          <article v-for="item in bestSellers" :key="item?.id" v-if="item" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -200,6 +200,137 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+// ===== MENU DATA (from our excel) =====
+const MENU = [
+  {
+    id: 1,
+    name: "Farmhouse",
+    price: 6.99,
+    calories: "680/770",
+    bagel: "Cheesy Hash",
+    ingredients: ["Eggs", "Bacon", "Smoked Ham", "Cheddar Cheese", "Country Pepper Shmear"],
+    img: "/Farmhouse.png",
+  },
+  {
+    id: 2,
+    name: "Garden Avocado",
+    price: 6.39,
+    calories: "510/600",
+    bagel: "Everything",
+    ingredients: ["Eggs", "Avocado", "Tomato", "Spinach", "Roasted Tomato Spread"],
+    img: "/Garden.png",
+  },
+  {
+    id: 3,
+    name: "All-Nighter",
+    price: 6.99,
+    calories: "900",
+    bagel: "Cheesy Hash",
+    ingredients: ["Eggs", "Bacon", "American Cheese", "Chipotle Aioli"],
+    img: "/AllNight.png",
+  },
+  {
+    id: 4,
+    name: "Breakfast Burrito",
+    price: 7.49,
+    calories: "1200",
+    bagel: "Tortilla",
+    ingredients: ["Eggs", "Bacon", "Turkey Sausage", "Shredded Cheese", "Green Chiles", "Hash Brown"],
+    img: "/Burrito.png",
+  },
+  {
+    id: 5,
+    name: "B.A.T.",
+    price: 6.59,
+    calories: "400/440",
+    bagel: "Plain Thin",
+    ingredients: ["Egg Whites", "Bacon", "Avocado", "Tomato", "Roasted Tomato Spread"],
+    img: "/BAT.png",
+  },
+  {
+    id: 6,
+    name: "Santa Fe",
+    price: 6.59,
+    calories: "420/460",
+    bagel: "Asiago Thin",
+    ingredients: ["Egg Whites", "Turkey Sausage", "Cheddar", "Salsa", "Jalapeno Shmear"],
+    img: "/SantaFe.png",
+  },
+  {
+    id: 7,
+    name: "Nova Lox",
+    price: 8.29,
+    calories: "500",
+    bagel: "Plain",
+    ingredients: ["Nova Lox", "Red Onion", "Capers", "Tomato", "Plain Shmear"],
+    img: "/Nova.png",
+  },
+  {
+    id: 8,
+    name: "T.B.A.",
+    price: 7.99,
+    calories: "580",
+    bagel: "Ciabatta",
+    ingredients: ["Turkey", "Bacon", "Avocado", "Lettuce", "Tomato", "Roasted Tomato Spread"],
+    img: "/TBA.png",
+  },
+  {
+    id: 9,
+    name: "Tasty Turkey",
+    price: 7.79,
+    calories: "510",
+    bagel: "Asiago",
+    ingredients: ["Turkey", "Spinach", "Cucumber", "Lettuce", "Tomato", "Onion"],
+    img: "/Tasty.png",
+  },
+  {
+    id: 10,
+    name: "Avocado Veg Out",
+    price: 7.29,
+    calories: "410",
+    bagel: "Sesame",
+    ingredients: ["Avocado", "Tomato", "Cucumber", "Red Onion", "Spinach", "Lettuce"],
+    img: "/Veg.png",
+  },
+  {
+    id: 11,
+    name: "Albuquerque Turkey",
+    price: 7.59,
+    calories: "680",
+    bagel: "6 Cheese",
+    ingredients: ["Turkey", "Bacon", "Cheddar", "Lettuce", "Tomato", "Green Chiles"],
+    img: "/Albuquerque.png",
+  },
+  {
+    id: 12,
+    name: "Pepperoni Chicken",
+    price: 7.59,
+    calories: "680",
+    bagel: "Ciabatta",
+    ingredients: ["Pepperoni", "Swiss", "Asiago", "Red Onion", "Spinach", "Roasted Tomato Spread"],
+    img: "/Pepperoni.png",
+  },
+  {
+    id: 13,
+    name: "Spicy Chicken",
+    price: 7.59,
+    calories: "620",
+    bagel: "Ciabatta",
+    ingredients: ["Chicken", "Bacon", "Cheddar", "Jalapenos", "Red Onion", "Jalapeno Shmear"],
+    img: "/Spicy.png",
+  },
+  {
+    id: 14,
+    name: "Cheesy Veggie Melt",
+    price: 7.09,
+    calories: "610",
+    bagel: "Ciabatta",
+    ingredients: ["Cheddar", "Swiss", "Tomato", "Spinach", "Roasted Tomato Spread"],
+    img: "/Cheesy.png",
+  },
+];
+
 
 /** =========================
  *  Location prototype (simple)
@@ -362,23 +493,14 @@ function removeFromCart(index) {
  *  Page Content (images)
  *  Replace URLs later with your own images in /public
  *  ========================= */
-const bestSellers = ref([
-  {
-    id: "bs1",
-    name: "Farm House Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs2",
-    name: "All Nighter Egg Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs3",
-    name: "Garden Avacado Egg Sandwich",
-    img: "/Garden.png",
-  },
+// ===== Best Sellers (from MENU) =====
+const bestSellers = computed(() => [
+  MENU.find(item => item.name === "Farmhouse"),
+  MENU.find(item => item.name === "All-Nighter"),
+  MENU.find(item => item.name === "Garden Avocado"),
 ]);
+
+
 
 const classics = ref([
   {
