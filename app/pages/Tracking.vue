@@ -66,47 +66,119 @@
                   </div>
                 </div>
 
-                <div class="stationBase">
-                  <!-- If this station is the oven, draw an oven -->
-                   <div v-if="s.key === 'oven'" class="ovenBox" :class="{ hot: statusIndex === i }" aria-hidden="true">
-                    <div class="ovenTop">
-                      <span class="knob" />
-                      <span class="knob" />
-                      <span class="knob" />
-                   </div>
-                   
-                   <div class="ovenDoor">
-                   <div class="ovenWindow">
-                    <div v-if="statusIndex === i" class="ovenFlame" />
-                  </div>
-                  <div class="ovenHandle" />
-                </div>
-                
-                <!-- warm glow behind oven when active -->
-                 <div v-if="statusIndex === i" class="ovenGlow" />
-                </div>
+<div class="stationBase">
+  <!-- ✅ ONLY show the oven at the oven station -->
+  <template v-if="s.key === 'oven'">
+    <div class="ovenBackdrop" aria-hidden="true"></div>
 
-  <!-- Normal post/platform for non-oven steps -->
+    <div class="ovenFx" aria-hidden="true">
+      <div class="embers"></div>
+      <div class="heatFx"></div>
+    </div>
+
+    <div
+    v-if="statusIndex === i"
+    class="heatWaves"
+    aria-hidden="true">
+    </div>
+
+    <div class="ovenArt" aria-hidden="true">
+      <div class="ovenGlowBg"></div>
+      <div class="ovenEmbers"></div>
+
+      <svg class="ovenSvg" viewBox="0 0 180 160" fill="none">
+  <path
+    d="M22 38
+       C22 28 30 20 40 20
+       H140
+       C150 20 158 28 158 38
+       V128
+       C158 138 150 146 140 146
+       H40
+       C30 146 22 138 22 128
+       V38Z"
+    class="ovBody"
+  />
+
+  <!-- Top control strip -->
+  <path d="M30 52 H150" class="ovLine" />
+
+  <!-- Knobs -->
+  <circle cx="56" cy="38" r="6" class="ovKnob" />
+  <circle cx="90" cy="38" r="6" class="ovKnob" />
+  <circle cx="124" cy="38" r="6" class="ovKnob" />
+
+  <!-- Door window -->
+  <path
+    d="M44 68
+       C44 58 52 50 62 50
+       H118
+       C128 50 136 58 136 68
+       V120
+       C136 130 128 138 118 138
+       H62
+       C52 138 44 130 44 120
+       V68Z"
+    class="ovWindow"
+  />
+
+  <!-- Rack lines -->
+  <path d="M56 94 H124" class="ovRack" />
+  <path d="M56 112 H124" class="ovRack2" />
+
+  <!-- Warm glow inside -->
+  <path
+    d="M58 76
+       C72 64 108 64 122 76
+       C112 104 68 110 58 76Z"
+    class="ovFire"
+  />
+
+  <!-- Little badge -->
+  <path
+    d="M84 147
+       h12
+       c4 0 6 2 6 6
+       c0 4-2 6-6 6
+       H84
+       c-4 0-6-2-6-6
+       c0-4 2-6 6-6Z"
+    class="ovBadge"
+  />
+  <path d="M87 151 H95" class="ovBadgeLine" />
+  <path d="M87 154 H93" class="ovBadgeLine" />
+  <path d="M87 157 H95" class="ovBadgeLine" />
+</svg>
+
+    </div>
+
+    <!-- ✅ ONLY when oven is ACTIVE -->
+    <div v-if="statusIndex === i" class="heat" aria-hidden="true"></div>
+  </template>
+
+  <!-- ✅ If NOT oven, keep your normal T-shape -->
   <template v-else>
-    <div class="post" />
-    <div class="platform" />
+    <div class="post"></div>
+    <div class="platform"></div>
   </template>
 </div>
 
-<!-- Heat shimmer ONLY when oven is active -->
-<div v-if="s.key === 'oven' && statusIndex === i" class="heat" aria-hidden="true"></div>
 
-                <!-- Oven heat shimmer overlay -->
-                <div v-if="s.key === 'oven' && statusIndex === i" class="heat" aria-hidden="true"></div>
+
               </div>
             </div>
 
             <!-- Bagel cart (moves) -->
             <div
-              class="bagelCart"
-              :class="{ moving: isMoving, bounce: doBounce }"
-              :style="{ left: `${bagelLeft}%` }"
+            class="bagelCart"\
+            :class="{
+            moving: isMoving,
+            bounce: doBounce,
+            oven: steps[statusIndex].key === 'oven'
+            }"
+            :style="{ left: `${bagelLeft}%` }"
             >
+
               <!-- Crumbs -->
               <div class="crumbs" aria-hidden="true">
                 <span
@@ -444,6 +516,169 @@ function rand(min, max) {
   background: linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
 }
 
+/* OVEN visuals (Einstein toaster oven) */
+.ovenBackdrop{
+  position:absolute;
+  left:50%;
+  top:-10px;
+  transform:translateX(-50%);
+  width:220px;
+  height:160px;
+  border-radius: 22px;
+  background: radial-gradient(circle at 50% 55%, rgba(255,142,40,0.18), rgba(255,142,40,0) 70%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 260ms ease;
+  z-index: 10;
+  pointer-events:none;
+}
+.station.oven.active .ovenBackdrop{ opacity: 1; }
+
+.ovenFx {
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  transform: translateX(-50%);
+  width: 210px;
+  height: 150px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 11;
+}
+.station.oven.active .ovenFx { opacity: 1; }
+
+.embers {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 60%, rgba(255, 142, 40, 0.24), rgba(255,255,255,0) 55%),
+    radial-gradient(circle at 70% 30%, rgba(255, 80, 20, 0.20), rgba(255,255,255,0) 60%),
+    radial-gradient(circle at 50% 50%, rgba(255, 200, 120, 0.14), rgba(255,255,255,0) 70%);
+  filter: blur(10px);
+  animation: ember 2.6s ease-in-out infinite;
+}
+@keyframes ember {
+  0% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(-4px); opacity: 0.85; }
+  100% { transform: translateY(0); opacity: 0.55; }
+}
+
+/* rename to avoid conflict with your existing .heat class */
+.heatFx {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 24px;
+  bottom: 10px;
+  border-radius: 18px;
+  background: linear-gradient(0deg, rgba(255, 142, 40, 0.0), rgba(255, 142, 40, 0.12), rgba(255, 255, 255, 0.0));
+  filter: blur(6px);
+  opacity: 0.75;
+  animation: shimmer 1.2s ease-in-out infinite;
+  mix-blend-mode: multiply;
+}
+@keyframes shimmer {
+  0% { transform: translateY(0) skewX(0deg); opacity: 0.55; }
+  50% { transform: translateY(-6px) skewX(1.8deg); opacity: 0.90; }
+  100% { transform: translateY(0) skewX(0deg); opacity: 0.55; }
+}
+
+.ovenArt{
+  position:absolute;
+  left:50%;
+  top:6px;
+  transform:translateX(-50%);
+  width:180px;
+  height:160px;
+  pointer-events:none;
+  opacity:0.20;
+  transition: opacity 260ms ease, transform 260ms ease;
+  z-index: 12;
+}
+.station.oven.active .ovenArt{
+  opacity:1;
+  transform:translateX(-50%) translateY(-2px);
+}
+.station.oven.active .ovenGlowBg{
+  animation: ovenGlowPulse 1.6s ease-in-out infinite;
+}
+
+
+.ovenGlowBg{
+  position:absolute;
+  inset:-18px -24px -16px -24px;
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 45% 65%, rgba(255,142,40,0.42), rgba(255,142,40,0) 65%),
+    radial-gradient(circle at 70% 55%, rgba(255,80,20,0.22), rgba(255,80,20,0) 70%);
+  filter: blur(12px);
+  opacity:0.7;
+}
+@keyframes ovenGlowPulse{
+  0%,100%{ transform:translateY(0) skewX(0deg); opacity:0.65;}
+  50%{ transform:translateY(-3px) skewX(-2deg); opacity:1;}
+}
+
+.ovenEmbers{ position:absolute; inset:0; }
+.station.oven.active .ovenEmbers::before,
+.station.oven.active .ovenEmbers::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:72%;
+  width:6px; height:6px;
+  border-radius:999px;
+  background: rgba(255,142,40,0.95);
+  box-shadow:
+    -44px 0 rgba(255,142,40,0.75),
+    -18px -14px rgba(255,80,20,0.55),
+    18px -20px rgba(255,142,40,0.65),
+    44px -8px rgba(255,80,20,0.45);
+  animation: embersUp 1.25s ease-out infinite;
+}
+.station.oven.active .ovenEmbers::after{
+  width:5px; height:5px;
+  top:78%;
+  opacity:0.7;
+  animation-duration:1.65s;
+  animation-delay:0.22s;
+}
+@keyframes embersUp{
+  0%{ transform:translate(-50%,0) scale(0.9); opacity:0;}
+  15%{ opacity:0.9;}
+  100%{ transform:translate(-50%,-20px) scale(1.1); opacity:0;}
+}
+
+.ovenSvg{
+  position:absolute;
+  left:50%;
+  top:10px;
+  transform:translateX(-50%);
+  width:180px;
+  height:160px;
+  filter: drop-shadow(0 12px 26px rgba(0,0,0,0.10));
+}
+
+/* SVG paint */
+.ovBody{ fill: rgba(255,255,255,0.74); stroke: rgba(0,0,0,0.10); stroke-width:2.5; }
+.ovLine{ stroke: rgba(0,0,0,0.10); stroke-width:4; stroke-linecap:round; }
+.ovKnob{ fill: rgba(255,255,255,0.9); stroke: rgba(0,0,0,0.12); stroke-width:2.2; }
+.ovWindow{ fill: rgba(0,0,0,0.06); stroke: rgba(0,0,0,0.10); stroke-width:2.5; }
+.ovFire{
+  fill: rgba(255,142,40,0.65);
+  filter: drop-shadow(0 0 18px rgba(255,142,40,0.45));
+  animation: fireFlicker 1.0s ease-in-out infinite;
+}
+@keyframes fireFlicker{
+  0%,100%{ transform:translateY(0); opacity:0.75;}
+  50%{ transform:translateY(-1px); opacity:1;}
+}
+.ovRack{ stroke: rgba(255,142,40,0.30); stroke-width:4; stroke-linecap:round; }
+.ovRack2{ stroke: rgba(255,80,20,0.18); stroke-width:4; stroke-linecap:round; }
+.ovBadge{ fill: rgba(255,255,255,0.72); stroke: rgba(0,0,0,0.10); stroke-width:2; }
+.ovBadgeLine{ stroke: rgba(0,0,0,0.18); stroke-width:2.2; stroke-linecap:round; }
+
 .railGlow{
   position: absolute;
   left: 0;
@@ -485,7 +720,7 @@ function rand(min, max) {
   100%{ transform: translateX(-35%); }
 }
 
-.stationTop{ position: relative; z-index: 5; }
+.stationTop{ position: relative; z-index: 30; } /* pill always on top */
 
 
 /* Oven container */
@@ -505,6 +740,21 @@ function rand(min, max) {
 .bagelCart { z-index: 20; }
 
 /* Top panel with knobs */
+
+/* when the bagel is "In the Oven", push it up into the oven window */
+.bagelCart.oven{
+  bottom: 1px;          /* move cart up */
+  z-index: 9;            /* behind ovenArt (we'll raise ovenArt next) */
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.10));
+}
+
+/* make the cart feel like it's inside the oven (slightly muted) */
+.bagelCart.oven .cart{
+  background: rgba(255,255,255,0.72);
+  border-color: rgba(75,52,41,0.10);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+}
+
 .ovenTop {
   height: 28px;
   display: flex;
@@ -568,6 +818,47 @@ function rand(min, max) {
     0 8px 20px rgba(75,52,41,0.08);
 }
 
+/* 🔥 HEAT WAVES (oven air distortion) */
+.heatWaves {
+  position: absolute;
+  left: 50%;
+  top: 125px;                 /* sits inside oven window */
+  transform: translateX(-50%);
+  width: 140px;
+  height: 90px;
+  pointer-events: none;
+  z-index: 50;               /* above oven, below bagel */
+  
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 190, 80, 0.18) 0px,
+      rgba(255, 190, 80, 0.18) 6px,
+      rgba(255, 190, 80, 0.06) 12px,
+      rgba(255, 190, 80, 0.00) 18px
+    );
+
+  filter: blur(1px);
+  opacity: 0.85;
+
+  animation: heatRise 1.6s ease-in-out infinite;
+}
+
+/* upward wavy motion */
+@keyframes heatRise {
+  0% {
+    transform: translateX(-50%) translateY(6px) skewX(0deg);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-4px) skewX(1.5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(6px) skewX(0deg);
+    opacity: 0.65;
+  }
+}
 
 /* vignette + tiny noise feel */
 .belt::after{
@@ -736,11 +1027,14 @@ function rand(min, max) {
   box-shadow: 0 10px 26px rgba(244,165,28,0.18);
 }
 
-.stationBase {
+.stationBase{
+  position: relative;     /* ✅ anchor oven absolute children */
+  min-height: 150px;      /* ✅ room for oven */
   margin-top: 12px;
   display: grid;
   place-items: center;
 }
+
 .post {
   width: 12px;
   height: 56px;
@@ -780,7 +1074,7 @@ function rand(min, max) {
     rgba(255,255,255,0.02) 6px,
     rgba(255,255,255,0.02) 12px
   );
-  mix-blend-mode: overlay;
+  mix-blend-mode: multiply;
   animation: heatWobble 1.3s ease-in-out infinite;
   opacity: 0.8;
 }
