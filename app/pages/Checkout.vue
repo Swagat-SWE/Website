@@ -8,7 +8,7 @@
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Home</NuxtLink>
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
@@ -108,11 +108,31 @@
             <span>I confirm my order is correct</span>
           </label>
 
-          <button class="primaryBtn" :disabled="!confirmed || cart.length === 0" type="button">
-            Add payment + place order
+          <div v-if="hasPayment" class="paySummary">
+             <div class="payTitle">Payment method</div>
+             <div class="payLine">
+              <b>{{ cards[0].brandLabel }}</b> • {{ cards[0].masked }} • Exp {{ cards[0].exp }}
+            </div>
+            <button class="linkBtn" type="button" @click="goToPayment">
+              Change payment method
+            </button>
+          </div>
+          
+          <button v-else class="addPaymentBtn" type="button" @click="goToPayment">
+            Add Payment Method
           </button>
-        </aside>
-      </div>
+
+          <button
+            class="primaryBtn"
+            :disabled="!confirmed || cart.length === 0 || !hasPayment"
+            type="button"
+            @click="navigateTo('/tracking')"
+          >
+            Order Now
+          </button>
+          </aside>
+        </div>
+
 
       <!-- EDIT MODAL -->
       <div v-if="editOpen" class="modalOverlay" @click="closeEdit">
@@ -181,6 +201,9 @@ const cartCount = computed(() =>
   cart.value.reduce((sum, i) => sum + (i.qty || 1), 0)
 );
 
+const cards = useState("cards", () => []);
+const hasPayment = computed(() => cards.value.length > 0);
+
 function lineTotal(item) {
   return (item.priceEach ?? 0) * (item.qty || 1);
 }
@@ -242,6 +265,10 @@ const OPTIONS_BY_NAME = {
 
 function getOptions(name) {
   return OPTIONS_BY_NAME[name] || { bagels: ["Plain"], shmears: ["Plain Shmear"], extras: [] };
+}
+
+function goToPayment() {
+  navigateTo("/Payment");
 }
 
 /** EDIT MODAL STATE */
@@ -328,6 +355,35 @@ function saveEdit() {
   --yellow: #f4b316;
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
+.addPaymentBtn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+
+  background: #1a73e8; /* clean blue */
+  color: #ffffff;
+
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+
+  box-shadow: 0 6px 16px rgba(26, 115, 232, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+}
+
+.addPaymentBtn:hover {
+  background: #1558b0;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(26, 115, 232, 0.45);
+}
+
+.addPaymentBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.35);
+}
+
 
 .page {
   min-height: 100vh;
@@ -460,6 +516,25 @@ function saveEdit() {
 }
 .qtyNum { font-weight: 1000; width: 18px; text-align: center; }
 
+.paySummary {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: rgba(75, 52, 41, 0.03);
+}
+
+.payTitle {
+  font-weight: 1000;
+  margin-bottom: 6px;
+}
+
+.payLine {
+  font-weight: 900;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+
 .thumb {
   width: 72px;
   height: 72px;
@@ -527,17 +602,39 @@ function saveEdit() {
 
 .primaryBtn {
   width: 100%;
-  background: var(--yellow);
-  border: none;
-  color: #2c1b12;
-  font-weight: 1000;
+  margin-top: 12px;            /* makes it match Add Payment spacing */
+  padding: 14px;               /* same size as Add Payment Method */
   border-radius: 14px;
-  padding: 12px;
+  border: none;
+
+  /* Einstein-style "order" vibe (gold/yellow) */
+  background: linear-gradient(180deg, #f4b316, #e89f00);
+  color: #2c1b12;
+
+  font-weight: 1000;
+  font-size: 15px;
   cursor: pointer;
+
+  box-shadow: 0 6px 16px rgba(244, 179, 22, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
 }
+
+.primaryBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(244, 179, 22, 0.45);
+  filter: brightness(0.98);
+}
+
+.primaryBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(244, 179, 22, 0.35);
+}
+
 .primaryBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 /* Modal */
