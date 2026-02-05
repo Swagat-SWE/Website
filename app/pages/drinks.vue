@@ -303,7 +303,7 @@ function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=fa
 
 /* Cart */
 const showCart = ref(false);
-const cartItems = ref([]);
+const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
 function addToCart(name){ cartItems.value.push(name); showCart.value=true; }
 function removeFromCart(i){ cartItems.value.splice(i,1); }
