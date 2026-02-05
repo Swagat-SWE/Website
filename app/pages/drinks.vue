@@ -194,7 +194,7 @@
 
         <ul v-else class="cartList">
           <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
-            <span>{{ item }}</span>
+            <span>{{ item.name }} ({{ item.size }}) x{{ item.qty }}</span>
             <button class="removeBtn" @click="removeFromCart(idx)">Remove</button>
           </li>
         </ul>
@@ -286,8 +286,26 @@ function openSizeModal(drink) {
 }
 
 function selectSize(size) {
-  cartItems.value.push(`${selectedDrink.value.name} - ${size.label}`)
+  const drink = selectedDrink.value
+
+  const existing = cart.value.find(
+    item => item.name === drink.name && item.size === size.label
+  )
+
+  if (existing) {
+    existing.qty += 1
+  } else {
+    cart.value.push({
+      name: drink.name,
+      size: size.label,
+      qty: 1,
+      priceEach: (drink.price || 0) + size.priceMod,
+      img: drink.img,
+    })
+  }
+
   showSizeModal.value = false
+  showCart.value = true
 }
 
 /* Review */
@@ -301,7 +319,7 @@ function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=fa
 
 /* Cart */
 const showCart = ref(false);
-const cartItems = ref([]);
+const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
 function addToCart(name){ cartItems.value.push(name); showCart.value=true; }
 function removeFromCart(i){ cartItems.value.splice(i,1); }
@@ -891,34 +909,6 @@ const TeaAndSmoothies = ref ([
   background: #ffbe21;
 }
 
-/* Responsive */
-@media (max-width: 980px) {
-  .page {
-    grid-template-columns: 220px 1fr;
-  }
-}
-
-@media (max-width: 720px) {
-  .page {
-    grid-template-columns: 1fr;
-  }
-  .sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-right: none;
-    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-  }
-  .tileGrid {
-    grid-template-columns: 1fr;
-  }
-  .locationInput {
-    width: 150px;
-  }
-  .locationDropdown {
-    min-width: 260px;
-  }
-
   /* ===== Size Modal ===== */
 .sizeOverlay {
   position: fixed;   /* makes it float over the whole screen */
@@ -984,5 +974,35 @@ const TeaAndSmoothies = ref ([
   opacity: 0.7;
   cursor: pointer;
 }
+
+/* Responsive */
+@media (max-width: 980px) {
+  .page {
+    grid-template-columns: 220px 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-right: none;
+    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+  }
+  .tileGrid {
+    grid-template-columns: 1fr;
+  }
+  .locationInput {
+    width: 150px;
+  }
+  .locationDropdown {
+    min-width: 260px;
+  }
+
+
 }
 </style>
