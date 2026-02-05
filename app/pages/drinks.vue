@@ -110,7 +110,7 @@
             <div class="tileFooter">
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
@@ -132,7 +132,7 @@
             <div class="tileFooter">
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
@@ -153,12 +153,33 @@
             <div class="tileFooter">
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
         </div>
       </section>
+
+      <!-- SIZE MODAL -->
+<div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
+  <div class="sizeModal" @click.stop>
+    <h3 class="sizeTitle">Choose a Size</h3>
+    <p class="sizeDrinkName">{{ selectedDrink?.name }}</p>
+
+    <div class="sizeOptions">
+      <button
+        v-for="size in drinkSizes"
+        :key="size.label"
+        class="sizeBtn"
+        @click="selectSize(size)"
+      >
+        {{ size.label }}
+      </button>
+    </div>
+
+    <button class="cancelBtn" @click="showSizeModal = false">Cancel</button>
+  </div>
+</div>
 
       <!-- CART -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
@@ -249,6 +270,25 @@ function selectLocation(opt){ location.value = opt; showLocationDropdown.value =
 function handleDocClick(e){ if(!e.target.closest(".locationWrap")) showLocationDropdown.value=false; }
 onMounted(()=>document.addEventListener("click",handleDocClick));
 onBeforeUnmount(()=>document.removeEventListener("click",handleDocClick));
+
+const showSizeModal = ref(false)
+const selectedDrink = ref(null)
+
+const drinkSizes = [
+  { label: "Small", priceMod: 0 },
+  { label: "Medium", priceMod: 0.75 },
+  { label: "Large", priceMod: 1.50 }
+]
+
+function openSizeModal(drink) {
+  selectedDrink.value = drink
+  showSizeModal.value = true
+}
+
+function selectSize(size) {
+  cartItems.value.push(`${selectedDrink.value.name} - ${size.label}`)
+  showSizeModal.value = false
+}
 
 /* Review */
 const showReview = ref(false);
@@ -878,5 +918,65 @@ const TeaAndSmoothies = ref ([
   .locationDropdown {
     min-width: 260px;
   }
+  
+  /* ===== Size Modal ===== */
+.sizeOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.sizeModal {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.sizeTitle {
+  margin: 0 0 6px;
+  font-weight: 900;
+  color: var(--brown);
+}
+
+.sizeDrinkName {
+  font-weight: 700;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.sizeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sizeBtn {
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+  background: var(--yellow);
+}
+
+.sizeBtn:hover {
+  background: #ffbe21;
+}
+
+.cancelBtn {
+  margin-top: 14px;
+  background: transparent;
+  border: none;
+  font-weight: 800;
+  opacity: 0.7;
+  cursor: pointer;
+}
 }
 </style>
