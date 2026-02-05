@@ -40,6 +40,12 @@
           <div class="belt">
             <div class="beltStripes" aria-hidden="true"></div>
 
+            <!-- Neon progress rail -->
+             <div class="rail" aria-hidden="true">
+            <div class="railBase"></div>
+            <div class="railGlow" :style="{ width: `${progressWidth}%` }"></div>
+             </div>
+
             <!-- Stations -->
             <div class="stations">
               <div
@@ -61,9 +67,34 @@
                 </div>
 
                 <div class="stationBase">
-                  <div class="post" />
-                  <div class="platform" />
+                  <!-- If this station is the oven, draw an oven -->
+                   <div v-if="s.key === 'oven'" class="ovenBox" :class="{ hot: statusIndex === i }" aria-hidden="true">
+                    <div class="ovenTop">
+                      <span class="knob" />
+                      <span class="knob" />
+                      <span class="knob" />
+                   </div>
+                   
+                   <div class="ovenDoor">
+                   <div class="ovenWindow">
+                    <div v-if="statusIndex === i" class="ovenFlame" />
+                  </div>
+                  <div class="ovenHandle" />
                 </div>
+                
+                <!-- warm glow behind oven when active -->
+                 <div v-if="statusIndex === i" class="ovenGlow" />
+                </div>
+
+  <!-- Normal post/platform for non-oven steps -->
+  <template v-else>
+    <div class="post" />
+    <div class="platform" />
+  </template>
+</div>
+
+<!-- Heat shimmer ONLY when oven is active -->
+<div v-if="s.key === 'oven' && statusIndex === i" class="heat" aria-hidden="true"></div>
 
                 <!-- Oven heat shimmer overlay -->
                 <div v-if="s.key === 'oven' && statusIndex === i" class="heat" aria-hidden="true"></div>
@@ -95,12 +126,48 @@
                 <div class="cartTop" />
 
                 <!-- Bagel -->
-                <div class="bagel">
-                  <div class="bagelInner" />
-                  <div class="seeds" aria-hidden="true">
-                    <span v-for="n in 10" :key="n" class="seed" />
-                  </div>
-                </div>
+               <!-- Bagel (more realistic SVG) -->
+                <svg class="bagelSvgReal" viewBox="0 0 64 64" aria-hidden="true">
+                  <defs>
+                <radialGradient id="bagelGradReal" cx="30%" cy="25%" r="80%">
+                  <stop offset="0%" stop-color="#FFE2B8" />
+                  <stop offset="55%" stop-color="#E9A760" />
+                  <stop offset="100%" stop-color="#B8743D" />
+                </radialGradient>
+                
+                <radialGradient id="holeGradReal" cx="40%" cy="35%" r="70%">
+                  <stop offset="0%" stop-color="rgba(0,0,0,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0.75)" />
+                </radialGradient>
+              </defs>
+
+  <!-- outer -->
+  <circle cx="32" cy="32" r="21" fill="url(#bagelGradReal)" />
+  <!-- inner hole -->
+  <circle cx="32" cy="32" r="8.5" fill="url(#holeGradReal)" />
+
+  <!-- highlight -->
+  <path
+    d="M18 26c4-9 20-14 28-4"
+    fill="none"
+    stroke="rgba(255,255,255,0.35)"
+    stroke-width="5"
+    stroke-linecap="round"
+  />
+
+  <!-- seeds -->
+  <g fill="rgba(255,255,255,0.8)">
+    <ellipse cx="21" cy="22" rx="2.2" ry="1.1" transform="rotate(20 21 22)" />
+    <ellipse cx="27" cy="18" rx="2.1" ry="1.0" transform="rotate(-10 27 18)" />
+    <ellipse cx="36" cy="18" rx="2.2" ry="1.1" transform="rotate(15 36 18)" />
+    <ellipse cx="45" cy="23" rx="2.2" ry="1.1" transform="rotate(-18 45 23)" />
+    <ellipse cx="46" cy="36" rx="2.2" ry="1.1" transform="rotate(12 46 36)" />
+    <ellipse cx="40" cy="46" rx="2.2" ry="1.1" transform="rotate(-20 40 46)" />
+    <ellipse cx="27" cy="47" rx="2.2" ry="1.1" transform="rotate(10 27 47)" />
+    <ellipse cx="18" cy="36" rx="2.2" ry="1.1" transform="rotate(-10 18 36)" />
+  </g>
+</svg>
+
 
                 <div class="wheels" aria-hidden="true">
                   <span class="wheel" />
@@ -165,6 +232,8 @@ function stationLeft(i) {
 }
 
 const bagelLeft = computed(() => stationLeft(statusIndex.value));
+const progressWidth = computed(() => stationLeft(statusIndex.value));
+
 
 /** Animation flags */
 const isMoving = ref(false);
@@ -229,7 +298,9 @@ function clamp(n, min, max) {
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 </script>
+
 
 <style scoped>
 :root {
@@ -354,25 +425,271 @@ function rand(min, max) {
   background: linear-gradient(180deg, rgba(75,52,41,0.04), rgba(75,52,41,0.02));
   overflow: hidden;
 }
+/* Neon progress rail (NEW) */
+.rail{
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 46px;               /* sits behind the pills */
+  height: 14px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 2;              /* above stripes, below station pills */
+}
 
-/* moving stripes */
-.beltStripes {
+.railBase{
   position: absolute;
   inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+}
+
+.railGlow{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+
+  /* neon blue → purple vibe like your screenshot */
+  background: linear-gradient(
+    90deg,
+    rgba(46,233,255,0.0),
+    rgba(46,233,255,0.75),
+    rgba(138,91,255,0.72)
+  );
+
+  box-shadow: 0 0 24px rgba(46,233,255,0.28);
+  transition: width 520ms cubic-bezier(0.2, 0.9, 0.2, 1.05);
+}
+
+/* optional: make it feel alive (subtle shimmer) */
+.railGlow::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.20) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  opacity: 0.45;
+  animation: railSweep 2.8s ease-in-out infinite;
+}
+
+@keyframes railSweep{
+  0%{ transform: translateX(-35%); }
+  50%{ transform: translateX(35%); }
+  100%{ transform: translateX(-35%); }
+}
+
+.stationTop{ position: relative; z-index: 5; }
+
+
+/* Oven container */
+.ovenBox {
+  position: relative;
+  width: 140px;
+  height: 110px;
+  border-radius: 18px;
+  margin-top: 6px;
+  background: linear-gradient(180deg, rgba(75,52,41,0.18), rgba(75,52,41,0.10));
+  border: 1px solid rgba(75,52,41,0.18);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.10);
+  overflow: hidden;
+  z-index: 2;
+}
+
+.bagelCart { z-index: 20; }
+
+/* Top panel with knobs */
+.ovenTop {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.20);
+  border-bottom: 1px solid rgba(75,52,41,0.16);
+}
+
+.knob {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(75,52,41,0.18);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.10);
+}
+
+/* Door */
+.ovenDoor {
+  position: relative;
+  height: calc(110px - 28px);
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.10);
+}
+
+/* Window */
+.ovenWindow {
+  width: 90px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(75,52,41,0.22);
+  box-shadow: inset 0 10px 18px rgba(0,0,0,0.20);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Handle */
+.ovenHandle {
+  position: absolute;
+  right: 16px;
+  top: 20px;
+  width: 34px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(75,52,41,0.18);
+}
+
+.belt{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25)),
+    #F2E7D7;
+
+  border: 1px solid rgba(75,52,41,0.10);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.4),
+    0 8px 20px rgba(75,52,41,0.08);
+}
+
+
+/* vignette + tiny noise feel */
+.belt::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:22px;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 55%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.06) 100%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0,0,0,0.02) 0px,
+      rgba(0,0,0,0.02) 2px,
+      rgba(0,0,0,0.00) 2px,
+      rgba(0,0,0,0.00) 6px
+    );
+  opacity:0.65;
+}
+
+.bagelSvgReal{
+  animation: bagelBob 2.6s ease-in-out infinite;
+}
+@keyframes bagelBob{
+  0%{ transform: translateY(0); }
+  50%{ transform: translateY(-1.5px); }
+  100%{ transform: translateY(0); }
+}
+
+/* Flame glow inside window when active */
+.ovenFlame {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 90px;
+  background: radial-gradient(circle at 50% 65%, rgba(244,165,28,0.55), rgba(244,165,28,0) 60%);
+  filter: blur(1px);
+  animation: flamePulse 0.7s ease-in-out infinite;
+  opacity: 0.95;
+}
+
+@keyframes flamePulse {
+  0% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.85; }
+  50% { transform: translateX(-50%) translateY(-2px) scale(1.03); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.85; }
+}
+
+/* Warm glow behind oven when active */
+.ovenGlow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 50% 70%, rgba(244,165,28,0.35), rgba(244,165,28,0) 65%);
+  filter: blur(10px);
+  z-index: -1;
+}
+
+/* Make the oven feel “hot” when active */
+.ovenBox.hot {
+  border-color: rgba(244,165,28,0.45);
+  box-shadow: 0 16px 34px rgba(244,165,28,0.16), 0 14px 28px rgba(0,0,0,0.10);
+}
+
+.belt::before{
+  content:"";
+  position:absolute;
+  inset:-40px;
+  pointer-events:none;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.20) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  transform: translateX(-35%);
+  animation: sweep 4.5s ease-in-out infinite;
+  opacity: 0.55;
+}
+@keyframes sweep{
+  0%{ transform: translateX(-45%); }
+  50%{ transform: translateX(45%); }
+  100%{ transform: translateX(-45%); }
+}
+.page{
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #F7F1E7 0%,
+    #EFE5D6 100%
+  );
+}
+
+.beltStripes{
+  opacity: 0.18;
+
   background: repeating-linear-gradient(
     90deg,
-    rgba(75,52,41,0.06) 0px,
-    rgba(75,52,41,0.06) 14px,
-    rgba(75,52,41,0.02) 14px,
-    rgba(75,52,41,0.02) 28px
+    rgba(75,52,41,0.05) 0px,
+    rgba(75,52,41,0.05) 14px,
+    rgba(75,52,41,0.015) 14px,
+    rgba(75,52,41,0.015) 30px
   );
-  opacity: 0.55;
-  animation: beltMove 1.05s linear infinite;
 }
-@keyframes beltMove {
-  from { transform: translateX(0); }
-  to { transform: translateX(-56px); }
+
+.belt::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:22px;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(244,179,22,0.08),
+      transparent 70%
+    );
+
+  opacity:0.7;
 }
+
 
 /* stations */
 .stations {
