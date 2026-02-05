@@ -168,12 +168,12 @@
 
     <div class="sizeOptions">
       <button
-        v-for="size in drinkSizes"
+        v-for="size in selectedDrink?.sizes"
         :key="size.label"
         class="sizeBtn"
         @click="selectSize(size)"
       >
-        {{ size.label }}
+        {{ size.label }} - ${{ (selectedDrink.basePrice + size.mod).toFixed(2) }}
       </button>
     </div>
 
@@ -194,7 +194,10 @@
 
         <ul v-else class="cartList">
           <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
-            <span>{{ item.name }} ({{ item.size }}) x{{ item.qty }}</span>
+            <span>
+              {{ item.name }} ({{ item.size }}) x{{ item.qty }}
+                — ${{ (item.price * item.qty).toFixed(2) }}
+            </span>
             <button class="removeBtn" @click="removeFromCart(idx)">Remove</button>
           </li>
         </ul>
@@ -286,9 +289,11 @@ function openSizeModal(drink) {
 }
 
 function selectSize(size) {
+  const price = selectedDrink.value.basePrice + size.mod
+
   const existing = cart.value.find(
     item =>
-      item.name === selectedDrink.value.name &&
+      item.id === selectedDrink.value.id &&
       item.size === size.label
   )
 
@@ -296,8 +301,10 @@ function selectSize(size) {
     existing.qty++
   } else {
     cart.value.push({
+      id: selectedDrink.value.id,
       name: selectedDrink.value.name,
       size: size.label,
+      price,
       qty: 1
     })
   }
@@ -319,13 +326,16 @@ function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=fa
 const showCart = ref(false);
 const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
-function addToCart(name){ cart.value.push(name); showCart.value=true; }
 function removeFromCart(i){ cart.value.splice(i,1); }
 function goToCheckout(){ navigateTo("/checkout"); }
 
 /* DRINK DATA */
 const coldDrinks = ref([
-  { id: "c1", name: "Classic Cold Brew", img: "ClassicColdBrew.png" },
+  { id: "c1", name: "Classic Cold Brew", img: "ClassicColdBrew.png",
+     basePrice: 3.49, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.50 }]
+   },
   { id: "c2", name: "Chocolate Cream Cold Brew", img: "ChocolateCreamColdBrew.png" },
   { id: "c3", name: "Vanilla Cream Cold Brew", img: "VanillaCreamColdBrew.png" },
   { id: "c4", name: "Caramel Cream Cold Brew", img: "CaramelCreamColdBrew.png" },
@@ -340,7 +350,7 @@ const hotDrinks = ref([
   { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png" },
   { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png" },
   { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png" },
-  { id: "h5", name: "Coffee", img: "HotCoffee.png" },
+  { id: "h6", name: "Coffee", img: "HotCoffee.png" },
 ])
 
 const TeaAndSmoothies = ref ([
@@ -420,37 +430,6 @@ const TeaAndSmoothies = ref ([
   justify-content: center;  /* centers the logo */
   margin-bottom: 14px;
   overflow: hidden;         /* prevents it from spilling */
-}
-
-.dotsBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  gap: 3px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 99px;
-  background: var(--brown);
-  opacity: 0.9;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--brown);
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
-  padding: 8px 10px;
-  border-radius: 12px;
 }
 
 .nav {
@@ -686,10 +665,6 @@ const TeaAndSmoothies = ref ([
   box-shadow: var(--cardShadow);
 }
 
-.cartIcon {
-  font-size: 18px;
-}
-
 .cartCount {
   position: absolute;
   top: -8px;
@@ -888,10 +863,6 @@ const TeaAndSmoothies = ref ([
   border-radius: 14px;
   padding: 10px 10px;
   background: rgba(75, 52, 41, 0.03);
-}
-
-.cartItemName {
-  font-weight: 900;
 }
 
 .removeBtn {
