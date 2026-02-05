@@ -85,7 +85,7 @@
           <button class="signInBtn">Sign In</button>
 
           <button class="cartBtn" @click="toggleCart">
-            🛒 <span class="cartCount">{{ cartItems.length }}</span>
+            🛒 <span>{{ item }}</span>
           </button>
         </div>
       </header>
@@ -286,26 +286,10 @@ function openSizeModal(drink) {
 }
 
 function selectSize(size) {
-  const drink = selectedDrink.value
-
-  const existing = cart.value.find(
-    item => item.name === drink.name && item.size === size.label
-  )
-
-  if (existing) {
-    existing.qty += 1
-  } else {
-    cart.value.push({
-      name: drink.name,
-      size: size.label,
-      qty: 1,
-      priceEach: (drink.price || 0) + size.priceMod,
-      img: drink.img,
-    })
-  }
+   cartItems.value.push(`${selectedDrink.value.name} - ${size.label}`)
 
   showSizeModal.value = false
-  showCart.value = true
+  
 }
 
 /* Review */
@@ -319,7 +303,7 @@ function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=fa
 
 /* Cart */
 const showCart = ref(false);
-const cart = useState("cart", () => []);
+const cartItems = ref([]);
 function toggleCart(){ showCart.value=!showCart.value; }
 function addToCart(name){ cartItems.value.push(name); showCart.value=true; }
 function removeFromCart(i){ cartItems.value.splice(i,1); }
