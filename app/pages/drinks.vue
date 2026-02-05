@@ -85,7 +85,7 @@
           <button class="signInBtn">Sign In</button>
 
           <button class="cartBtn" @click="toggleCart">
-            🛒 <span>{{ item }}</span>
+            🛒 <span class="cartCount">{{ cart.length }}</span>
           </button>
         </div>
       </header>
@@ -189,11 +189,11 @@
           <button class="xBtn" @click="showCart = false">✕</button>
         </div>
 
-        <div v-if="cartItems.length === 0" class="emptyCart">No items yet. Use the <b>+</b> button to add items.
+        <div v-if="cart.length === 0" class="emptyCart">No items yet. Use the <b>+</b> button to add items.
         </div>
 
         <ul v-else class="cartList">
-          <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
+          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
             <span>{{ item.name }} ({{ item.size }}) x{{ item.qty }}</span>
             <button class="removeBtn" @click="removeFromCart(idx)">Remove</button>
           </li>
@@ -286,10 +286,24 @@ function openSizeModal(drink) {
 }
 
 function selectSize(size) {
-   cartItems.value.push(`${selectedDrink.value.name} - ${size.label}`)
+  const existing = cart.value.find(
+    item =>
+      item.name === selectedDrink.value.name &&
+      item.size === size.label
+  )
 
+  if (existing) {
+    existing.qty++
+  } else {
+    cart.value.push({
+      name: selectedDrink.value.name,
+      size: size.label,
+      qty: 1
+    })
+  }
+
+  showCart.value = true
   showSizeModal.value = false
-  
 }
 
 /* Review */
@@ -305,8 +319,8 @@ function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=fa
 const showCart = ref(false);
 const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
-function addToCart(name){ cartItems.value.push(name); showCart.value=true; }
-function removeFromCart(i){ cartItems.value.splice(i,1); }
+function addToCart(name){ cart.value.push(name); showCart.value=true; }
+function removeFromCart(i){ cart.value.splice(i,1); }
 function goToCheckout(){ navigateTo("/checkout"); }
 
 /* DRINK DATA */
