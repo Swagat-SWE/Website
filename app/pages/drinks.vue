@@ -277,12 +277,6 @@ onBeforeUnmount(()=>document.removeEventListener("click",handleDocClick));
 const showSizeModal = ref(false)
 const selectedDrink = ref(null)
 
-const drinkSizes = [
-  { label: "Small", priceMod: 0 },
-  { label: "Medium", priceMod: 0.75 },
-  { label: "Large", priceMod: 1.50 }
-]
-
 function openSizeModal(drink) {
   selectedDrink.value = drink
   showSizeModal.value = true
@@ -336,27 +330,107 @@ const coldDrinks = ref([
     { label: "Small", mod: 0 },
     { label: "Large", mod: 0.50 }]
    },
-  { id: "c2", name: "Chocolate Cream Cold Brew", img: "ChocolateCreamColdBrew.png" },
-  { id: "c3", name: "Vanilla Cream Cold Brew", img: "VanillaCreamColdBrew.png" },
-  { id: "c4", name: "Caramel Cream Cold Brew", img: "CaramelCreamColdBrew.png" },
-  { id: "c5", name: "Chocolate Cold Brew Shake", img: "ChocolateColdBrewShake.png" },
-  { id: "c6", name: "Vanilla Cold Brew Shake", img: "VanillaColdBrewShake.png" },
-  { id: "c7", name: "Caramel Cold Brew Shake", img: "CaramelColdBrewShake.png" },
+  { id: "c2", name: "Chocolate Cream Cold Brew", img: "ChocolateCreamColdBrew.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c3", name: "Vanilla Cream Cold Brew", img: "VanillaCreamColdBrew.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c4", name: "Caramel Cream Cold Brew", img: "CaramelCreamColdBrew.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c5", name: "Chocolate Cold Brew Shake", img: "ChocolateColdBrewShake.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c6", name: "Vanilla Cold Brew Shake", img: "VanillaColdBrewShake.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c7", name: "Caramel Cold Brew Shake", img: "CaramelColdBrewShake.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+   { id: "c8", name: "Mocha", img: "IcedMocha.png", 
+    basePrice: 4.69, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.30 }]
+   },
+   { id: "c9", name: "Caramel Macchiato", img: "IcedCaramelMacchiato.png", 
+    basePrice: 5.39, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.10 }]
+   },
+   { id: "c10", name: "Latte", img: "ColdLatte.png", 
+    basePrice: 4.29, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.40 }]
+   },
+   { id: "c11", name: "Chai Tea Latte", img: "ColdChaiTeaLatte.png", 
+    basePrice: 4.19, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
 ]);
 
 const hotDrinks = ref([
-  { id: "h1", name: "Mocha", img: "Mocha.png" },
-  { id: "h2", name: "Latte", img: "Latte.png" },
-  { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png" },
-  { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png" },
-  { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png" },
-  { id: "h6", name: "Coffee", img: "HotCoffee.png" },
+  { id: "h1", name: "Mocha", img: "Mocha.png", 
+    basePrice: 4.69, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.30 }]
+   },
+  { id: "h2", name: "Latte", img: "Latte.png", 
+    basePrice: 4.19, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
+  { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png", 
+    basePrice: 5.29, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
+  { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png", 
+    basePrice: 4.19, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
+  { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png", 
+    basePrice: 3.99, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.50 }]
+   },
+  { id: "h6", name: "Coffee", img: "HotCoffee.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
 ])
 
 const TeaAndSmoothies = ref ([
-  { id: "o1", name: "Hot Tea", img: "HotTea.png" },
-  { id: "o2", name: "Iced Tea", img: "IcedTea.png" },
-  { id: "o3", name: "Strawberry Banana Smoothie", img: "Strawberry Banana Smoothie.png" },
+  { id: "o1", name: "Hot Tea", img: "HotTea.png", 
+    basePrice: 3.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.76 }]
+   },
+  { id: "o2", name: "Iced Tea", img: "IcedTea.png", 
+    basePrice: 3.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.76 }]
+   },
+  { id: "o3", name: "Strawberry Banana Smoothie", img: "Strawberry Banana Smoothie.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
 ])
 </script>
 
