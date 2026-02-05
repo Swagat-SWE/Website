@@ -918,25 +918,31 @@ const TeaAndSmoothies = ref ([
   .locationDropdown {
     min-width: 260px;
   }
-  
+
   /* ===== Size Modal ===== */
 .sizeOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
+  position: fixed;   /* makes it float over the whole screen */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 40;
+
+  z-index: 9999;   /* ensures it sits above EVERYTHING */
 }
 
 .sizeModal {
   background: white;
   padding: 24px;
   border-radius: 20px;
-  width: 280px;
+  width: 300px;
+  max-width: 90%;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
 }
 
 .sizeTitle {
