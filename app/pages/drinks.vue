@@ -7,7 +7,7 @@
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
+        <NuxtLink class="navItem" to="/index">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
@@ -139,6 +139,27 @@
         </div>
       </section>
 
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Tea and Smoothies</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="tileGrid">
+          <article v-for="item in TeaAndSmoothies" :key="item.id" class="tileCard">
+            <div class="tileImg">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <span class="tileName">{{ item.name }}</span>
+                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- CART -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
       <aside class="cartPanel" :class="{ open: showCart }">
@@ -147,7 +168,8 @@
           <button class="xBtn" @click="showCart = false">✕</button>
         </div>
 
-        <div v-if="cartItems.length === 0" class="emptyCart">No items yet.</div>
+        <div v-if="cartItems.length === 0" class="emptyCart">No items yet. Use the <b>+</b> button to add items.
+        </div>
 
         <ul v-else class="cartList">
           <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
@@ -169,7 +191,56 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 const location = ref("Dubuque, IA");
 const locationQuery = ref("");
 const showLocationDropdown = ref(false);
-const locations = ["Iowa","Illinois","Wisconsin","California","Texas","Florida","New York"];
+const locations = ["Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",];
 const filteredLocations = computed(() => {
   const q = locationQuery.value.toLowerCase();
   return locations.filter(l => l.toLowerCase().includes(q));
@@ -213,6 +284,7 @@ const hotDrinks = ref([
   { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png" },
   { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png" },
   { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png" },
+  { id: "h5", name: "Coffee", img: "HotCoffee.png" },
 ])
 
 const TeaAndSmoothies = ref ([
