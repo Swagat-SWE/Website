@@ -9,6 +9,7 @@
       </div>
 
       <nav class="nav">
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
@@ -72,7 +73,7 @@
                 v-model="locationQuery"
                 class="locationInput"
                 type="text"
-                placeholder="Search a city…"
+                placeholder="Search a state…"
                 @focus="showLocationDropdown = true"
                 @input="showLocationDropdown = true"
               />
@@ -338,7 +339,7 @@ const MENU = [
 /** =========================
  *  Location prototype (simple)
  *  ========================= */
-const location = ref("Dubuque, IA");
+const location = ref("Iowa");
 const locationQuery = ref("");
 const showLocationDropdown = ref(false);
 
@@ -470,22 +471,31 @@ function goToCheckout() {
   navigateTo("/checkout");       // or "/Checkout" depending on your filename
 }
 
-function addToCart(name) {
+function addToCart(input) {
+  // allow passing either the whole object OR just a name string
+  const menuItem =
+    typeof input === "string"
+      ? MENU.find((m) => m.name === input) || { name: input, price: 0 }
+      : input;
+
   const existing = cart.value.find((x) => x.name === menuItem.name);
 
   if (existing) {
-    existing.qty += 1
+    existing.qty += 1;
   } else {
     cart.value.push({
       name: menuItem.name,
       qty: 1,
+      img: menuItem.img,
+      basePrice: menuItem.price,
       priceEach: menuItem.price,
-      details: ""
-    })
+      custom: null,
+    });
   }
 
-  showCart.value = true
+  showCart.value = true;
 }
+
 
 
 function removeFromCart(index) {
@@ -528,7 +538,7 @@ const classics = ref([
   },
   {
     id: "c2",
-    name: "Avacado Veg Out Sandwich",
+    name: "Avocado Veg Out Sandwich",
     img: "/Veg.png",
   },
   {

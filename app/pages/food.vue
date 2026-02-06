@@ -9,9 +9,11 @@
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Home Page</NuxtLink>
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
+        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -122,7 +124,7 @@
       <!-- Breakfest -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Breakfest</h2>
+          <h2 class="sectionTitle">Breakfast</h2>
           <div class="sectionLine" />
         </div>
 

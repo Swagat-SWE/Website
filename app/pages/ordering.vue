@@ -2,7 +2,10 @@
   <div class="page">
     <h1>Ordering</h1>
     <p class="sub">Click an item to add it to your cart.</p>
-
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
+        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
     <div class="list">
       <div class="row" v-for="item in menu" :key="item.id">
         <div>

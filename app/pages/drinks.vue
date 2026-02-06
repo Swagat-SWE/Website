@@ -7,10 +7,10 @@
       </div>
 
       <nav class="nav">
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
-
         <!-- Review Toggle -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
           Review
@@ -85,7 +85,7 @@
           <button class="signInBtn">Sign In</button>
 
           <button class="cartBtn" @click="toggleCart">
-            🛒 <span class="cartCount">{{ cartItems.length }}</span>
+            🛒 <span class="cartCount">{{ cart.length }}</span>
           </button>
         </div>
       </header>
@@ -110,7 +110,7 @@
             <div class="tileFooter">
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
@@ -132,12 +132,54 @@
             <div class="tileFooter">
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="addToCart(item.name)">+</button>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
         </div>
       </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Tea and Smoothies</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="tileGrid">
+          <article v-for="item in TeaAndSmoothies" :key="item.id" class="tileCard">
+            <div class="tileImg">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <span class="tileName">{{ item.name }}</span>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SIZE MODAL -->
+<div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
+  <div class="sizeModal" @click.stop>
+    <h3 class="sizeTitle">Choose a Size</h3>
+    <p class="sizeDrinkName">{{ selectedDrink?.name }}</p>
+
+    <div class="sizeOptions">
+      <button
+        v-for="size in selectedDrink?.sizes"
+        :key="size.label"
+        class="sizeBtn"
+        @click="selectSize(size)"
+      >
+        {{ size.label }} - ${{ (selectedDrink.basePrice + size.mod).toFixed(2) }}
+      </button>
+    </div>
+
+    <button class="cancelBtn" @click="showSizeModal = false">Cancel</button>
+  </div>
+</div>
 
       <!-- CART -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
@@ -147,11 +189,15 @@
           <button class="xBtn" @click="showCart = false">✕</button>
         </div>
 
-        <div v-if="cartItems.length === 0" class="emptyCart">No items yet.</div>
+        <div v-if="cart.length === 0" class="emptyCart">No items yet. Use the <b>+</b> button to add items.
+        </div>
 
         <ul v-else class="cartList">
-          <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
-            <span>{{ item }}</span>
+          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+            <span>
+              {{ item.name }} ({{ item.size }}) x{{ item.qty }}
+                — ${{ (item.price * item.qty).toFixed(2) }}
+            </span>
             <button class="removeBtn" @click="removeFromCart(idx)">Remove</button>
           </li>
         </ul>
@@ -169,7 +215,56 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 const location = ref("Dubuque, IA");
 const locationQuery = ref("");
 const showLocationDropdown = ref(false);
-const locations = ["Iowa","Illinois","Wisconsin","California","Texas","Florida","New York"];
+const locations = ["Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",];
 const filteredLocations = computed(() => {
   const q = locationQuery.value.toLowerCase();
   return locations.filter(l => l.toLowerCase().includes(q));
@@ -178,6 +273,39 @@ function selectLocation(opt){ location.value = opt; showLocationDropdown.value =
 function handleDocClick(e){ if(!e.target.closest(".locationWrap")) showLocationDropdown.value=false; }
 onMounted(()=>document.addEventListener("click",handleDocClick));
 onBeforeUnmount(()=>document.removeEventListener("click",handleDocClick));
+
+const showSizeModal = ref(false)
+const selectedDrink = ref(null)
+
+function openSizeModal(drink) {
+  selectedDrink.value = drink
+  showSizeModal.value = true
+}
+
+function selectSize(size) {
+  const price = selectedDrink.value.basePrice + size.mod
+
+  const existing = cart.value.find(
+    item =>
+      item.id === selectedDrink.value.id &&
+      item.size === size.label
+  )
+
+  if (existing) {
+    existing.qty++
+  } else {
+    cart.value.push({
+      id: selectedDrink.value.id,
+      name: selectedDrink.value.name,
+      size: size.label,
+      price,
+      qty: 1
+    })
+  }
+
+  showCart.value = true
+  showSizeModal.value = false
+}
 
 /* Review */
 const showReview = ref(false);
@@ -190,35 +318,119 @@ function submitReview(){ submitted.value=true; setTimeout(()=>submitted.value=fa
 
 /* Cart */
 const showCart = ref(false);
-const cartItems = ref([]);
+const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
-function addToCart(name){ cartItems.value.push(name); showCart.value=true; }
-function removeFromCart(i){ cartItems.value.splice(i,1); }
+function removeFromCart(i){ cart.value.splice(i,1); }
 function goToCheckout(){ navigateTo("/checkout"); }
 
 /* DRINK DATA */
 const coldDrinks = ref([
-  { id: "c1", name: "Classic Cold Brew", img: "ClassicColdBrew.png" },
-  { id: "c2", name: "Chocolate Cream Cold Brew", img: "ChocolateCreamColdBrew.png" },
-  { id: "c3", name: "Vanilla Cream Cold Brew", img: "VanillaCreamColdBrew.png" },
-  { id: "c4", name: "Caramel Cream Cold Brew", img: "CaramelCreamColdBrew.png" },
-  { id: "c5", name: "Chocolate Cold Brew Shake", img: "ChocolateColdBrewShake.png" },
-  { id: "c6", name: "Vanilla Cold Brew Shake", img: "VanillaColdBrewShake.png" },
-  { id: "c7", name: "Caramel Cold Brew Shake", img: "CaramelColdBrewShake.png" },
+  { id: "c1", name: "Classic Cold Brew", img: "ClassicColdBrew.png",
+     basePrice: 3.49, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.50 }]
+   },
+  { id: "c2", name: "Chocolate Cream Cold Brew", img: "ChocolateCreamColdBrew.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c3", name: "Vanilla Cream Cold Brew", img: "VanillaCreamColdBrew.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c4", name: "Caramel Cream Cold Brew", img: "CaramelCreamColdBrew.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c5", name: "Chocolate Cold Brew Shake", img: "ChocolateColdBrewShake.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c6", name: "Vanilla Cold Brew Shake", img: "VanillaColdBrewShake.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+  { id: "c7", name: "Caramel Cold Brew Shake", img: "CaramelColdBrewShake.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
+   { id: "c8", name: "Mocha", img: "IcedMocha.png", 
+    basePrice: 4.69, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.30 }]
+   },
+   { id: "c9", name: "Caramel Macchiato", img: "IcedCaramelMacchiato.png", 
+    basePrice: 5.39, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.10 }]
+   },
+   { id: "c10", name: "Latte", img: "ColdLatte.png", 
+    basePrice: 4.29, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.40 }]
+   },
+   { id: "c11", name: "Chai Tea Latte", img: "ColdChaiTeaLatte.png", 
+    basePrice: 4.19, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
 ]);
 
 const hotDrinks = ref([
-  { id: "h1", name: "Mocha", img: "Mocha.png" },
-  { id: "h2", name: "Latte", img: "Latte.png" },
-  { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png" },
-  { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png" },
-  { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png" },
+  { id: "h1", name: "Mocha", img: "Mocha.png", 
+    basePrice: 4.69, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.30 }]
+   },
+  { id: "h2", name: "Latte", img: "Latte.png", 
+    basePrice: 4.19, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
+  { id: "h3", name: "Caramel Macchiato", img: "CaramelMacchiato.png", 
+    basePrice: 5.29, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
+  { id: "h4", name: "Chai Tea Latte", img: "ChaiTeaLatte.png", 
+    basePrice: 4.19, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.20 }]
+   },
+  { id: "h5", name: "Hot Chocolate", img: "HotChocolate.png", 
+    basePrice: 3.99, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.50 }]
+   },
+  { id: "h6", name: "Coffee", img: "HotCoffee.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Medium", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
 ])
 
 const TeaAndSmoothies = ref ([
-  { id: "o1", name: "Hot Tea", img: "HotTea.png" },
-  { id: "o2", name: "Iced Tea", img: "IcedTea.png" },
-  { id: "o3", name: "Strawberry Banana Smoothie", img: "Strawberry Banana Smoothie.png" },
+  { id: "o1", name: "Hot Tea", img: "HotTea.png", 
+    basePrice: 3.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.76 }]
+   },
+  { id: "o2", name: "Iced Tea", img: "IcedTea.png", 
+    basePrice: 3.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.76 }]
+   },
+  { id: "o3", name: "Strawberry Banana Smoothie", img: "Strawberry Banana Smoothie.png", 
+    basePrice: 4.99, sizes: [
+    { label: "Small", mod: 0 },
+    { label: "Large", mod: 0.80 }]
+   },
 ])
 </script>
 
@@ -292,37 +504,6 @@ const TeaAndSmoothies = ref ([
   justify-content: center;  /* centers the logo */
   margin-bottom: 14px;
   overflow: hidden;         /* prevents it from spilling */
-}
-
-.dotsBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  gap: 3px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 99px;
-  background: var(--brown);
-  opacity: 0.9;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--brown);
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
-  padding: 8px 10px;
-  border-radius: 12px;
 }
 
 .nav {
@@ -558,10 +739,6 @@ const TeaAndSmoothies = ref ([
   box-shadow: var(--cardShadow);
 }
 
-.cartIcon {
-  font-size: 18px;
-}
-
 .cartCount {
   position: absolute;
   top: -8px;
@@ -762,10 +939,6 @@ const TeaAndSmoothies = ref ([
   background: rgba(75, 52, 41, 0.03);
 }
 
-.cartItemName {
-  font-weight: 900;
-}
-
 .removeBtn {
   border: none;
   background: transparent;
@@ -777,6 +950,72 @@ const TeaAndSmoothies = ref ([
 
 .checkoutBtn:hover {
   background: #ffbe21;
+}
+
+  /* ===== Size Modal ===== */
+.sizeOverlay {
+  position: fixed;   /* makes it float over the whole screen */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;   /* ensures it sits above EVERYTHING */
+}
+
+.sizeModal {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  width: 300px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.sizeTitle {
+  margin: 0 0 6px;
+  font-weight: 900;
+  color: var(--brown);
+}
+
+.sizeDrinkName {
+  font-weight: 700;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.sizeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sizeBtn {
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+  background: var(--yellow);
+}
+
+.sizeBtn:hover {
+  background: #ffbe21;
+}
+
+.cancelBtn {
+  margin-top: 14px;
+  background: transparent;
+  border: none;
+  font-weight: 800;
+  opacity: 0.7;
+  cursor: pointer;
 }
 
 /* Responsive */
@@ -806,5 +1045,7 @@ const TeaAndSmoothies = ref ([
   .locationDropdown {
     min-width: 260px;
   }
+
+
 }
 </style>
