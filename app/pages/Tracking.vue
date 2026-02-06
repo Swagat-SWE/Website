@@ -247,17 +247,6 @@
     </div>
   </Transition>
 </div>
-
-            <!-- Demo controls -->
-            <div class="demo">
-              <div class="demoTitle">Demo tester (delete later)</div>
-              <div class="demoBtns">
-                <button class="demoBtn" @click="setStatus(0)">Ordered</button>
-                <button class="demoBtn" @click="setStatus(1)">Preparing</button>
-                <button class="demoBtn" @click="setStatus(2)">In the Oven</button>
-                <button class="demoBtn" @click="setStatus(3)">Ready</button>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -272,7 +261,7 @@ import { computed, ref, watch } from "vue";
  * Shared status across pages (Staff page will update this later).
  * 0: ordered, 1: preparing, 2: oven, 3: ready
  */
-const orderStatus = useState("orderStatus", () => 0);
+const orderStatus = useOrderStatus();
 
 const steps = [
   { key: "ordered", label: "Ordered", desc: "We got it. You’re officially in the system." },
