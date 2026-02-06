@@ -593,7 +593,7 @@ const Other = ref([
   {
     id: "o1",
     name: "Cinnamon Chip Muffin",
-    img: "/Tastey.png",
+    img: "650x6501-1.jpeg",
   },
   {
     id: "o2",
