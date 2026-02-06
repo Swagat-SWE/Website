@@ -128,16 +128,6 @@
             </div>
 
             <div class="infoBlock">
-              <p class="crumbs">
-                <span class="crumbLink">EinsteinBros Directory</span>
-                <span class="crumbSep">/</span>
-                <span class="crumbLink">Iowa</span>
-                <span class="crumbSep">/</span>
-                <span class="crumbLink">Dubuque</span>
-                <span class="crumbSep">/</span>
-                <span>Loras College</span>
-              </p>
-
               <div class="infoRow">
                 <div class="infoLabel">Address</div>
                 <div class="infoValue">
