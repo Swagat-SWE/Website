@@ -1,190 +1,335 @@
 <template>
   <div class="page">
-    <!-- Left Sidebar -->
+    <!-- Sidebar (kept, but “quiet” during payment) -->
     <aside class="sidebar">
       <div class="sidebarTop">
         <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
       </div>
 
-      <nav class="nav">
-       <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
+      <nav class="nav" aria-label="Primary">
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
       </nav>
+
+      <div class="sidebarHint">
+        <div class="lockRow" aria-hidden="true">
+          <span class="lockDot"></span>
+          <span>Secure checkout</span>
+        </div>
+      </div>
     </aside>
 
     <!-- Main -->
     <main class="main">
       <header class="topbar">
-        <h1 class="title">PAYMENT</h1>
+        <div class="topbarLeft">
+          <div class="kicker">Checkout</div>
+          <h1 class="title">Payment</h1>
+          <div class="subtle">Enter your payment details to complete your order.</div>
+        </div>
 
-        <button class="cartBtn" type="button" @click="goBackToCheckout">
-          ← Back to Checkout
+        <button class="backBtn" type="button" @click="goBackToCheckout">
+          <span class="backIcon">←</span>
+          <span>Back to Checkout</span>
         </button>
       </header>
 
-      <div class="layout">
-        <section class="card">
-          <div class="cardHeader">
-            <h2>Enter your card information</h2>
-            <span class="muted">Fake cards are allowed — format rules still apply</span>
+      <div class="shell">
+        <!-- Left: form card -->
+        <section class="panel" aria-labelledby="paymentHeading">
+          <div class="panelTop">
+            <div>
+              <h2 id="paymentHeading" class="panelTitle">Card details</h2>
+            </div>
+
+            <div class="badgeRow" aria-hidden="true">
+              <span class="chip">VISA</span>
+              <span class="chip">Mastercard</span>
+              <span class="chip">AMEX</span>
+              <span class="chip">Discover</span>
+              <span class="chip"> Pay</span>
+            </div>
           </div>
 
-          <!-- Saved card preview -->
-          <div v-if="cards.length" class="savedBox">
-            <div class="savedTitle">Saved payment method</div>
+          <!-- Saved payment (premium “wallet” card) -->
+          <div v-if="cards.length" class="wallet">
+            <div class="walletTop">
+              <div class="walletTitle">Saved payment method</div>
+              <div class="walletPill">{{ cards[0].brandLabel }}</div>
+            </div>
 
-            <div class="savedCard">
-              <div class="brandPill">{{ cards[0].brandLabel }}</div>
-              <div class="savedLine">
-                <b>{{ cards[0].masked }}</b>
-                <span class="dot">•</span>
+            <div class="walletBody">
+              <div class="walletNumber">{{ cards[0].masked }}</div>
+              <div class="walletMeta">
                 <span>Exp {{ cards[0].exp }}</span>
-                <span class="dot">•</span>
+                <span class="sep">•</span>
                 <span>{{ cards[0].nameOnCard }}</span>
               </div>
-              <div class="savedSub">This will show on Checkout.</div>
             </div>
+
+            <div class="walletFine">This will show on Checkout.</div>
           </div>
 
-          <form class="form" @submit.prevent="saveCard">
-            <!-- Card Number -->
-            <label class="fieldLabel">Credit/Debit Card Number</label>
-            <div class="inputWrap">
-              <input
-                class="input"
-                inputmode="numeric"
-                autocomplete="cc-number"
-                placeholder="Card number"
-                v-model="cardNumber"
-                @input="onCardNumberInput"
-                :aria-invalid="!!errors.cardNumber"
-              />
+          <form class="form" @submit.prevent="saveCard" novalidate>
+            <!-- Card preview (Apple/Shopify vibe) -->
+            <div class="cardPreview" :data-brand="detected.brand">
+              <div class="cardPreviewTop">
+                <div class="miniChip" aria-hidden="true"></div>
+                <div class="brandMark">
+                  <span class="brandText">{{ detected.brandLabel }}</span>
+                </div>
+              </div>
 
-              <!-- watermark logos inside the box -->
-              <div class="watermarks" aria-hidden="true">
-                <span class="wm visa">VISA</span>
-                <span class="wm mc">mastercard</span>
-                <span class="wm amex">AMEX</span>
-                <span class="wm disc">DISCOVER</span>
-                <span class="wm apple"> Pay</span>
+              <div class="cardPreviewNum">
+                {{ previewNumber }}
+              </div>
+
+              <div class="cardPreviewBottom">
+                <div class="pvCol">
+                  <div class="pvLabel">Name</div>
+                  <div class="pvValue">{{ previewName }}</div>
+                </div>
+                <div class="pvCol right">
+                  <div class="pvLabel">Expiry</div>
+                  <div class="pvValue">{{ previewExp }}</div>
+                </div>
               </div>
             </div>
-            <p v-if="errors.cardNumber" class="err">{{ errors.cardNumber }}</p>
 
-            <!-- Exp + CVV -->
-            <div class="row2">
-              <div>
-                <label class="fieldLabel">Expiration (MM/YY)</label>
+            <!-- Card number -->
+            <div class="field">
+              <label class="label" for="cc-number">Card number</label>
+              <div class="control">
                 <input
+                  id="cc-number"
                   class="input"
                   inputmode="numeric"
-                  autocomplete="cc-exp"
-                  placeholder="MM/YY"
-                  v-model="exp"
-                  @input="onExpInput"
-                  :aria-invalid="!!errors.exp"
+                  autocomplete="cc-number"
+                  placeholder="1234 5678 9012 3456"
+                  v-model="cardNumber"
+                  @input="onCardNumberInput"
+                  :aria-invalid="!!errors.cardNumber"
+                  :aria-describedby="errors.cardNumber ? 'err-number' : 'help-number'"
                 />
-                <p v-if="errors.exp" class="err">{{ errors.exp }}</p>
+                <div class="rightAffix" aria-hidden="true">
+                  <span class="brandPill" :data-brand="detected.brand">{{ detected.brandLabel }}</span>
+                </div>
               </div>
 
-              <div>
-                <label class="fieldLabel">CVV</label>
-                <div class="cvvWrap">
+              <p v-if="errors.cardNumber" id="err-number" class="err">{{ errors.cardNumber }}</p>
+              <p v-else id="help-number" class="help">{{ detected.note }}</p>
+            </div>
+
+            <!-- Expiry + CVV -->
+            <div class="grid2">
+              <div class="field">
+                <label class="label" for="cc-exp">Expiration</label>
+                <div class="control">
                   <input
+                    id="cc-exp"
+                    class="input"
+                    inputmode="numeric"
+                    autocomplete="cc-exp"
+                    placeholder="MM/YY"
+                    v-model="exp"
+                    @input="onExpInput"
+                    :aria-invalid="!!errors.exp"
+                    :aria-describedby="errors.exp ? 'err-exp' : undefined"
+                  />
+                </div>
+                <p v-if="errors.exp" id="err-exp" class="err">{{ errors.exp }}</p>
+              </div>
+
+              <div class="field">
+                <label class="label" for="cc-cvv">
+                  CVV
+                  <button
+                    class="hintBtn"
+                    type="button"
+                    @click="showCvvHelp = !showCvvHelp"
+                    :aria-expanded="showCvvHelp ? 'true' : 'false'"
+                    aria-controls="cvvHelp"
+                  >
+                    ?
+                  </button>
+                </label>
+
+                <div class="control">
+                  <input
+                    id="cc-cvv"
                     class="input"
                     inputmode="numeric"
                     autocomplete="cc-csc"
-                    placeholder="CVV"
+                    :placeholder="detected.brand === 'amex' ? '4 digits' : '3 digits'"
                     v-model="cvv"
                     @input="onCvvInput"
                     :aria-invalid="!!errors.cvv"
+                    :aria-describedby="errors.cvv ? 'err-cvv' : (showCvvHelp ? 'cvvHelp' : undefined)"
                   />
-                  <span class="hint">?</span>
                 </div>
-                <p v-if="errors.cvv" class="err">{{ errors.cvv }}</p>
+
+                <p v-if="errors.cvv" id="err-cvv" class="err">{{ errors.cvv }}</p>
+                <p v-else-if="showCvvHelp" id="cvvHelp" class="help">
+                  CVV is the security code on your card (usually 3 digits, AMEX uses 4).
+                </p>
               </div>
             </div>
 
             <!-- Name -->
-            <label class="fieldLabel">Name on card</label>
-            <input
-              class="input"
-              autocomplete="cc-name"
-              placeholder="Full name"
-              v-model="nameOnCard"
-              :aria-invalid="!!errors.nameOnCard"
-            />
-            <p v-if="errors.nameOnCard" class="err">{{ errors.nameOnCard }}</p>
-
-            <hr class="divider" />
-
-            <div class="sectionTitle">Billing Address</div>
-
-            <label class="checkLine">
-              <input type="checkbox" v-model="useShipping" />
-              <span>Use my shipping address (demo)</span>
-            </label>
-
-            <label class="fieldLabel">Country/Region</label>
-            <select class="input" v-model="country">
-              <option>United States</option>
-              <option>Canada</option>
-              <option>Nepal</option>
-              <option>Other</option>
-            </select>
-
-            <div class="row2">
-              <div>
-                <label class="fieldLabel">First Name</label>
-                <input class="input" placeholder="First Name" v-model="firstName" />
-              </div>
-              <div>
-                <label class="fieldLabel">Last Name</label>
-                <input class="input" placeholder="Last Name" v-model="lastName" />
-              </div>
-            </div>
-
-            <label class="fieldLabel">Street Address</label>
-            <input class="input" placeholder="Street Address" v-model="street" />
-
-            <label class="fieldLabel">Apartment, Suite, Building (Optional)</label>
-            <input class="input" placeholder="Apartment, Suite, Building (Optional)" v-model="apt" />
-
-            <div class="row2">
-              <div>
-                <label class="fieldLabel">Zip Code</label>
+            <div class="field">
+              <label class="label" for="cc-name">Name on card</label>
+              <div class="control">
                 <input
+                  id="cc-name"
                   class="input"
-                  inputmode="numeric"
-                  placeholder="Zip Code"
-                  v-model="zip"
+                  autocomplete="cc-name"
+                  placeholder="Full name"
+                  v-model="nameOnCard"
+                  :aria-invalid="!!errors.nameOnCard"
+                  :aria-describedby="errors.nameOnCard ? 'err-name' : undefined"
                 />
               </div>
-              <div>
-                <label class="fieldLabel">City, State</label>
-                <input class="input" placeholder="City, State" v-model="cityState" />
+              <p v-if="errors.nameOnCard" id="err-name" class="err">{{ errors.nameOnCard }}</p>
+            </div>
+
+            <!-- Billing (Shopify-style collapsible) -->
+            <div class="accordion">
+              <button class="accordionHead" type="button" @click="billingOpen = !billingOpen" :aria-expanded="billingOpen ? 'true' : 'false'">
+                <div class="accLeft">
+                  <div class="accTitle">Billing address</div>
+                  <div class="accSub">Used for verification and receipts.</div>
+                </div>
+                <div class="accRight">
+                  <span class="accPill" v-if="useShipping">Using shipping address</span>
+                  <span class="chev" :class="{ open: billingOpen }">⌄</span>
+                </div>
+              </button>
+
+              <div class="accordionBody" v-show="billingOpen">
+                <label class="checkLine">
+                  <input type="checkbox" v-model="useShipping" />
+                  <span>Use my shipping address (demo)</span>
+                </label>
+
+                <div class="field">
+                  <label class="label" for="country">Country/Region</label>
+                  <div class="control">
+                    <select id="country" class="input" v-model="country">
+                      <option>United States</option>
+                      <option>Canada</option>
+                      <option>Nepal</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid2">
+                  <div class="field">
+                    <label class="label" for="firstName">First name</label>
+                    <div class="control">
+                      <input id="firstName" class="input" placeholder="First name" v-model="firstName" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label" for="lastName">Last name</label>
+                    <div class="control">
+                      <input id="lastName" class="input" placeholder="Last name" v-model="lastName" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="street">Street address</label>
+                  <div class="control">
+                    <input id="street" class="input" placeholder="Street address" v-model="street" />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="apt">Apartment / Suite (optional)</label>
+                  <div class="control">
+                    <input id="apt" class="input" placeholder="Apartment, suite, building" v-model="apt" />
+                  </div>
+                </div>
+
+                <div class="grid2">
+                  <div class="field">
+                    <label class="label" for="zip">ZIP code</label>
+                    <div class="control">
+                      <input id="zip" class="input" inputmode="numeric" placeholder="ZIP" v-model="zip" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label" for="cityState">City / State</label>
+                    <div class="control">
+                      <input id="cityState" class="input" placeholder="City, State" v-model="cityState" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <p v-if="formMsg" class="formMsg" :class="{ ok: formMsgType === 'ok', bad: formMsgType === 'bad' }">
+            <!-- Status message -->
+            <p
+              v-if="formMsg"
+              class="toast"
+              :class="{ ok: formMsgType === 'ok', bad: formMsgType === 'bad' }"
+              role="status"
+              aria-live="polite"
+            >
               {{ formMsg }}
             </p>
 
-            <!-- Buttons -->
-            <div class="btnStack">
-              <button class="blueBtn" type="submit">
-                {{ cards.length ? "Add another card" : "Save the card" }}
+            <!-- Actions -->
+            <div class="actions">
+              <button class="primaryBtn" type="submit">
+                <span>{{ cards.length ? "Add another card" : "Save card" }}</span>
+                <span class="btnArrow" aria-hidden="true">→</span>
               </button>
 
-              <button class="ghostBtn" type="button" @click="goBackToCheckout">
+              <button class="secondaryBtn" type="button" @click="goBackToCheckout">
                 Continue to checkout
               </button>
+
+              <div class="trustRow" aria-hidden="true">
+                <span class="trustDot"></span>
+                <span>Secure • Encrypted • Protected</span>
+              </div>
             </div>
           </form>
         </section>
 
+        <!-- Right: summary card (premium + sticky) -->
+        <aside class="summary" aria-label="Order summary">
+          <div class="summaryCard">
+            <div class="sumTop">
+              <div class="sumTitle">Order summary</div>
+              <div class="sumSub">Quick preview</div>
+            </div>
+
+            <div class="sumRow">
+              <span>Payment method</span>
+              <span class="sumValue">
+                {{ cards.length ? `${cards[0].brandLabel} •••• ${cards[0].last4}` : "Not saved yet" }}
+              </span>
+            </div>
+
+            <div class="sumRow">
+              <span>Billing</span>
+              <span class="sumValue">
+                {{ country }}
+              </span>
+            </div>
+
+            <div class="sumDivider"></div>
+
+            <div class="sumFine">
+              You’ll confirm the final order on the checkout page.
+            </div>
+          </div>
+        </aside>
       </div>
     </main>
   </div>
@@ -195,10 +340,13 @@ import { computed, reactive, ref } from "vue";
 
 /**
  * Shared state:
- * - cart uses useState("cart") in your checkout/index already
- * - cards is our saved payment method state (shared across pages)
+ * - cards is saved payment method state (shared across pages)
  */
 const cards = useState("cards", () => []);
+
+/** UI state */
+const billingOpen = ref(true);
+const showCvvHelp = ref(false);
 
 /** Form fields */
 const cardNumber = ref("");
@@ -237,7 +385,7 @@ function onlyDigits(s) {
 }
 
 function formatCardGroups(digits) {
-  // simple grouping: 4-4-4-4... (Amex is 4-6-5 but we'll keep it simple)
+  // basic grouping: 4-4-4-4...
   return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
 }
 
@@ -264,72 +412,81 @@ function onCvvInput() {
 
 /**
  * Brand detection (prefix patterns)
- * This is format-based, not “real validation”.
  */
 function detectBrand(digits) {
-  if (!digits) return { brand: "unknown", brandLabel: "Unknown", validLengths: [16], cvvLen: [3], note: "Enter a card number to detect brand." };
+  if (!digits) {
+    return {
+      brand: "unknown",
+      brandLabel: "Card",
+      validLengths: [16],
+      cvvLen: [3],
+      note: "We’ll detect the card type automatically.",
+    };
+  }
 
   const n = digits;
 
-  // Visa: starts 4, length 13/16/19
   if (n.startsWith("4")) {
     return { brand: "visa", brandLabel: "VISA", validLengths: [13, 16, 19], cvvLen: [3], note: "Visa starts with 4." };
   }
 
-  // Amex: 34 or 37, length 15, CVV 4
   if (n.startsWith("34") || n.startsWith("37")) {
-    return { brand: "amex", brandLabel: "AMEX", validLengths: [15], cvvLen: [4], note: "Amex usually has 15 digits and 4-digit CVV." };
+    return { brand: "amex", brandLabel: "AMEX", validLengths: [15], cvvLen: [4], note: "AMEX uses 15 digits and a 4-digit CVV." };
   }
 
-  // Mastercard: 51-55 or 2221-2720, length 16
   const first2 = parseInt(n.slice(0, 2) || "0", 10);
   const first4 = parseInt(n.slice(0, 4) || "0", 10);
+
   if ((first2 >= 51 && first2 <= 55) || (first4 >= 2221 && first4 <= 2720)) {
     return { brand: "mastercard", brandLabel: "Mastercard", validLengths: [16], cvvLen: [3], note: "Mastercard is 51–55 or 2221–2720." };
   }
 
-  // Discover: 6011, 65, 644-649, 622126-622925, length 16
   const first3 = parseInt(n.slice(0, 3) || "0", 10);
   const first6 = parseInt(n.slice(0, 6) || "0", 10);
+
   if (
     n.startsWith("6011") ||
     n.startsWith("65") ||
     (first3 >= 644 && first3 <= 649) ||
     (first6 >= 622126 && first6 <= 622925)
   ) {
-    return { brand: "discover", brandLabel: "Discover", validLengths: [16], cvvLen: [3], note: "Discover often starts 6011 / 65 / 644–649 / 622126–622925." };
+    return { brand: "discover", brandLabel: "Discover", validLengths: [16], cvvLen: [3], note: "Discover often starts 6011 / 65 / 644–649." };
   }
 
-  // JCB: 3528-3589, length 16
   if (first4 >= 3528 && first4 <= 3589) {
     return { brand: "jcb", brandLabel: "JCB", validLengths: [16], cvvLen: [3], note: "JCB commonly starts 3528–3589." };
   }
 
-  // Diners Club: 300-305, 36, 38-39, length 14
   if ((first3 >= 300 && first3 <= 305) || n.startsWith("36") || n.startsWith("38") || n.startsWith("39")) {
-    return { brand: "diners", brandLabel: "Diners Club", validLengths: [14], cvvLen: [3], note: "Diners Club often has 14 digits." };
+    return { brand: "diners", brandLabel: "Diners", validLengths: [14], cvvLen: [3], note: "Diners Club often has 14 digits." };
   }
 
-  // UnionPay (simple): starts 62, length 16-19 (varies)
   if (n.startsWith("62")) {
-    return { brand: "unionpay", brandLabel: "UnionPay", validLengths: [16, 17, 18, 19], cvvLen: [3], note: "UnionPay often starts 62 (length can vary)." };
+    return { brand: "unionpay", brandLabel: "UnionPay", validLengths: [16, 17, 18, 19], cvvLen: [3], note: "UnionPay can vary in length." };
   }
 
-  return { brand: "unknown", brandLabel: "Unknown", validLengths: [16], cvvLen: [3], note: "Brand not recognized, using general rules." };
+  return { brand: "unknown", brandLabel: "Card", validLengths: [16], cvvLen: [3], note: "We’ll validate format before saving." };
 }
 
-const detected = computed(() => {
+const detected = computed(() => detectBrand(onlyDigits(cardNumber.value)));
+
+/** Premium preview helpers */
+const previewNumber = computed(() => {
   const digits = onlyDigits(cardNumber.value);
-  return detectBrand(digits);
+  if (!digits) return "•••• •••• •••• ••••";
+  const grouped = formatCardGroups(digits).trim();
+  // pad the preview a bit so it doesn’t “shrink” while typing
+  return (grouped + " •••• •••• ••••").slice(0, 19);
 });
+const previewExp = computed(() => (exp.value?.trim() ? exp.value.trim() : "MM/YY"));
+const previewName = computed(() => (nameOnCard.value?.trim() ? nameOnCard.value.trim() : "FULL NAME"));
 
 /**
  * Validation rules:
  * - Fake card allowed, but MUST match brand length + CVV length + expiry format.
- * - We do NOT run Luhn check (so any digits are ok if length/pattern ok).
+ * - We do NOT run Luhn check (demo behavior).
  */
 function validate() {
-  // reset
   errors.cardNumber = "";
   errors.exp = "";
   errors.cvv = "";
@@ -341,16 +498,13 @@ function validate() {
 
   const brand = detectBrand(digits);
 
-  // card number length checks
   if (!digits.length) {
     errors.cardNumber = "Card number is required.";
   } else if (!brand.validLengths.includes(digits.length)) {
-    // special message for the user
     const allow = brand.validLengths.join(", ");
     errors.cardNumber = `${brand.brandLabel} card number must be ${allow} digits. You entered ${digits.length}.`;
   }
 
-  // expiry MM/YY checks (format + reasonable month)
   if (!expRaw) {
     errors.exp = "Expiration is required.";
   } else {
@@ -363,7 +517,6 @@ function validate() {
     }
   }
 
-  // CVV checks
   if (!cvvDigits) {
     errors.cvv = "CVV is required.";
   } else if (!brand.cvvLen.includes(cvvDigits.length)) {
@@ -371,7 +524,6 @@ function validate() {
     errors.cvv = `${brand.brandLabel} CVV must be ${allow} digits. You entered ${cvvDigits.length}.`;
   }
 
-  // name checks
   if (!nameOnCard.value.trim()) {
     errors.nameOnCard = "Name on card is required.";
   }
@@ -383,7 +535,6 @@ function validate() {
  * Save behavior:
  * - Saves card into shared `cards` state.
  * - Stores masked number for display, but also keeps full digits (demo).
- * - After saving, button text becomes "Add another card" and we clear form.
  */
 function saveCard() {
   formMsg.value = "";
@@ -401,14 +552,13 @@ function saveCard() {
   const last4 = digits.slice(-4);
   const masked = `•••• •••• •••• ${last4}`;
 
-  // Save as "primary" (index 0). You can expand to multi-card later.
   cards.value = [
     {
       brand: brand.brand,
       brandLabel: brand.brandLabel,
       masked,
       last4,
-      fullDigits: digits, // demo only
+      fullDigits: digits, // demo only (do not store in real systems)
       exp: exp.value.trim(),
       nameOnCard: nameOnCard.value.trim(),
       billing: {
@@ -428,7 +578,7 @@ function saveCard() {
   formMsgType.value = "ok";
   formMsg.value = `Saved ${brand.brandLabel} ending in ${last4}.`;
 
-  // Clear for "Add another card"
+  // Clear for “Add another card”
   cardNumber.value = "";
   exp.value = "";
   cvv.value = "";
@@ -437,347 +587,739 @@ function saveCard() {
 </script>
 
 <style scoped>
-:root {
-  --cream: #f6f0e8;
-  --cream2: #fbf8f3;
-  --brown: #4b3429;
-  --brown2: #6a4a3a;
-  --yellow: #f4b316;
-  --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-}
+/* =========================
+   Premium Apple/Shopify vibe
+   ========================= */
 
 .page {
+  /* ---- scoped-safe variables ---- */
+  --bg0: #f6f7fb;
+  --bg1: #eef2ff;
+  --ink: #0f172a;
+  --muted: rgba(15, 23, 42, 0.65);
+  --line: rgba(15, 23, 42, 0.10);
+  --card: rgba(255, 255, 255, 0.78);
+  --shadow: 0 22px 70px rgba(2, 6, 23, 0.10);
+  --shadow2: 0 10px 26px rgba(2, 6, 23, 0.08);
+  --radius: 18px;
+
+  --focus: rgba(10, 132, 255, 0.30);
+  --appleBlue: #0a84ff;
+  --appleBlueHover: #0071e3;
+
+  --checkoutBg: #111827;
+  --checkoutHover: #0b1220;
+
+  /* ---- IMPORTANT: restore layout ---- */
   min-height: 100vh;
+  width: 100%;
   display: grid;
   grid-template-columns: 260px 1fr;
-  background: linear-gradient(180deg, var(--cream2), var(--cream));
-  color: var(--brown);
+
+  background:
+    radial-gradient(1200px 800px at 20% -10%, rgba(99, 102, 241, 0.22), transparent 60%),
+    radial-gradient(900px 700px at 90% 10%, rgba(16, 185, 129, 0.12), transparent 55%),
+    linear-gradient(180deg, var(--bg1), var(--bg0));
+
+  color: var(--ink);
 }
+
+
 
 /* Sidebar */
 .sidebar {
-  border-right: 1px solid rgba(75, 52, 41, 0.12);
+  border-right: 1px solid var(--line);
   padding: 18px 14px;
-  background: #fff8ee;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
 }
+
 .sidebarTop {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 14px;
 }
+
 .logoImg {
   width: 100%;
   max-width: 160px;
   height: auto;
   object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(2, 6, 23, 0.10));
 }
+
 .nav {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .navItem {
-  display: block;
   text-decoration: none;
-  color: var(--brown);
-  font-size: 16px;
+  color: var(--ink);
+  font-size: 14px;
   font-weight: 800;
   border-radius: 14px;
   padding: 12px 12px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: #fff;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(2, 6, 23, 0.04);
+  transition: transform 0.10s ease, box-shadow 0.10s ease, border 0.10s ease;
 }
+
 .navItem:hover {
   transform: translateY(-1px);
-  box-shadow: var(--cardShadow);
-  border-color: rgba(244, 179, 22, 0.55);
+  box-shadow: var(--shadow2);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.sidebarHint {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.lockRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.lockDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22c55e, #60a5fa);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
+}
+
+.sidebarFine {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+  font-weight: 700;
 }
 
 /* Main */
 .main {
-  padding: 20px 26px 50px;
-}
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-.title {
-  margin: 0;
-  font-size: 44px;
-  letter-spacing: 2px;
-  font-weight: 900;
-}
-.cartBtn {
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: #fff;
-  border-radius: 14px;
-  padding: 10px 14px;
-  cursor: pointer;
-  box-shadow: var(--cardShadow);
-  font-weight: 900;
+  padding: 22px 26px 60px;
 }
 
-.layout {
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.kicker {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(79, 70, 229, 0.9);
+}
+
+.title {
+  margin: 4px 0 2px;
+  font-size: clamp(28px, 3vw, 42px);
+  letter-spacing: -0.02em;
+  font-weight: 950;
+}
+
+.subtle {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 900;
+  box-shadow: 0 1px 0 rgba(2, 6, 23, 0.04);
+  transition: transform 0.10s ease, box-shadow 0.10s ease, border 0.10s ease;
+}
+
+.backBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow2);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.backIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
   display: grid;
-  grid-template-columns: 1fr 340px;
+  place-items: center;
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 360px;
   gap: 18px;
   align-items: start;
 }
 
-.card {
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  box-shadow: var(--cardShadow);
-  padding: 14px;
+/* Panel (glass card) */
+.panel {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.cardHeader {
-  display: grid;
-  gap: 6px;
-  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+.panelTop {
+  padding: 16px 16px 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--line);
 }
-.cardHeader h2 {
+
+.panelTitle {
   margin: 0;
-}
-.muted {
-  opacity: 0.7;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: -0.01em;
 }
 
-.form {
-  display: grid;
+.panelSub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-content: flex-start;
+  padding-top: 2px;
+}
+
+.chip {
+  font-size: 11px;
+  font-weight: 950;
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* Wallet (saved) */
+.wallet {
+  margin: 14px 16px 0;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(800px 300px at 20% 0%, rgba(99, 102, 241, 0.18), transparent 60%),
+    radial-gradient(700px 300px at 90% 20%, rgba(16, 185, 129, 0.10), transparent 55%),
+    rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  padding: 14px;
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.08);
+}
+
+.walletTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
-.fieldLabel {
-  display: block;
+.walletTitle {
+  font-weight: 950;
+  font-size: 13px;
+}
+
+.walletPill {
+  font-weight: 950;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.walletBody {
+  margin-top: 10px;
+}
+
+.walletNumber {
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.walletMeta {
+  margin-top: 8px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.sep { opacity: 0.6; margin: 0 6px; }
+
+.walletFine {
+  margin-top: 10px;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* Form */
+.form {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+/* Card preview */
+.cardPreview {
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  padding: 14px;
+  color: rgba(255, 255, 255, 0.95);
+  background:
+    radial-gradient(900px 320px at 20% 0%, rgba(255, 255, 255, 0.20), transparent 60%),
+    linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(79, 70, 229, 0.80));
+  box-shadow: 0 18px 46px rgba(2, 6, 23, 0.20);
+  position: relative;
+  overflow: hidden;
+}
+
+.cardPreview::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 55%);
+  transform: rotate(12deg);
+}
+
+.cardPreviewTop,
+.cardPreviewBottom,
+.cardPreviewNum {
+  position: relative;
+  z-index: 1;
+}
+
+.cardPreviewTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.miniChip {
+  width: 34px;
+  height: 26px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.28), rgba(255,255,255,0.10));
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+.brandMark .brandText {
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+.cardPreviewNum {
+  margin-top: 18px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  font-size: 14px;
+}
+
+.cardPreviewBottom {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+}
+
+.pvLabel {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
   font-weight: 900;
-  margin-top: 6px;
+}
+
+.pvValue {
+  margin-top: 4px;
+  font-weight: 950;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.pvCol.right { text-align: right; }
+
+/* Fields */
+.field { display: grid; gap: 8px; }
+
+.label {
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: rgba(2, 6, 23, 0.88);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .input {
   width: 100%;
   border-radius: 14px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  padding: 14px;
+  border: 1px solid var(--line);
+  padding: 13px 14px;
   font: inherit;
   outline: none;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(2, 6, 23, 0.03);
+  transition: box-shadow 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+
+.input:focus-visible {
+  border-color: rgba(99, 102, 241, 0.55);
+  box-shadow: 0 0 0 4px var(--focus);
 }
 
 .input[aria-invalid="true"] {
-  border-color: rgba(200, 30, 30, 0.55);
-  box-shadow: 0 0 0 3px rgba(200, 30, 30, 0.12);
+  border-color: rgba(239, 68, 68, 0.55);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18);
+}
+
+.rightAffix {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.brandPill {
+  font-size: 11px;
+  font-weight: 950;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(2, 6, 23, 0.10);
+  background: rgba(255, 255, 255, 0.70);
+  color: rgba(2, 6, 23, 0.88);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Hint button */
+.hintBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.70);
+  font-weight: 950;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.help {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .err {
-  margin: -4px 0 0;
-  color: #b31b1b;
-  font-weight: 900;
-  font-size: 13px;
+  margin: 0;
+  font-size: 12px;
+  color: rgba(185, 28, 28, 0.92);
+  font-weight: 800;
 }
 
-.row2 {
+.grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.divider {
-  border: none;
-  border-top: 1px solid rgba(75, 52, 41, 0.12);
-  margin: 10px 0;
+/* Accordion (billing) */
+.accordion {
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.55);
 }
 
-.sectionTitle {
-  font-weight: 1000;
-  margin-top: 2px;
+.accordionHead {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.accTitle {
+  font-weight: 950;
+  font-size: 13px;
+}
+
+.accSub {
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.accRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.accPill {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.chev {
+  font-weight: 950;
+  opacity: 0.65;
+  transform: translateY(-1px);
+  transition: transform 0.12s ease;
+}
+.chev.open { transform: rotate(180deg) translateY(1px); }
+
+.accordionBody {
+  padding: 12px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
 }
 
 .checkLine {
   display: flex;
+  align-items: center;
   gap: 10px;
-  align-items: center;
-  font-weight: 900;
-  opacity: 0.95;
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(2, 6, 23, 0.82);
 }
 
-.cvvWrap {
-  position: relative;
-}
-.hint {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  border: 1px solid rgba(75, 52, 41, 0.2);
-  display: grid;
-  place-items: center;
-  font-weight: 1000;
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* Watermark logos inside the card input */
-.inputWrap {
-  position: relative;
-}
-.watermarks {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  opacity: 0.55; /* watermark vibe */
-  pointer-events: none;
-  user-select: none;
-}
-.wm {
-  font-weight: 1000;
-  font-size: 12px;
-  letter-spacing: 0.4px;
-  padding: 4px 6px;
-  border-radius: 10px;
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(2px);
-}
-.wm.visa { color: #1a45b8; }
-.wm.mc { color: #d35400; text-transform: lowercase; }
-.wm.amex { color: #0b6b7a; }
-.wm.disc { color: #b24b00; }
-.wm.apple { color: #111; }
-
-/* Saved box */
-.savedBox {
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  background: rgba(75, 52, 41, 0.03);
-}
-.savedTitle {
-  font-weight: 1000;
-  margin-bottom: 8px;
-}
-.savedCard {
-  display: grid;
-  gap: 6px;
-}
-.brandPill {
-  width: fit-content;
-  font-weight: 1000;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  background: #fff;
-}
-.savedLine {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  font-weight: 900;
-}
-.dot { opacity: 0.5; }
-.savedSub { opacity: 0.7; font-weight: 800; }
-
-/* Messages */
-.formMsg {
-  margin: 6px 0 0;
+/* Toast */
+.toast {
+  margin: 0;
   padding: 10px 12px;
   border-radius: 14px;
   font-weight: 900;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.65);
 }
-.formMsg.ok {
-  background: rgba(0, 140, 70, 0.1);
-  border: 1px solid rgba(0, 140, 70, 0.22);
-  color: #0b5e32;
+.toast.ok {
+  background: var(--good);
+  border-color: rgba(16, 185, 129, 0.30);
+  color: rgba(6, 95, 70, 0.98);
 }
-.formMsg.bad {
-  background: rgba(200, 30, 30, 0.08);
-  border: 1px solid rgba(200, 30, 30, 0.2);
-  color: #8f1414;
+.toast.bad {
+  background: var(--bad);
+  border-color: rgba(239, 68, 68, 0.28);
+  color: rgba(153, 27, 27, 0.95);
 }
 
-/* Buttons */
-.btnStack {
-  margin-top: 10px;
+/* Actions */
+.actions {
   display: grid;
   gap: 10px;
-}
-
-.blueBtn {
-  width: 100%;
   margin-top: 2px;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  background: #1a73e8;
-  color: #fff;
-  font-weight: 1000;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(26, 115, 232, 0.35);
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
-}
-.blueBtn:hover {
-  background: #1558b0;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(26, 115, 232, 0.45);
 }
 
-.ghostBtn {
+.primaryBtn{
   width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: #fff;
-  font-weight: 1000;
-  cursor: pointer;
-}
-
-.tips h2 {
-  margin-top: 0;
-}
-.bullets {
-  margin: 0;
-  padding-left: 18px;
-  font-weight: 900;
-  opacity: 0.85;
-  display: grid;
-  gap: 8px;
-}
-
-.miniCard {
-  margin-top: 14px;
+  border: 0;
   border-radius: 16px;
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  background: rgba(75, 52, 41, 0.03);
-  padding: 12px;
-}
-.miniTitle { font-weight: 1000; }
-.miniBrand { font-weight: 1000; font-size: 18px; margin-top: 6px; }
-.miniSub { opacity: 0.75; font-weight: 800; margin-top: 4px; }
+  padding: 14px 14px;
+  cursor: pointer;
+  font-weight: 950;
+  color: #fff;
 
-@media (max-width: 980px) {
-  .layout { grid-template-columns: 1fr; }
+  background: var(--appleBlue);
+  box-shadow: 0 14px 30px rgba(10, 132, 255, 0.25);
+
+  transition: transform 0.10s ease, box-shadow 0.10s ease, background 0.10s ease;
+
+  /* ✅ center content */
+  position: relative;
+  display: grid;
+  place-items: center;
 }
 
-@media (max-width: 720px) {
+.primaryBtn:hover{
+  background: var(--appleBlueHover);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(10, 132, 255, 0.32);
+}
+
+/* ✅ keep arrow on the right */
+.btnArrow{
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+
+/* CHECKOUT BUTTON (colored) */
+.secondaryBtn {
+  width: 100%;
+  border-radius: 16px;
+  padding: 14px 14px;
+  cursor: pointer;
+  font-weight: 950;
+  border: 0;
+
+  color: #fff;
+  background: var(--checkoutBg);
+  box-shadow: 0 12px 26px rgba(17, 24, 39, 0.18);
+
+  transition: transform 0.10s ease, box-shadow 0.10s ease, background 0.10s ease;
+}
+
+.secondaryBtn:hover {
+  background: var(--checkoutHover);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(17, 24, 39, 0.22);
+}
+
+.btnArrow { opacity: 0.9; }
+
+.trustRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.trustDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+/* Summary */
+.summary {
+  position: sticky;
+  top: 18px;
+}
+
+.summaryCard {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow2);
+  padding: 14px;
+}
+
+.sumTop { margin-bottom: 10px; }
+.sumTitle { font-weight: 950; }
+.sumSub { margin-top: 6px; color: var(--muted); font-weight: 700; font-size: 12px; }
+
+.sumRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(2, 6, 23, 0.06);
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(2, 6, 23, 0.82);
+}
+
+.sumRow:first-of-type { border-top: 0; }
+
+.sumValue {
+  font-weight: 950;
+  color: rgba(2, 6, 23, 0.92);
+  text-align: right;
+}
+
+.sumDivider {
+  height: 1px;
+  background: rgba(2, 6, 23, 0.08);
+  margin: 10px 0;
+}
+
+.sumFine {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 1020px) {
+  .shell { grid-template-columns: 1fr; }
+  .summary { position: static; }
+}
+
+@media (max-width: 760px) {
   .page { grid-template-columns: 1fr; }
-  .sidebar { border-right: none; border-bottom: 1px solid rgba(75,52,41,0.12); }
-  .row2 { grid-template-columns: 1fr; }
-  .watermarks { display: none; } /* too tight on small screens */
+  .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
+  .grid2 { grid-template-columns: 1fr; }
+  .topbar { align-items: flex-start; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
 }
 </style>
