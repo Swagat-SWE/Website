@@ -600,22 +600,22 @@ const Other = ref([
   {
     id: "o2",
     name: "Cinnamon Bliss Rolls",
-    img: "/Veg.png",
+    img: "EBB-Cinnamon-Bliss-Roll-1.jpg",
   },
   {
     id: "o3",
     name: "Blueberry Muffin",
-    img: "/Nova.png",
+    img: "EBB-Sweets-BlueberryMuffin-650x6501-1.jpg",
   },
   {
     id: "o4",
     name: "Chocolate Chip Cooke",
-    img: "/Special.png",
+    img: "EBB-Sweets-ChocolateChipCookie-650x6501-1.jpg",
   },
   {
     id: "o5",
     name: "Twice Baked Hashbrown",
-    img: "/Ham.png",
+    img: "EBB-Twice-Baked-Hashbrown.jpg",
   },
 ]);
 </script>
