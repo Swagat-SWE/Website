@@ -1,4 +1,13 @@
 <!-- app/pages/contact.vue -->
+
+<!--
+[FR-100] The Contact page SHALL display the business’s physical address in a clearly visible section at the top of the page.
+[FR-101] The Contact page SHALL provide fields for the user’s name and phone number when submitting an inquiry or message.
+[FR-102] The Contact page SHALL include a section containing all applicable legal disclaimers related to communication and data use.
+[FR-103] The Contact page SHALL include a link or embedded section describing the website’s privacy policy, including how user information is handled and stored.
+[FR-104] The Contact page SHALL display the business’s phone number in a dedicated section, allowing users to call directly from mobile devices.
+-->
+
 <template>
   <div class="page">
     <!-- Left Sidebar -->
