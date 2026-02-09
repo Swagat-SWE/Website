@@ -464,6 +464,11 @@ const Breakfest = ref([
     img: "/AllNight.png",
   },
   {
+    id: "bs88",
+    name: "Spicy Chicken Sandwich",
+    img: "/Chicken.png",
+  },
+  {
     id: "bs9",
     name: "Stanta Fe Egg White Sandwich",
     img: "/Garden.png",
@@ -569,6 +574,11 @@ const Smears = ref([
     id: "s2",
     name: "Avacado Veg Out Sandwich",
     img: "/Veg.png",
+  },
+  {
+    id: "s22",
+    name: "Spicy Chicken Sandwich",
+    img: "/Chicken.png",
   },
   {
     id: "s3",
