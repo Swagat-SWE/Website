@@ -1,10 +1,9 @@
-<!-- app/pages/index.vue -->
+<!-- app/pages/privacy.vue -->
 <template>
   <div class="page">
     <!-- Left Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
-
         <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
       </div>
 
@@ -13,7 +12,6 @@
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
-
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -62,14 +60,12 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- Top bar: Location (simple prototype) + Cart -->
+      <!-- Top bar: Location + Cart -->
       <header class="topbar">
         <div class="topbarLeft">
           <div class="locationWrap">
             <div class="locationPill">
               <span class="pin">📍</span>
-
-              <!-- Always-visible search input -->
               <input
                 v-model="locationQuery"
                 class="locationInput"
@@ -78,15 +74,12 @@
                 @focus="showLocationDropdown = true"
                 @input="showLocationDropdown = true"
               />
-
-              <!-- Show selected location (like a “result”) -->
               <span class="locationSelected">{{ location }}</span>
             </div>
 
-            <!-- Suggestions dropdown -->
             <div v-if="showLocationDropdown" class="locationDropdown">
               <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try “Chicago” or “Boston”.
+                No matches. Try "Chicago" or "Boston".
               </div>
 
               <button
@@ -103,148 +96,248 @@
         </div>
 
         <div class="topbarRight">
-          <!-- Sign In button -->
-          <button class="signInBtn" type="button">
-            Sign In
-          </button>
-
-          <!-- Cart button -->
+          <button class="signInBtn" type="button">Sign In</button>
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
             <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartItems.length }}</span>
+            <span class="cartCount">0</span>
           </button>
         </div>
-        </header>
+      </header>
 
-      <!-- Title -->
+      <!-- Privacy Policy Title -->
       <section class="hero">
-        <h1 class="title">Food Selection</h1>
+        <h1 class="title">PRIVACY POLICY</h1>
+        <p class="subtitle">Last updated: {{ currentDate }}</p>
       </section>
 
-      <!-- Breakfest -->
+      <!-- Content Sections -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Breakfast</h2>
+          <h2 class="sectionTitle">Introduction</h2>
           <div class="sectionLine" />
         </div>
 
-        <!-- Einstein-style image tiles (3 across) -->
-        <div class="tileGrid">
-          <article v-for="item in Breakfest" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <!-- ONLY this button adds to cart -->
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <p>
+            Einstein Bros Bagels ("we," "us," "our," or "Company") respects the privacy of our customers and website visitors. 
+            This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website 
+            and use our services.
+          </p>
+          <p>
+            Please read this Privacy Policy carefully. If you do not agree with our policies and practices, please do not use our website.
+          </p>
         </div>
       </section>
 
-      <!-- Lunch -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Lunch</h2>
+          <h2 class="sectionTitle">Information We Collect</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Lunch" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
+        <div class="policyContent">
+          <h3>Personal Information You Provide</h3>
+          <ul>
+            <li>Name, email address, and phone number</li>
+            <li>Billing and delivery address</li>
+            <li>Payment information</li>
+            <li>Order history and preferences</li>
+            <li>Account credentials and password</li>
+            <li>Comments, reviews, and feedback</li>
+            <li>Customer service inquiries and communications</li>
+          </ul>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+          <h3>Automatically Collected Information</h3>
+          <ul>
+            <li>Browser type and version</li>
+            <li>IP address and device identifier</li>
+            <li>Pages visited and time spent</li>
+            <li>Cookies and similar tracking technologies</li>
+            <li>Location data (with permission)</li>
+            <li>Usage patterns and analytics</li>
+          </ul>
+
+          <h3>Third-Party Information</h3>
+          <p>
+            We may receive information about you from third parties, including payment processors, delivery partners, 
+            and social media platforms.
+          </p>
         </div>
       </section>
 
-      <!-- Bagels -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Bagels</h2>
+          <h2 class="sectionTitle">How We Use Your Information</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Bagels" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <p>We use the information we collect to:</p>
+          <ul>
+            <li>Process and fulfill your orders</li>
+            <li>Send order confirmations and updates</li>
+            <li>Provide customer service and support</li>
+            <li>Personalize your experience</li>
+            <li>Send promotional emails and offers (with consent)</li>
+            <li>Improve our website and services</li>
+            <li>Conduct market research and analytics</li>
+            <li>Comply with legal obligations</li>
+            <li>Prevent fraud and unauthorized access</li>
+            <li>Enforce our Terms of Service</li>
+          </ul>
         </div>
       </section>
 
-      <!-- Smears -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Smears</h2>
+          <h2 class="sectionTitle">Information Sharing & Disclosure</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Smears" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <p>
+            We do not sell, trade, or rent your personal information to third parties. We may share your information with:
+          </p>
+          <ul>
+            <li>Service providers (payment processors, delivery partners, hosting providers)</li>
+            <li>Business partners for co-marketing initiatives</li>
+            <li>Legal authorities when required by law</li>
+            <li>Professional advisors (attorneys, accountants, auditors)</li>
+            <li>Successors in case of merger, acquisition, or sale of assets</li>
+          </ul>
+          <p>
+            All third parties are contractually obligated to use your information only as necessary to provide services 
+            and maintain confidentiality.
+          </p>
         </div>
       </section>
 
-      <!-- Other -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Other</h2>
+          <h2 class="sectionTitle">Data Security</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Other" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
+        <div class="policyContent">
+          <p>
+            We implement comprehensive security measures to protect your personal information, including:
+          </p>
+          <ul>
+            <li>SSL encryption for data transmission</li>
+            <li>Secure password protection</li>
+            <li>Regular security audits and updates</li>
+            <li>Access controls and authentication</li>
+            <li>Secure data storage protocols</li>
+          </ul>
+          <p>
+            However, no security system is impenetrable. We cannot guarantee absolute security of your information, 
+            and you transmit information at your own risk.
+          </p>
+        </div>
+      </section>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Cookies & Tracking Technologies</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            Our website uses cookies and similar tracking technologies to enhance your experience. You can control cookie settings 
+            through your browser preferences. Disabling cookies may affect some website functionality.
+          </p>
+          <p>
+            We use Google Analytics and similar tools to understand user behavior and improve our services. 
+            These providers have their own privacy policies governing their data collection practices.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Your Rights & Choices</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>You have the right to:</p>
+          <ul>
+            <li>Access your personal information</li>
+            <li>Correct inaccurate information</li>
+            <li>Request deletion of your information</li>
+            <li>Opt-out of marketing communications</li>
+            <li>Request a copy of your data</li>
+            <li>Withdraw consent at any time</li>
+          </ul>
+          <p>
+            To exercise any of these rights, please contact us using the information in the "Contact Us" section below.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Children's Privacy</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            Our website is not intended for children under the age of 13. We do not knowingly collect personal information 
+            from children under 13. If we become aware that a child under 13 has provided us with personal information, 
+            we will promptly delete such information and terminate the child's account.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Third-Party Links</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            Our website may contain links to third-party websites. We are not responsible for the privacy practices 
+            or content of external websites. We encourage you to review the privacy policies of any third-party sites 
+            before providing your personal information.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Policy Updates</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            We may update this Privacy Policy from time to time to reflect changes in our practices, technology, 
+            legal requirements, or other factors. We will notify you of material changes by posting the updated policy 
+            on our website and updating the "Last updated" date. Continued use of our website following notification 
+            constitutes your acceptance of the updated Privacy Policy.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Contact Us</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            If you have questions, concerns, or requests regarding this Privacy Policy or our privacy practices, 
+            please contact us:
+          </p>
+          <div class="contactInfo">
+            <p><strong>Einstein Bros Bagels - Loras College</strong></p>
+            <p>Phone: (563) 588-7067</p>
+            <p>Address: 1450 Alta Vista<br />Dubuque, IA 52001</p>
+          </div>
         </div>
       </section>
 
@@ -272,15 +365,25 @@
         </button>
       </aside>
     </main>
+    <footer>
+        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
+        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+    </footer>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** =========================
- *  Location prototype (simple)
- *  ========================= */
+const currentDate = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+// Location management
 const location = ref("Dubuque, IA");
 const locationQuery = ref("");
 const showLocationDropdown = ref(false);
@@ -350,7 +453,6 @@ function selectLocation(opt) {
   showLocationDropdown.value = false;
 }
 
-/** close dropdown if user clicks outside */
 function handleDocClick(e) {
   const target = e.target;
   if (target?.closest?.(".locationWrap")) return;
@@ -365,9 +467,7 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleDocClick);
 });
 
-/** =========================
- *  Sidebar Review
- *  ========================= */
+// Review management
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
@@ -379,24 +479,14 @@ function toggleReview() {
 }
 
 function submitReview() {
-  // show message
   submitted.value = true;
-
-  // reset the form
   rating.value = 0;
   hoverRating.value = 0;
   comment.value = "";
-
-  // optional: close the review panel after submit
-  // showReview.value = false;
-
   setTimeout(() => (submitted.value = false), 2000);
 }
 
-
-/** =========================
- *  Cart
- *  ========================= */
+// Cart management
 const showCart = ref(false);
 const cartItems = ref([]);
 
@@ -405,243 +495,24 @@ function toggleCart() {
 }
 
 function goToCheckout() {
-  showCart.value = false;        // optional: close the cart
-  navigateTo("/checkout");       // or "/Checkout" depending on your filename
-}
-
-function addToCart(name) {
-  cartItems.value.push(name);
-  showCart.value = true;
+  showCart.value = false;
+  navigateTo("/checkout");
 }
 
 function removeFromCart(index) {
   cartItems.value.splice(index, 1);
 }
-
-/** =========================
- *  Page Content (images)
- *  Replace URLs later with your own images in /public
- *  ========================= */
-const Breakfest = ref([
-  {
-    id: "bs1",
-    name: "Farm House Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs2",
-    name: "All Nighter Egg Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs3",
-    name: "Garden Avacado Egg Sandwich",
-    img: "/Garden.png",
-  },
-  {
-    id: "bs4",
-    name: "Bacon Chedder Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs5",
-    name: "Chedder Egg Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs6",
-    name: "Ham Swiss Egg Sandwich",
-    img: "/Garden.png",
-  },
-  {
-    id: "bs7",
-    name: "Turky Sausage Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs8",
-    name: "Bacon Avocoado Tomato Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs88",
-    name: "Spicy Chicken Sandwich",
-    img: "/Chicken.png",
-  },
-  {
-    id: "bs9",
-    name: "Stanta Fe Egg White Sandwich",
-    img: "/Garden.png",
-  },
-  {
-    id: "bs10",
-    name: "Texas Brisket Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-]);
-
-const Lunch = ref([
-  {
-    id: "l1",
-    name: "Tastey Turkey Sandwich",
-    img: "/Tastey.png",
-  },
-  {
-    id: "l2",
-    name: "Avacado Veg Out Sandwich",
-    img: "/Veg.png",
-  },
-  {
-    id: "l3",
-    name: "Nova Lox Sandwich",
-    img: "/Nova.png",
-  },
-  {
-    id: "l4",
-    name: "Nova Lux Brunch Special",
-    img: "/Special.png",
-  },
-  {
-    id: "l5",
-    name: "Ham & Swiss Sandwich",
-    img: "/Ham.png",
-  },
-  {
-    id: "l6",
-    name: "Turkey, Bacon & Avacado Sandwich",
-    img: "/TT.png",
-  },
-]);
-const Bagels = ref([
-  {
-    id: "c1",
-    name: "Plain Bagel",
-    img: "/Tastey.png",
-  },
-  {
-    id: "c2",
-    name: "Cinnamon Rasin Bagel",
-    img: "/Veg.png",
-  },
-  {
-    id: "c3",
-    name: "Everything Bagel",
-    img: "/Nova.png",
-  },
-  {
-    id: "c4",
-    name: "Ancient Grain Bagel",
-    img: "/Special.png",
-  },
-  {
-    id: "c5",
-    name: "Sesame Seed Bagel",
-    img: "/Ham.png",
-  },
-  {
-    id: "c6",
-    name: "Cheesy Hashbrown Bagel",
-    img: "/TT.png",
-  },
-    {
-    id: "c7",
-    name: "Six Cheese Bagel",
-    img: "/Tastey.png",
-  },
-  {
-    id: "c8",
-    name: "Aisago Bagle",
-    img: "/Veg.png",
-  },
-  {
-    id: "c9",
-    name: "Blueberry Bagel",
-    img: "/Nova.png",
-  },
-  {
-    id: "c10",
-    name: "Chocolate Chip Bagel",
-    img: "/Special.png",
-  },
-]);
-const Smears = ref([
-  {
-    id: "s1",
-    name: "Plain",
-    img: "PlainSmear.png",
-  },
-  {
-    id: "s2",
-    name: "Strawberry",
-    img: "Straberry.png",
-  },
-  {
-    id: "s22",
-    name: "Spicy Chicken Sandwich",
-    img: "/Chicken.png",
-  },
-  {
-    id: "s3",
-    name: "Almond",
-    img: "/Nova.png",
-  },
-  {
-    id: "s4",
-    name: "Country Pepper",
-    img: "/Special.png",
-  },
-  {
-    id: "s5",
-    name: "Garden Veggie",
-    img: "/Ham.png",
-  },
-  {
-    id: "s6",
-    name: "Onion Chive",
-    img: "/TT.png",
-  },
-]);
-const Other = ref([
-  {
-    id: "o1",
-    name: "Cinnamon Chip Muffin",
-    img: "650x6501-1.jpeg",
-  },
-  {
-    id: "o2",
-    name: "Cinnamon Bliss Rolls",
-    img: "EBB-Cinnamon-Bliss-Roll-1.jpg",
-  },
-  {
-    id: "o3",
-    name: "Blueberry Muffin",
-    img: "EBB-Sweets-BlueberryMuffin-650x6501-1.jpg",
-  },
-  {
-    id: "o4",
-    name: "Chocolate Chip Cooke",
-    img: "EBB-Sweets-ChocolateChipCookie-650x6501-1.jpg",
-  },
-  {
-    id: "o5",
-    name: "Twice Baked Hashbrown",
-    img: "EBB-Twice-Baked-Hashbrown.jpg",
-  },
-]);
 </script>
 
 <style scoped>
-/* Einstein-ish warm palette */
+/* Color palette */
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
   --brown: #4b3429;
   --brown2: #6a4a3a;
-
-  /* Your plus button orange */
   --orange: #f4a51c;
   --orangeHover: #ffb42f;
-
   --yellow: #f4b316;
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
@@ -666,18 +537,17 @@ const Other = ref([
 
 .signInBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
   border-color: rgba(244, 179, 22, 0.5);
 }
 
 .logoImg {
   width: 100%;
-  max-width: 160px;   /* controls how big it can get */
+  max-width: 160px;
   height: auto;
   display: block;
   object-fit: contain;
 }
-
 
 .page {
   min-height: 100vh;
@@ -697,40 +567,9 @@ const Other = ref([
 .sidebarTop {
   display: flex;
   align-items: center;
-  justify-content: center;  /* centers the logo */
+  justify-content: center;
   margin-bottom: 14px;
-  overflow: hidden;         /* prevents it from spilling */
-}
-
-.dotsBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  gap: 3px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 99px;
-  background: var(--brown);
-  opacity: 0.9;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--brown);
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
-  padding: 8px 10px;
-  border-radius: 12px;
+  overflow: hidden;
 }
 
 .nav {
@@ -769,6 +608,7 @@ const Other = ref([
   transform: rotate(0deg);
   transition: transform 0.15s ease;
 }
+
 .chev.open {
   transform: rotate(180deg);
 }
@@ -858,6 +698,8 @@ const Other = ref([
 .main {
   position: relative;
   padding: 20px 26px 50px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .topbar {
@@ -873,7 +715,7 @@ const Other = ref([
   gap: 14px;
 }
 
-/* Location (simple prototype) */
+/* Location */
 .locationWrap {
   position: relative;
 }
@@ -906,41 +748,33 @@ const Other = ref([
   padding-left: 12px;
 }
 
-/* dropdown container */
 .locationDropdown {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-
   width: 320px;
-  max-height: 312px;       /* fixed box height */
-  overflow-y: auto;       /* scroll */
+  max-height: 312px;
+  overflow-y: auto;
   overflow-x: hidden;
-
   background: #fff;
   border: 1px solid rgba(75, 52, 41, 0.14);
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 8px;
-
   z-index: 50;
 }
 
-/* each row */
 .locationOption {
   width: 100%;
-  height: 44px;           /* fixed row height */
+  height: 44px;
   display: flex;
   align-items: center;
-
   text-align: left;
   border: none;
   background: transparent;
-
   padding: 0 12px;
   border-radius: 12px;
   cursor: pointer;
-
   font-weight: 900;
   color: #4b3429;
 }
@@ -948,7 +782,6 @@ const Other = ref([
 .locationOption:hover {
   background: rgba(244, 179, 22, 0.18);
 }
-
 
 .locationEmpty {
   padding: 10px;
@@ -986,9 +819,10 @@ const Other = ref([
   font-size: 12px;
 }
 
+/* Hero section */
 .hero {
   text-align: center;
-  padding: 8px 0 12px;
+  padding: 20px 0 30px;
 }
 
 .title {
@@ -1001,19 +835,21 @@ const Other = ref([
 
 .subtitle {
   margin: 8px 0 0;
-  opacity: 0.75;
+  opacity: 0.65;
   font-weight: 800;
+  font-size: 14px;
 }
 
+/* Sections */
 .section {
-  margin-top: 26px;
+  margin-top: 30px;
 }
 
 .sectionHeader {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .sectionTitle {
@@ -1029,72 +865,48 @@ const Other = ref([
   background: linear-gradient(90deg, rgba(75, 52, 41, 0.25), rgba(75, 52, 41, 0));
 }
 
-/* === Einstein-style big tiles === */
-.tileGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  align-items: start;
-}
-
-
-.tileCard {
-  background: transparent;
-}
-
-.tileImg {
-  width: 80%;
-  aspect-ratio: 1 / 1;      /* ✅ makes the box the same shape (square like Einstein tiles) */
-  border-radius: 22px;
-  overflow: hidden;         /* ✅ prevents overflow outside rounded corners */
-  box-shadow: var(--cardShadow);
-  border: 1px solid rgba(75, 52, 41, 0.14);
+.policyContent {
   background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  box-shadow: var(--cardShadow);
+  line-height: 1.7;
 }
 
-.tileImg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;        /* ✅ fills the box perfectly */
-  display: block;
+.policyContent p {
+  margin: 0 0 14px 0;
+  opacity: 0.9;
 }
 
-.tileFooter {
-  padding-top: 10px;
-}
-
-.tileNameRow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.tileName {
-  font-size: 18px;
-  font-weight: 1000;
+.policyContent h3 {
+  margin: 20px 0 10px 0;
+  font-size: 16px;
+  font-weight: 900;
   color: var(--brown);
-  letter-spacing: 0.2px;
 }
 
-/* Orange + button */
-.plusBtn {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: var(--orange);
-  color: #111;
-  font-weight: 1000;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 18px rgba(244, 165, 28, 0.25);
+.policyContent ul {
+  margin: 0 0 14px 0;
+  padding-left: 24px;
 }
 
-.plusBtn:hover {
-  background: var(--orangeHover);
+.policyContent li {
+  margin: 8px 0;
+  opacity: 0.85;
+}
+
+.contactInfo {
+  background: rgba(244, 179, 22, 0.08);
+  border-left: 4px solid var(--yellow);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 14px;
+}
+
+.contactInfo p {
+  margin: 6px 0;
+  font-weight: 800;
 }
 
 /* Cart slide-over */
@@ -1146,18 +958,12 @@ const Other = ref([
   opacity: 0.8;
 }
 
-.checkoutBtn {
-  width: 100%;
-  border: none;
-  background: var(--yellow);
-  color: #2c1b12;
-  font-weight: 1000;
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-
-  position: sticky;
-  bottom: 14px;
+.cartList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 0;
+  margin: 0;
+  list-style: none;
 }
 
 .cartItem {
@@ -1168,6 +974,7 @@ const Other = ref([
   border-radius: 14px;
   padding: 10px 10px;
   background: rgba(75, 52, 41, 0.03);
+  margin-bottom: 8px;
 }
 
 .cartItemName {
@@ -1181,6 +988,19 @@ const Other = ref([
   font-weight: 900;
   color: var(--brown2);
   opacity: 0.9;
+}
+
+.checkoutBtn {
+  width: 100%;
+  border: none;
+  background: var(--yellow);
+  color: #2c1b12;
+  font-weight: 1000;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  position: sticky;
+  bottom: 14px;
 }
 
 .checkoutBtn:hover {
@@ -1205,14 +1025,20 @@ const Other = ref([
     border-right: none;
     border-bottom: 1px solid rgba(75, 52, 41, 0.12);
   }
-  .tileGrid {
-    grid-template-columns: 1fr;
-  }
   .locationInput {
     width: 150px;
   }
   .locationDropdown {
     min-width: 260px;
+  }
+  .main {
+    padding: 16px 18px 40px;
+  }
+  .title {
+    font-size: 32px;
+  }
+  .policyContent {
+    padding: 16px;
   }
 }
 </style>
