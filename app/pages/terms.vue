@@ -1,10 +1,9 @@
-<!-- app/pages/index.vue -->
+<!-- app/pages/terms.vue -->
 <template>
   <div class="page">
     <!-- Left Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
-
         <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
       </div>
 
@@ -14,8 +13,6 @@
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
 
-
-        <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
           Review
           <span class="chev" :class="{ open: showReview }">▾</span>
@@ -62,14 +59,12 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- Top bar: Location (simple prototype) + Cart -->
+      <!-- Top bar: Location + Cart -->
       <header class="topbar">
         <div class="topbarLeft">
           <div class="locationWrap">
             <div class="locationPill">
               <span class="pin">📍</span>
-
-              <!-- Always-visible search input -->
               <input
                 v-model="locationQuery"
                 class="locationInput"
@@ -78,15 +73,12 @@
                 @focus="showLocationDropdown = true"
                 @input="showLocationDropdown = true"
               />
-
-              <!-- Show selected location (like a “result”) -->
               <span class="locationSelected">{{ location }}</span>
             </div>
 
-            <!-- Suggestions dropdown -->
             <div v-if="showLocationDropdown" class="locationDropdown">
               <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try “Chicago” or “Boston”.
+                No matches. Try "Chicago" or "Boston".
               </div>
 
               <button
@@ -103,148 +95,177 @@
         </div>
 
         <div class="topbarRight">
-          <!-- Sign In button -->
-          <button class="signInBtn" type="button">
-            Sign In
-          </button>
-
-          <!-- Cart button -->
+          <button class="signInBtn" type="button">Sign In</button>
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
             <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartItems.length }}</span>
+            <span class="cartCount">0</span>
           </button>
         </div>
-        </header>
+      </header>
 
-      <!-- Title -->
+      <!-- Terms Title -->
       <section class="hero">
-        <h1 class="title">Food Selection</h1>
+        <h1 class="title">TERMS OF USE</h1>
+        <p class="subtitle">Last updated: {{ currentDate }}</p>
       </section>
 
-      <!-- Breakfest -->
+      <!-- Terms Content -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Breakfast</h2>
+          <h2 class="sectionTitle">Agreement to Terms</h2>
           <div class="sectionLine" />
         </div>
 
-        <!-- Einstein-style image tiles (3 across) -->
-        <div class="tileGrid">
-          <article v-for="item in Breakfest" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <!-- ONLY this button adds to cart -->
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <p>
+            These Terms of Use govern your access to and use of the website and services provided by Einstein Bros.
+            By accessing or using the Site, you agree to be bound by these Terms. If you do not agree, do not use the Site.
+          </p>
         </div>
       </section>
 
-      <!-- Lunch -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Lunch</h2>
+          <h2 class="sectionTitle">Permitted Use & Restrictions</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Lunch" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <ul>
+            <li>You may use the Site for personal, non-commercial purposes only.</li>
+            <li>You agree not to: interfere with the Site, reverse engineer, or attempt to access other accounts.</li>
+            <li>Do not post unlawful, abusive, or infringing content on the Site.</li>
+          </ul>
         </div>
       </section>
 
-      <!-- Bagels -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Bagels</h2>
+          <h2 class="sectionTitle">Account Security</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Bagels" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <p>
+            When you create an account, you are responsible for maintaining the confidentiality of your credentials
+            and for all activity that occurs under your account. Notify us immediately of any unauthorized use.
+          </p>
         </div>
       </section>
 
-      <!-- Smears -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Smears</h2>
+          <h2 class="sectionTitle">Intellectual Property</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Smears" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+        <div class="policyContent">
+          <p>
+            All content on the Site, including text, images, logos, and software, is the property of Einstein Bros or
+            its licensors and is protected by intellectual property laws. You may not copy, reproduce, or create
+            derivative works without prior written permission.
+          </p>
         </div>
       </section>
 
-      <!-- Other -->
       <section class="section">
         <div class="sectionHeader">
-          <h2 class="sectionTitle">Other</h2>
+          <h2 class="sectionTitle">Third-Party Services</h2>
           <div class="sectionLine" />
         </div>
 
-        <div class="tileGrid">
-          <article v-for="item in Other" :key="item.id" class="tileCard">
-            <div class="tileImg">
-              <img :src="item.img" :alt="item.name" />
-            </div>
-            <div class="tileFooter">
-              <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
+        <div class="policyContent">
+          <p>
+            The Site may contain links or integrations with third-party services. We are not responsible for the
+            availability or practices of those services.
+          </p>
+        </div>
+      </section>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
-              </div>
-            </div>
-          </article>
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Disclaimer of Warranties</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            THE SITE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND. TO THE MAXIMUM EXTENT
+            PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, WHETHER EXPRESS OR IMPLIED.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Limitation of Liability</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, EINSTEIN BROS SHALL NOT BE LIABLE FOR ANY INDIRECT,
+            INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING FROM YOUR USE OF THE SITE.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Termination</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            We may suspend or terminate your access for violations of these Terms or for other business reasons,
+            without liability to you.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Governing Law</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            These Terms are governed by the laws of the State of Iowa, without regard to conflict of law principles.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Changes to Terms</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            We may update these Terms from time to time. Material changes will be posted with an updated "Last updated" date.
+            Continued use after changes constitutes acceptance of the new Terms.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Contact</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="policyContent">
+          <p>
+            For questions about these Terms, contact us:
+          </p>
+          <div class="contactInfo">
+            <p><strong>Einstein Bros Bagels - Loras College</strong></p>
+            <p>Phone: (563) 588-7067</p>
+            <p>Address: 1450 Alta Vista<br />Dubuque, IA 52001</p>
+          </div>
         </div>
       </section>
 
@@ -278,64 +299,23 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** =========================
- *  Location prototype (simple)
- *  ========================= */
+const currentDate = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+// Location management
 const location = ref("Dubuque, IA");
 const locationQuery = ref("");
 const showLocationDropdown = ref(false);
 
 const locations = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
+  "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia",
+  "Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
+  "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey",
+  "New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina",
+  "South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming",
 ];
 
 const filteredLocations = computed(() => {
@@ -350,53 +330,25 @@ function selectLocation(opt) {
   showLocationDropdown.value = false;
 }
 
-/** close dropdown if user clicks outside */
 function handleDocClick(e) {
   const target = e.target;
   if (target?.closest?.(".locationWrap")) return;
   showLocationDropdown.value = false;
 }
 
-onMounted(() => {
-  document.addEventListener("click", handleDocClick);
-});
+onMounted(() => document.addEventListener("click", handleDocClick));
+onBeforeUnmount(() => document.removeEventListener("click", handleDocClick));
 
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleDocClick);
-});
-
-/** =========================
- *  Sidebar Review
- *  ========================= */
+// Review
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
 const comment = ref("");
 const submitted = ref(false);
+function toggleReview() { showReview.value = !showReview.value; }
+function submitReview() { submitted.value = true; rating.value = 0; hoverRating.value = 0; comment.value = ""; setTimeout(() => (submitted.value = false), 2000); }
 
-function toggleReview() {
-  showReview.value = !showReview.value;
-}
-
-function submitReview() {
-  // show message
-  submitted.value = true;
-
-  // reset the form
-  rating.value = 0;
-  hoverRating.value = 0;
-  comment.value = "";
-
-  // optional: close the review panel after submit
-  // showReview.value = false;
-
-  setTimeout(() => (submitted.value = false), 2000);
-}
-
-
-/** =========================
- *  Cart
- *  ========================= */
+// Cart
 const showCart = ref(false);
 const cartItems = ref([]);
 
@@ -405,243 +357,24 @@ function toggleCart() {
 }
 
 function goToCheckout() {
-  showCart.value = false;        // optional: close the cart
-  navigateTo("/checkout");       // or "/Checkout" depending on your filename
-}
-
-function addToCart(name) {
-  cartItems.value.push(name);
-  showCart.value = true;
+  showCart.value = false;
+  navigateTo("/checkout");
 }
 
 function removeFromCart(index) {
   cartItems.value.splice(index, 1);
 }
-
-/** =========================
- *  Page Content (images)
- *  Replace URLs later with your own images in /public
- *  ========================= */
-const Breakfest = ref([
-  {
-    id: "bs1",
-    name: "Farm House Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs2",
-    name: "All Nighter Egg Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs3",
-    name: "Garden Avacado Egg Sandwich",
-    img: "/Garden.png",
-  },
-  {
-    id: "bs4",
-    name: "Bacon Chedder Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs5",
-    name: "Chedder Egg Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs6",
-    name: "Ham Swiss Egg Sandwich",
-    img: "/Garden.png",
-  },
-  {
-    id: "bs7",
-    name: "Turky Sausage Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-  {
-    id: "bs8",
-    name: "Bacon Avocoado Tomato Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs88",
-    name: "Spicy Chicken Sandwich",
-    img: "/Chicken.png",
-  },
-  {
-    id: "bs9",
-    name: "Stanta Fe Egg White Sandwich",
-    img: "/Garden.png",
-  },
-  {
-    id: "bs10",
-    name: "Texas Brisket Egg Sandwich",
-    img: "/Farmhouse.png",
-  },
-]);
-
-const Lunch = ref([
-  {
-    id: "l1",
-    name: "Tastey Turkey Sandwich",
-    img: "/Tastey.png",
-  },
-  {
-    id: "l2",
-    name: "Avacado Veg Out Sandwich",
-    img: "/Veg.png",
-  },
-  {
-    id: "l3",
-    name: "Nova Lox Sandwich",
-    img: "/Nova.png",
-  },
-  {
-    id: "l4",
-    name: "Nova Lux Brunch Special",
-    img: "/Special.png",
-  },
-  {
-    id: "l5",
-    name: "Ham & Swiss Sandwich",
-    img: "/Ham.png",
-  },
-  {
-    id: "l6",
-    name: "Turkey, Bacon & Avacado Sandwich",
-    img: "/TT.png",
-  },
-]);
-const Bagels = ref([
-  {
-    id: "c1",
-    name: "Plain Bagel",
-    img: "/Tastey.png",
-  },
-  {
-    id: "c2",
-    name: "Cinnamon Rasin Bagel",
-    img: "/Veg.png",
-  },
-  {
-    id: "c3",
-    name: "Everything Bagel",
-    img: "/Nova.png",
-  },
-  {
-    id: "c4",
-    name: "Ancient Grain Bagel",
-    img: "/Special.png",
-  },
-  {
-    id: "c5",
-    name: "Sesame Seed Bagel",
-    img: "/Ham.png",
-  },
-  {
-    id: "c6",
-    name: "Cheesy Hashbrown Bagel",
-    img: "/TT.png",
-  },
-    {
-    id: "c7",
-    name: "Six Cheese Bagel",
-    img: "/Tastey.png",
-  },
-  {
-    id: "c8",
-    name: "Aisago Bagle",
-    img: "/Veg.png",
-  },
-  {
-    id: "c9",
-    name: "Blueberry Bagel",
-    img: "/Nova.png",
-  },
-  {
-    id: "c10",
-    name: "Chocolate Chip Bagel",
-    img: "/Special.png",
-  },
-]);
-const Smears = ref([
-  {
-    id: "s1",
-    name: "Tastey Turkey Sandwich",
-    img: "/Tastey.png",
-  },
-  {
-    id: "s2",
-    name: "Avacado Veg Out Sandwich",
-    img: "/Veg.png",
-  },
-  {
-    id: "s22",
-    name: "Spicy Chicken Sandwich",
-    img: "/Chicken.png",
-  },
-  {
-    id: "s3",
-    name: "Nova Lox Sandwich",
-    img: "/Nova.png",
-  },
-  {
-    id: "s4",
-    name: "Nova Lux Brunch Special",
-    img: "/Special.png",
-  },
-  {
-    id: "s5",
-    name: "Ham & Swiss Sandwich",
-    img: "/Ham.png",
-  },
-  {
-    id: "s6",
-    name: "Turkey, Bacon & Avacado Sandwich",
-    img: "/TT.png",
-  },
-]);
-const Other = ref([
-  {
-    id: "o1",
-    name: "Cinnamon Chip Muffin",
-    img: "650x6501-1.jpeg",
-  },
-  {
-    id: "o2",
-    name: "Cinnamon Bliss Rolls",
-    img: "EBB-Cinnamon-Bliss-Roll-1.jpg",
-  },
-  {
-    id: "o3",
-    name: "Blueberry Muffin",
-    img: "EBB-Sweets-BlueberryMuffin-650x6501-1.jpg",
-  },
-  {
-    id: "o4",
-    name: "Chocolate Chip Cooke",
-    img: "EBB-Sweets-ChocolateChipCookie-650x6501-1.jpg",
-  },
-  {
-    id: "o5",
-    name: "Twice Baked Hashbrown",
-    img: "EBB-Twice-Baked-Hashbrown.jpg",
-  },
-]);
 </script>
 
 <style scoped>
-/* Einstein-ish warm palette */
+/* reuse styles similar to other pages */
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
   --brown: #4b3429;
   --brown2: #6a4a3a;
-
-  /* Your plus button orange */
   --orange: #f4a51c;
   --orangeHover: #ffb42f;
-
   --yellow: #f4b316;
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
@@ -666,18 +399,9 @@ const Other = ref([
 
 .signInBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
   border-color: rgba(244, 179, 22, 0.5);
 }
-
-.logoImg {
-  width: 100%;
-  max-width: 160px;   /* controls how big it can get */
-  height: auto;
-  display: block;
-  object-fit: contain;
-}
-
 
 .page {
   min-height: 100vh;
@@ -697,40 +421,17 @@ const Other = ref([
 .sidebarTop {
   display: flex;
   align-items: center;
-  justify-content: center;  /* centers the logo */
+  justify-content: center;
   margin-bottom: 14px;
-  overflow: hidden;         /* prevents it from spilling */
+  overflow: hidden;
 }
 
-.dotsBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  gap: 3px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 99px;
-  background: var(--brown);
-  opacity: 0.9;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--brown);
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
-  padding: 8px 10px;
-  border-radius: 12px;
+.logoImg {
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .nav {
@@ -769,6 +470,7 @@ const Other = ref([
   transform: rotate(0deg);
   transition: transform 0.15s ease;
 }
+
 .chev.open {
   transform: rotate(180deg);
 }
@@ -873,7 +575,7 @@ const Other = ref([
   gap: 14px;
 }
 
-/* Location (simple prototype) */
+/* Location */
 .locationWrap {
   position: relative;
 }
@@ -906,41 +608,33 @@ const Other = ref([
   padding-left: 12px;
 }
 
-/* dropdown container */
 .locationDropdown {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-
   width: 320px;
-  max-height: 312px;       /* fixed box height */
-  overflow-y: auto;       /* scroll */
+  max-height: 312px;
+  overflow-y: auto;
   overflow-x: hidden;
-
   background: #fff;
   border: 1px solid rgba(75, 52, 41, 0.14);
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 8px;
-
   z-index: 50;
 }
 
-/* each row */
 .locationOption {
   width: 100%;
-  height: 44px;           /* fixed row height */
+  height: 44px;
   display: flex;
   align-items: center;
-
   text-align: left;
   border: none;
   background: transparent;
-
   padding: 0 12px;
   border-radius: 12px;
   cursor: pointer;
-
   font-weight: 900;
   color: #4b3429;
 }
@@ -948,7 +642,6 @@ const Other = ref([
 .locationOption:hover {
   background: rgba(244, 179, 22, 0.18);
 }
-
 
 .locationEmpty {
   padding: 10px;
@@ -986,9 +679,10 @@ const Other = ref([
   font-size: 12px;
 }
 
+/* Hero section */
 .hero {
   text-align: center;
-  padding: 8px 0 12px;
+  padding: 20px 0 30px;
 }
 
 .title {
@@ -1001,19 +695,21 @@ const Other = ref([
 
 .subtitle {
   margin: 8px 0 0;
-  opacity: 0.75;
+  opacity: 0.65;
   font-weight: 800;
+  font-size: 14px;
 }
 
+/* Sections */
 .section {
-  margin-top: 26px;
+  margin-top: 30px;
 }
 
 .sectionHeader {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .sectionTitle {
@@ -1029,72 +725,41 @@ const Other = ref([
   background: linear-gradient(90deg, rgba(75, 52, 41, 0.25), rgba(75, 52, 41, 0));
 }
 
-/* === Einstein-style big tiles === */
-.tileGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  align-items: start;
-}
-
-
-.tileCard {
-  background: transparent;
-}
-
-.tileImg {
-  width: 80%;
-  aspect-ratio: 1 / 1;      /* ✅ makes the box the same shape (square like Einstein tiles) */
-  border-radius: 22px;
-  overflow: hidden;         /* ✅ prevents overflow outside rounded corners */
-  box-shadow: var(--cardShadow);
-  border: 1px solid rgba(75, 52, 41, 0.14);
+.policyContent {
   background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  box-shadow: var(--cardShadow);
+  line-height: 1.7;
 }
 
-.tileImg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;        /* ✅ fills the box perfectly */
-  display: block;
+.policyContent p {
+  margin: 0 0 14px 0;
+  opacity: 0.9;
 }
 
-.tileFooter {
-  padding-top: 10px;
+.policyContent ul {
+  margin: 0 0 14px 0;
+  padding-left: 24px;
 }
 
-.tileNameRow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+.policyContent li {
+  margin: 8px 0;
+  opacity: 0.85;
 }
 
-.tileName {
-  font-size: 18px;
-  font-weight: 1000;
-  color: var(--brown);
-  letter-spacing: 0.2px;
+.contactInfo {
+  background: rgba(244, 179, 22, 0.08);
+  border-left: 4px solid var(--yellow);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 14px;
 }
 
-/* Orange + button */
-.plusBtn {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: var(--orange);
-  color: #111;
-  font-weight: 1000;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 18px rgba(244, 165, 28, 0.25);
-}
-
-.plusBtn:hover {
-  background: var(--orangeHover);
+.contactInfo p {
+  margin: 6px 0;
+  font-weight: 800;
 }
 
 /* Cart slide-over */
@@ -1146,18 +811,12 @@ const Other = ref([
   opacity: 0.8;
 }
 
-.checkoutBtn {
-  width: 100%;
-  border: none;
-  background: var(--yellow);
-  color: #2c1b12;
-  font-weight: 1000;
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-
-  position: sticky;
-  bottom: 14px;
+.cartList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 0;
+  margin: 0;
+  list-style: none;
 }
 
 .cartItem {
@@ -1168,6 +827,7 @@ const Other = ref([
   border-radius: 14px;
   padding: 10px 10px;
   background: rgba(75, 52, 41, 0.03);
+  margin-bottom: 8px;
 }
 
 .cartItemName {
@@ -1181,6 +841,19 @@ const Other = ref([
   font-weight: 900;
   color: var(--brown2);
   opacity: 0.9;
+}
+
+.checkoutBtn {
+  width: 100%;
+  border: none;
+  background: var(--yellow);
+  color: #2c1b12;
+  font-weight: 1000;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  position: sticky;
+  bottom: 14px;
 }
 
 .checkoutBtn:hover {
@@ -1205,14 +878,20 @@ const Other = ref([
     border-right: none;
     border-bottom: 1px solid rgba(75, 52, 41, 0.12);
   }
-  .tileGrid {
-    grid-template-columns: 1fr;
-  }
   .locationInput {
     width: 150px;
   }
   .locationDropdown {
     min-width: 260px;
+  }
+  .main {
+    padding: 16px 18px 40px;
+  }
+  .title {
+    font-size: 32px;
+  }
+  .policyContent {
+    padding: 16px;
   }
 }
 </style>
