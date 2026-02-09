@@ -562,32 +562,32 @@ const Bagels = ref([
 const Smears = ref([
   {
     id: "s1",
-    name: "Tastey Turkey Sandwich",
-    img: "/Tastey.png",
+    name: "Plain",
+    img: "PlainSmear.png",
   },
   {
     id: "s2",
-    name: "Avacado Veg Out Sandwich",
-    img: "/Veg.png",
+    name: "Strawberry",
+    img: "Straberry.png",
   },
   {
     id: "s3",
-    name: "Nova Lox Sandwich",
+    name: "Almond",
     img: "/Nova.png",
   },
   {
     id: "s4",
-    name: "Nova Lux Brunch Special",
+    name: "Country Pepper",
     img: "/Special.png",
   },
   {
     id: "s5",
-    name: "Ham & Swiss Sandwich",
+    name: "Garden Veggie",
     img: "/Ham.png",
   },
   {
     id: "s6",
-    name: "Turkey, Bacon & Avacado Sandwich",
+    name: "Onion Chive",
     img: "/TT.png",
   },
 ]);
