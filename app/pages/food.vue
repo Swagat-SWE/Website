@@ -516,52 +516,52 @@ const Bagels = ref([
   {
     id: "c1",
     name: "Plain Bagel",
-    img: "/Tastey.png",
+    img: "EBB-Bagel-Classic-Plain-1.jpg",
   },
   {
     id: "c2",
     name: "Cinnamon Rasin Bagel",
-    img: "/Veg.png",
+    img: "EBB-Bagel-Classic-Cinnamon-Raisin.jpg",
   },
   {
     id: "c3",
     name: "Everything Bagel",
-    img: "/Nova.png",
+    img: "EBB-Bagel-Classic-Everything.jpg",
   },
   {
     id: "c4",
     name: "Ancient Grain Bagel",
-    img: "/Special.png",
+    img: "EBB-Bagel-Classic-Ancient-Grain.jpg",
   },
   {
     id: "c5",
     name: "Sesame Seed Bagel",
-    img: "/Ham.png",
+    img: "EBB-Bagel-Classic-Sesame-Seed.jpg",
   },
   {
     id: "c6",
     name: "Cheesy Hashbrown Bagel",
-    img: "/TT.png",
+    img: "EBB-Bagel-Gourmet-Cheesy-Hashbrown.jpg",
   },
     {
     id: "c7",
     name: "Six Cheese Bagel",
-    img: "/Tastey.png",
+    img: "EBB-Bagel-Gourmet-Six-Cheese.jpg",
   },
   {
     id: "c8",
     name: "Aisago Bagle",
-    img: "/Veg.png",
+    img: "EBB-Bagel-Signature-Asiago-1.jpg",
   },
   {
     id: "c9",
     name: "Blueberry Bagel",
-    img: "/Nova.png",
+    img: "EBB-Bagel-Signature-Blueberry.jpg",
   },
   {
     id: "c10",
     name: "Chocolate Chip Bagel",
-    img: "/Special.png",
+    img: "EBB-Bagel-Signature-Chocolate-Chip.jpg",
   },
 ]);
 const Smears = ref([
@@ -576,29 +576,24 @@ const Smears = ref([
     img: "Straberry.png",
   },
   {
-    id: "s22",
-    name: "Spicy Chicken Sandwich",
-    img: "/Chicken.png",
-  },
-  {
     id: "s3",
     name: "Almond",
-    img: "/Nova.png",
+    img: "Almond.png",
   },
   {
     id: "s4",
     name: "Country Pepper",
-    img: "/Special.png",
+    img: "CountryPepper.png",
   },
   {
     id: "s5",
     name: "Garden Veggie",
-    img: "/Ham.png",
+    img: "GardenVeggie.png",
   },
   {
     id: "s6",
     name: "Onion Chive",
-    img: "/TT.png",
+    img: "OnionChive.png",
   },
 ]);
 const Other = ref([
