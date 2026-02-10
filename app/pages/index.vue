@@ -134,17 +134,18 @@
               <img :src="item.img" :alt="item.name" />
             </div>
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span class="tilePrice">${{ item.price.toFixed(2) }}</span>
-                </div>
-
-                <!-- ONLY this button adds to cart -->
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
-                  +
-                </button>
-              </div>
+          <div class="tileNameRow">
+            <div class="namePrice">
+              <span class="tileName">{{ item.name }}</span>
+              <span v-if="item.price != null" class="pricePill">
+                ${{ Number(item.price).toFixed(2) }}
+              </span>
+            </div>
+          
+            <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
+              +
+            </button>
+          </div>
             </div>
           </article>
         </div>
@@ -163,14 +164,19 @@
               <img :src="item.img" :alt="item.name" />
             </div>
             <div class="tileFooter">
-              <div class="tileNameRow">
+            <div class="tileNameRow">
+              <div class="namePrice">
                 <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
+                <span v-if="item.price != null" class="pricePill">
+                  ${{ Number(item.price).toFixed(2) }}
+                </span>
               </div>
-            </div>
+    <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
+      +
+    </button>
+  </div>
+</div>
+
           </article>
         </div>
       </section>
@@ -315,6 +321,7 @@ const MENU = [
     ingredients: ["Pepperoni", "Swiss", "Asiago", "Red Onion", "Spinach", "Roasted Tomato Spread"],
     img: "/Pepperoni.png",
   },
+
   {
     id: 13,
     name: "Spicy Chicken",
@@ -511,7 +518,7 @@ const bestSellers = ref([
   {
     id: 1,
     name: "Farm House Egg Sandwich",
-    price: 6.99,
+    price: 7.19,
     img: "/Farmhouse.png",
   },
   {
@@ -534,31 +541,37 @@ const classics = ref([
   {
     id: "c1",
     name: "Tastey Turkey Sandwich",
+    price: 7.99,
     img: "/Tastey.png",
   },
   {
     id: "c2",
     name: "Avocado Veg Out Sandwich",
+    price: 7.54,  
     img: "/Veg.png",
   },
   {
     id: "c3",
     name: "Nova Lox Sandwich",
+    price: 8.49,
     img: "/Nova.png",
   },
   {
     id: "c4",
     name: "Nova Lux Brunch Special",
+    price: 9.29,
     img: "/Special.png",
   },
   {
     id: "c5",
     name: "Ham & Swiss Sandwich",
+    price: 7.99,
     img: "/Ham.png",
   },
   {
     id: "c6",
     name: "Turkey, Bacon & Avacado Sandwich",
+    price: 7.49,
     img: "/TT.png",
   },
 ]);
@@ -634,6 +647,19 @@ const classics = ref([
   justify-content: center;  /* centers the logo */
   margin-bottom: 14px;
   overflow: hidden;         /* prevents it from spilling */
+}
+
+.pricePill{
+  flex: 0 0 auto;
+  background: #111;
+  color: #fff;
+  font-weight: 1000;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .dotsBtn {
@@ -998,17 +1024,12 @@ const classics = ref([
 }
 
 .tileNameRow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.tileName {
-  font-size: 18px;
-  font-weight: 1000;
-  color: var(--brown);
-  letter-spacing: 0.2px;
-}
+.tileName { font-size: 18px; font-weight: 1000; color: var(--brown); letter-spacing: 0.2px; }
 
 /* Orange + button */
 .plusBtn {
@@ -1067,6 +1088,10 @@ const classics = ref([
   border-bottom: 1px solid rgba(75, 52, 41, 0.12);
 }
 
+.namePrice{
+  max-width: 260px;  /* 👈 change this number */
+}
+
 .xBtn {
   border: none;
   background: transparent;
@@ -1121,10 +1146,12 @@ const classics = ref([
   background: #ffbe21;
 }
 
-.namePrice {
+.namePrice{
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between; /* ✅ pushes price to the right */
   gap: 10px;
+  width: 100%;
 }
 
 .tilePrice {
