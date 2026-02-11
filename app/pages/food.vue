@@ -367,57 +367,62 @@ const Breakfest = ref([
   {
     id: "bs1",
     name: "Farm House Egg Sandwich",
-    img: "/Farmhouse.png",
+    img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg",
   },
   {
     id: "bs2",
     name: "All Nighter Egg Sandwich",
-    img: "/AllNight.png",
+    img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg",
   },
   {
     id: "bs3",
     name: "Garden Avacado Egg Sandwich",
-    img: "/Garden.png",
+    img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg",
   },
   {
     id: "bs4",
     name: "Bacon Chedder Egg Sandwich",
-    img: "/Farmhouse.png",
+    img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg",
   },
   {
     id: "bs5",
     name: "Chedder Egg Sandwich",
-    img: "/AllNight.png",
+    img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg",
   },
   {
     id: "bs6",
     name: "Ham Swiss Egg Sandwich",
-    img: "/Garden.png",
+    img: "EBB-Ham-Swiss-Classic-Egg-Sandwich.jpg",
   },
   {
     id: "bs7",
     name: "Turky Sausage Egg Sandwich",
-    img: "/Farmhouse.png",
+    img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg",
   },
   {
     id: "bs8",
     name: "Bacon Avocoado Tomato Sandwich",
-    img: "/AllNight.png",
-  },
-  {
-    id: "bs88",
-    name: "Spicy Chicken Sandwich",
-    img: "/Chicken.png",
+    img: "EBB-SignatureEgg-BaconAvocadoTomatoEggWhite-650x6501-1.jpg",
   },
   {
     id: "bs9",
     name: "Stanta Fe Egg White Sandwich",
-    img: "/Garden.png",
+    img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg",
   },
   {
     id: "bs10",
     name: "Texas Brisket Egg Sandwich",
-    img: "/Farmhouse.png",
+    img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg",
+  },
+  {
+    id: "bs11",
+    name: "Big Breakfast Burrito",
+    img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg",
+  },
+  {
+    id: "bs12",
+    name: "Avocado Toast",
+    img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg",
   },
 ]);
 
@@ -439,7 +444,7 @@ const Lunch = ref([
   },
   {
     id: "l4",
-    name: "Nova Lux Brunch Special",
+    name: "Pepperoni Chicken",
     img: "/Special.png",
   },
   {
@@ -450,6 +455,41 @@ const Lunch = ref([
   {
     id: "l6",
     name: "Turkey, Bacon & Avacado Sandwich",
+    img: "/TT.png",
+  },
+  {
+    id: "l7",
+    name: "Spicy Chicken",
+    img: "/Tastey.png",
+  },
+  {
+    id: "l8",
+    name: "Chessy Veggie Melt",
+    img: "/Veg.png",
+  },
+  {
+    id: "l9",
+    name: "Cheese Pizza Bagel",
+    img: "/Nova.png",
+  },
+  {
+    id: "l10",
+    name: "Pepperoni Pizza Bagel",
+    img: "/Special.png",
+  },
+  {
+    id: "l11",
+    name: "Turkey and Chedder",
+    img: "/Ham.png",
+  },
+  {
+    id: "l12",
+    name: "Chicken Salad",
+    img: "/TT.png",
+  },
+   {
+    id: "l13",
+    name: "Albuquerque Turkey",
     img: "/TT.png",
   },
 ]);
