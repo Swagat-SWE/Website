@@ -1,11 +1,9 @@
 export default defineNuxtConfig({
-  // ✅ Production build target for Render/Node hosting
   nitro: {
     preset: "node-server",
   },
 
-  // ✅ Only use HTTPS certs locally (Render won’t have these files)
-  devServer: process.env.NODE_ENV === "development"
+  devServer: import.meta.dev
     ? {
         https: {
           key: "./certs/localhost-key.pem",
