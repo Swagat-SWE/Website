@@ -49,43 +49,12 @@
     <main class="main">
       <!-- Topbar -->
       <header class="topbar">
-        <div class="topbarLeft">
-          <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                type="text"
-                placeholder="Search a city…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
-              <span class="locationSelected">{{ location }}</span>
-            </div>
-
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try "Chicago" or "Boston"
-              </div>
-
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
-            </div>
-          </div>
-        </div>
-
+        <div> </div>
         <div class="topbarRight">
           <button class="signInBtn">Sign In</button>
 
           <button class="cartBtn" @click="toggleCart">
-            🛒 <span class="cartCount">{{ cart.length }}</span>
+           🛒 <span class="cartCount">{{ cartCount }}</span>
           </button>
         </div>
       </header>
@@ -193,13 +162,27 @@
         </div>
 
         <ul v-else class="cartList">
-          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
-            <span>
-              {{ item.name }} ({{ item.size }}) x{{ item.qty }}
-                — ${{ (item.price * item.qty).toFixed(2) }}
-            </span>
-            <button class="removeBtn" @click="removeFromCart(idx)">Remove</button>
-          </li>
+        <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+          <!-- left: image -->
+          <div class="cartThumb">
+            <img v-if="item.img" :src="item.img" :alt="item.name" />
+            <div v-else class="cartThumbFallback">PIC</div>
+          </div>
+        
+          <!-- middle: name + size + qty -->
+          <div class="cartMeta">
+            <div class="cartName">{{ item.name }} <span v-if="item.size">({{ item.size }})</span></div>
+            <div class="cartSub">Qty: {{ item.qty }}</div>
+          </div>
+        
+          <!-- right: price + remove -->
+          <div class="cartRight">
+            <div class="cartPrice">
+              ${{ (item.price * (item.qty || 1)).toFixed(2) }}
+            </div>
+            <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
+          </div>
+        </li>
         </ul>
 
         <button class="checkoutBtn" @click="goToCheckout">Checkout</button>
@@ -211,60 +194,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/* Location */
-const location = ref("Dubuque, IA");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-const locations = ["Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",];
 const filteredLocations = computed(() => {
   const q = locationQuery.value.toLowerCase();
   return locations.filter(l => l.toLowerCase().includes(q));
@@ -297,6 +226,7 @@ function selectSize(size) {
     cart.value.push({
       id: selectedDrink.value.id,
       name: selectedDrink.value.name,
+      img: selectedDrink.value.img?.startsWith("/") ? selectedDrink.value.img : `/${selectedDrink.value.img}`,
       size: size.label,
       price,
       qty: 1
@@ -322,6 +252,11 @@ const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
 function removeFromCart(i){ cart.value.splice(i,1); }
 function goToCheckout(){ navigateTo("/checkout"); }
+
+
+const cartCount = computed(() =>
+  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
+);
 
 /* DRINK DATA */
 const coldDrinks = ref([
@@ -456,11 +391,11 @@ const TeaAndSmoothies = ref ([
   gap: 12px;
 }
 
-.signInBtn {
+.signInBtn{
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
   border-radius: 14px;
-  padding: 10px 16px;
+  padding: 10px 16px;     /* ✅ makes it bigger */
   cursor: pointer;
   font-weight: 900;
   color: var(--brown);
@@ -729,14 +664,16 @@ const TeaAndSmoothies = ref ([
   font-weight: 800;
 }
 
-.cartBtn {
+/* Bigger cart button */
+.cartBtn{
   position: relative;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
   border-radius: 14px;
-  padding: 10px 12px;
+  padding: 10px 12px;     /* ✅ makes it bigger */
   cursor: pointer;
   box-shadow: var(--cardShadow);
+  font-size: 18px;        /* ✅ makes the 🛒 bigger */
 }
 
 .cartCount {
@@ -929,14 +866,81 @@ const TeaAndSmoothies = ref ([
   bottom: 14px;
 }
 
-.cartItem {
-  display: flex;
-  justify-content: space-between;
+.cartItem{
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
   align-items: center;
+
   border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 14px;
-  padding: 10px 10px;
+  border-radius: 16px;
+  padding: 10px;
   background: rgba(75, 52, 41, 0.03);
+}
+
+.cartList{
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.cartThumb{
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.cartThumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cartThumbFallback{
+  font-weight: 1000;
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.cartMeta{
+  min-width: 0; /* ✅ stops long names pushing price away */
+}
+
+.cartName{
+  font-weight: 1000;
+  font-size: 14px;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cartSub{
+  margin-top: 4px;
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.cartRight{
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.cartPrice{
+  font-weight: 1000;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .removeBtn {

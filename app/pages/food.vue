@@ -64,43 +64,7 @@
     <main class="main">
       <!-- Top bar: Location (simple prototype) + Cart -->
       <header class="topbar">
-        <div class="topbarLeft">
-          <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
-
-              <!-- Always-visible search input -->
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                type="text"
-                placeholder="Search a city…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
-
-              <!-- Show selected location (like a “result”) -->
-              <span class="locationSelected">{{ location }}</span>
-            </div>
-
-            <!-- Suggestions dropdown -->
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try “Chicago” or “Boston”.
-              </div>
-
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                type="button"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
-            </div>
-          </div>
-        </div>
+        <div> </div> <!-- empty div to balance the flex space on the left -->
 
         <div class="topbarRight">
           <!-- Sign In button -->
@@ -296,67 +260,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-
-/** =========================
- *  Location prototype (simple)
- *  ========================= */
-const location = ref("Dubuque, IA");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-
-const locations = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
-];
-
 const filteredLocations = computed(() => {
   const q = locationQuery.value.trim().toLowerCase();
   if (!q) return locations.slice(0, 50);
@@ -450,6 +353,11 @@ function addToCart(item) {
 
   showCart.value = true;
 }
+
+function removeFromCart(index) {
+  cart.value.splice(index, 1);
+}
+
 
 /** =========================
  *  Page Content (images)
