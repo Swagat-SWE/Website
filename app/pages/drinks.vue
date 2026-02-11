@@ -789,13 +789,6 @@ const bottledDrinks = ref([
   padding: 8px 0 12px;
 }
 
-.title {
-  margin: 0;
-  font-size: 44px;
-  letter-spacing: 2px;
-  font-weight: 900;
-  color: var(--brown);
-}
 
 .subtitle {
   margin: 8px 0 0;
@@ -831,7 +824,7 @@ const bottledDrinks = ref([
 .tileGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  gap: 28px;
   align-items: start;
 }
 
@@ -860,19 +853,30 @@ const bottledDrinks = ref([
 .tileFooter {
   padding-top: 10px;
 }
-
-.tileNameRow {
-  display: inline-flex;
+.tileNameRow{
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  width: 100%;
+
+  padding-right: 3px;   /* 👈 change this number */
 }
 
-.tileName {
-  font-size: 18px;
-  font-weight: 1000;
-  color: var(--brown);
-  letter-spacing: 0.2px;
+
+.tileName{
+  flex: 1;
+  min-width: 0;
+
+  white-space: normal;   /* ✅ allow wrapping */
+  overflow: visible;     /* ✅ no cutting */
+  text-overflow: clip;   /* ✅ no ... */
+
+  line-height: 1.15;
+  max-width: 100%;
 }
+
+
 
 /* Orange + button */
 .plusBtn {
@@ -888,6 +892,8 @@ const bottledDrinks = ref([
   cursor: pointer;
   display: grid;
   place-items: center;
+  margin-left: 0;
+  margin-right: 30px;   /* 👈 increase to move left */
   box-shadow: 0 8px 18px rgba(244, 165, 28, 0.25);
 }
 
