@@ -192,7 +192,7 @@
           <!-- right: price + remove -->
           <div class="cartRight">
             <div class="cartPrice">
-              ${{ (item.price * (item.qty || 1)).toFixed(2) }}
+              ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}C49025A
             </div>
             <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
           </div>
@@ -242,9 +242,12 @@ function selectSize(size) {
       name: selectedDrink.value.name,
       img: selectedDrink.value.img?.startsWith("/") ? selectedDrink.value.img : `/${selectedDrink.value.img}`,
       size: size.label,
-      price,
-      qty: 1
-    })
+      qty: 1,     
+
+      // ✅ make it match food items
+      basePrice: selectedDrink.value.basePrice,
+      priceEach: price, // <-- this is the real final price for that size
+    });
   }
 
   showCart.value = true
