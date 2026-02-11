@@ -3,7 +3,9 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
-        <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
+        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+          <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
+        </NuxtLink>
       </div>
 
       <nav class="nav">
