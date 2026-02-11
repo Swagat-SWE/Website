@@ -153,7 +153,6 @@
       </section>
 
       <!-- SIZE MODAL -->
-      <!-- SIZE MODAL -->
       <div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
         <div class="sizeModal" @click.stop>
           <div class="sizeHead">
@@ -244,6 +243,28 @@ const showSizeModal = ref(false)
 const selectedDrink = ref(null)
 
 function openSizeModal(drink) {
+  // If the drink has NO sizes → add straight to cart
+  if (!drink.sizes || drink.sizes.length === 0) {
+    const existing = cart.value.find(item => item.id === drink.id)
+
+    if (existing) {
+      existing.qty++
+    } else {
+      cart.value.push({
+        id: drink.id,
+        name: drink.name,
+        img: drink.img?.startsWith("/") ? drink.img : `/${drink.img}`,
+        qty: 1,
+        basePrice: drink.basePrice,
+        priceEach: drink.basePrice
+      })
+    }
+
+    showCart.value = true
+    return
+  }
+
+  // Otherwise, open the size selector
   selectedDrink.value = drink
   showSizeModal.value = true
 }
