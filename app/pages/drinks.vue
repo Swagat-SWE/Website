@@ -49,43 +49,12 @@
     <main class="main">
       <!-- Topbar -->
       <header class="topbar">
-        <div class="topbarLeft">
-          <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                type="text"
-                placeholder="Search a city…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
-              <span class="locationSelected">{{ location }}</span>
-            </div>
-
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try "Chicago" or "Boston"
-              </div>
-
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
-            </div>
-          </div>
-        </div>
-
+        <div> </div>
         <div class="topbarRight">
           <button class="signInBtn">Sign In</button>
 
           <button class="cartBtn" @click="toggleCart">
-            🛒 <span class="cartCount">{{ cart.length }}</span>
+           🛒 <span class="cartCount">{{ cartCount }}</span>
           </button>
         </div>
       </header>
@@ -139,6 +108,7 @@
         </div>
       </section>
 
+      <!-- Tea and Smoothies -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Tea and Smoothies</h2>
@@ -160,26 +130,61 @@
         </div>
       </section>
 
+      <!-- Bottled Drinks -->
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Bottled Drinks</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="tileGrid">
+          <article v-for="item in bottledDrinks" :key="item.id" class="tileCard">
+            <div class="tileImg">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <span class="tileName">{{ item.name }}</span>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- SIZE MODAL -->
-<div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
-  <div class="sizeModal" @click.stop>
-    <h3 class="sizeTitle">Choose a Size</h3>
-    <p class="sizeDrinkName">{{ selectedDrink?.name }}</p>
-
-    <div class="sizeOptions">
-      <button
-        v-for="size in selectedDrink?.sizes"
-        :key="size.label"
-        class="sizeBtn"
-        @click="selectSize(size)"
-      >
-        {{ size.label }} - ${{ (selectedDrink.basePrice + size.mod).toFixed(2) }}
-      </button>
-    </div>
-
-    <button class="cancelBtn" @click="showSizeModal = false">Cancel</button>
-  </div>
-</div>
+      <div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
+        <div class="sizeModal" @click.stop>
+          <div class="sizeHead">
+            <h3 class="sizeTitle sizeDrinkTitle">
+              {{ selectedDrink?.name }}
+            </h3>
+            
+            <p class="sizeDrinkName">
+              Choose a Size
+            </p>
+            </div>
+      
+          <div class="sizeOptions">
+            <button
+              v-for="size in selectedDrink?.sizes"
+              :key="size.label"
+              class="sizeBtn"
+              @click="selectSize(size)"
+            >
+              <span class="sizeLeft">
+                <span class="sizeLabel">{{ size.label }}</span>
+              </span>
+      
+              <span class="sizePrice">
+                ${{ (selectedDrink.basePrice + size.mod).toFixed(2) }}
+              </span>
+            </button>
+          </div>
+      
+          <button class="cancelBtn" type="button" @click="showSizeModal = false">Cancel</button>
+        </div>
+      </div>
 
       <!-- CART -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
@@ -193,13 +198,27 @@
         </div>
 
         <ul v-else class="cartList">
-          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
-            <span>
-              {{ item.name }} ({{ item.size }}) x{{ item.qty }}
-                — ${{ (item.price * item.qty).toFixed(2) }}
-            </span>
-            <button class="removeBtn" @click="removeFromCart(idx)">Remove</button>
-          </li>
+        <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+          <!-- left: image -->
+          <div class="cartThumb">
+            <img v-if="item.img" :src="item.img" :alt="item.name" />
+            <div v-else class="cartThumbFallback">PIC</div>
+          </div>
+        
+          <!-- middle: name + size + qty -->
+          <div class="cartMeta">
+            <div class="cartName">{{ item.name }} <span v-if="item.size">({{ item.size }})</span></div>
+            <div class="cartSub">Qty: {{ item.qty }}</div>
+          </div>
+        
+          <!-- right: price + remove -->
+          <div class="cartRight">
+            <div class="cartPrice">
+              ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}
+            </div>
+            <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
+          </div>
+        </li>
         </ul>
 
         <button class="checkoutBtn" @click="goToCheckout">Checkout</button>
@@ -211,60 +230,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/* Location */
-const location = ref("Dubuque, IA");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-const locations = ["Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",];
 const filteredLocations = computed(() => {
   const q = locationQuery.value.toLowerCase();
   return locations.filter(l => l.toLowerCase().includes(q));
@@ -278,6 +243,28 @@ const showSizeModal = ref(false)
 const selectedDrink = ref(null)
 
 function openSizeModal(drink) {
+  // If the drink has NO sizes → add straight to cart
+  if (!drink.sizes || drink.sizes.length === 0) {
+    const existing = cart.value.find(item => item.id === drink.id)
+
+    if (existing) {
+      existing.qty++
+    } else {
+      cart.value.push({
+        id: drink.id,
+        name: drink.name,
+        img: drink.img?.startsWith("/") ? drink.img : `/${drink.img}`,
+        qty: 1,
+        basePrice: drink.basePrice,
+        priceEach: drink.basePrice
+      })
+    }
+
+    showCart.value = true
+    return
+  }
+
+  // Otherwise, open the size selector
   selectedDrink.value = drink
   showSizeModal.value = true
 }
@@ -297,10 +284,14 @@ function selectSize(size) {
     cart.value.push({
       id: selectedDrink.value.id,
       name: selectedDrink.value.name,
+      img: selectedDrink.value.img?.startsWith("/") ? selectedDrink.value.img : `/${selectedDrink.value.img}`,
       size: size.label,
-      price,
-      qty: 1
-    })
+      qty: 1,     
+
+      // ✅ make it match food items
+      basePrice: selectedDrink.value.basePrice,
+      priceEach: price, // <-- this is the real final price for that size
+    });
   }
 
   showCart.value = true
@@ -322,6 +313,11 @@ const cart = useState("cart", () => []);
 function toggleCart(){ showCart.value=!showCart.value; }
 function removeFromCart(i){ cart.value.splice(i,1); }
 function goToCheckout(){ navigateTo("/checkout"); }
+
+
+const cartCount = computed(() =>
+  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
+);
 
 /* DRINK DATA */
 const coldDrinks = ref([
@@ -432,6 +428,37 @@ const TeaAndSmoothies = ref ([
     { label: "Large", mod: 0.80 }]
    },
 ])
+
+const bottledDrinks = ref([
+  { id: "b1", name: "Pepsi", img: "Pepsi.png", 
+    basePrice: 2.50},
+  { id: "b2", name: "Diet Pepsi", img: "DietPepsi.png", 
+    basePrice: 2.50},
+  { id: "b3", name: "Mountain Dew", img: "MountainDew.png", 
+    basePrice: 2.50},
+  { id: "b4", name: "Diet Mountain Dew", img: "DietMountainDew.png", 
+    basePrice: 2.50},
+  { id: "b5", name: "Orange Juice", img: "OrangeJuice.png", 
+    basePrice: 2.50},
+  { id: "b6", name: "Grape Juice", img: "GrapeJuice.png", 
+    basePrice: 2.50},
+  { id: "b7", name: "Apple Juice", img: "AppleJuice.png", 
+    basePrice: 2.50},
+  { id: "b8", name: "Raspberry Iced Tea", img: "RaspberryIcedTea.png", 
+    basePrice: 2.50},
+  { id: "b9", name: "Unsweetened Iced Tea", img: "UnsweetenedIcedTea.png", 
+    basePrice: 2.50},
+  { id: "b10", name: "Chocolate Milk", img: "ChocolateMilk.png", 
+    basePrice: 2.50},
+  { id: "b11", name: "White Milk", img: "WhiteMilk.png", 
+    basePrice: 2.50},
+  { id: "b12", name: "Water", img: "Water.png", 
+    basePrice: 2.50},
+  { id: "b14", name: "Lemon Lime Gatorade", img: "YellowGatorade.png", 
+    basePrice: 2.50},
+  { id: "b15", name: "Cool Blue Gatorade", img: "CoolBlueGatorade.png", 
+    basePrice: 2.50},
+])
 </script>
 
 <style scoped>
@@ -456,11 +483,11 @@ const TeaAndSmoothies = ref ([
   gap: 12px;
 }
 
-.signInBtn {
+.signInBtn{
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
   border-radius: 14px;
-  padding: 10px 16px;
+  padding: 10px 16px;     /* ✅ makes it bigger */
   cursor: pointer;
   font-weight: 900;
   color: var(--brown);
@@ -729,14 +756,16 @@ const TeaAndSmoothies = ref ([
   font-weight: 800;
 }
 
-.cartBtn {
+/* Bigger cart button */
+.cartBtn{
   position: relative;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
   border-radius: 14px;
-  padding: 10px 12px;
+  padding: 10px 12px;     /* ✅ makes it bigger */
   cursor: pointer;
   box-shadow: var(--cardShadow);
+  font-size: 18px;        /* ✅ makes the 🛒 bigger */
 }
 
 .cartCount {
@@ -929,14 +958,81 @@ const TeaAndSmoothies = ref ([
   bottom: 14px;
 }
 
-.cartItem {
-  display: flex;
-  justify-content: space-between;
+.cartItem{
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
   align-items: center;
+
   border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 14px;
-  padding: 10px 10px;
+  border-radius: 16px;
+  padding: 10px;
   background: rgba(75, 52, 41, 0.03);
+}
+
+.cartList{
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.cartThumb{
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.cartThumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cartThumbFallback{
+  font-weight: 1000;
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.cartMeta{
+  min-width: 0; /* ✅ stops long names pushing price away */
+}
+
+.cartName{
+  font-weight: 1000;
+  font-size: 14px;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cartSub{
+  margin-top: 4px;
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.cartRight{
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.cartPrice{
+  font-weight: 1000;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .removeBtn {
@@ -952,43 +1048,73 @@ const TeaAndSmoothies = ref ([
   background: #ffbe21;
 }
 
-  /* ===== Size Modal ===== */
-.sizeOverlay {
-  position: fixed;   /* makes it float over the whole screen */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.4);
+/* ===== Size Modal (Premium) ===== */
+.sizeOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  padding: 18px;
+}
 
+.sizeModal{
+  width: min(420px, 92vw);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 26px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.25);
+  padding: 18px 18px 14px;
+}
+
+.sizeHead{
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  z-index: 9999;   /* ensures it sits above EVERYTHING */
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
-.sizeModal {
-  background: white;
-  padding: 24px;
-  border-radius: 20px;
-  width: 300px;
-  max-width: 90%;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-}
-
-.sizeTitle {
-  margin: 0 0 6px;
-  font-weight: 900;
+.sizeTitle{
+  margin: 0;
+  font-weight: 1000;
+  font-size: 22px;
   color: var(--brown);
+  letter-spacing: 0.2px;
 }
 
-.sizeDrinkName {
-  font-weight: 700;
-  margin-bottom: 16px;
-  opacity: 0.8;
+.sizeClose{
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 1000;
+  color: var(--brown);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--cardShadow);
 }
+.sizeClose:hover{ transform: translateY(-1px); }
+
+.sizeDrinkName{
+  margin: 0 0 14px;
+  font-weight: 900;
+  opacity: 0.75;
+  font-size: 15px;
+}
+
+.sizeOptions{
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+
 
 .sizeOptions {
   display: flex;
@@ -996,26 +1122,74 @@ const TeaAndSmoothies = ref ([
   gap: 10px;
 }
 
-.sizeBtn {
-  padding: 10px;
-  border-radius: 12px;
-  border: none;
+.sizeBtn{
+  width: 100%;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 14px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+}
+
+.sizeBtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.12);
+  border-color: rgba(244, 179, 22, 0.55);
+}
+
+.sizeLeft{
+  display: grid;
+  gap: 3px;
+  text-align: left;
+}
+
+.sizeLabel{
+  font-weight: 1000;
+  font-size: 16px;
+  color: var(--brown);
+}
+
+.sizeHint{
   font-weight: 900;
-  cursor: pointer;
-  background: var(--yellow);
+  font-size: 12px;
+  opacity: 0.55;
 }
 
-.sizeBtn:hover {
-  background: #ffbe21;
+.sizePrice{
+  font-weight: 1000;
+  font-size: 15px;
+  color: #2c1b12;
+  background: rgba(244, 179, 22, 0.22);
+  border: 1px solid rgba(244, 179, 22, 0.35);
+  padding: 8px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.cancelBtn {
-  margin-top: 14px;
+.cancelBtn{
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
   background: transparent;
-  border: none;
-  font-weight: 800;
-  opacity: 0.7;
+  border-radius: 16px;
+  padding: 12px;
+  font-weight: 1000;
+  color: var(--brown);
+  opacity: 0.8;
   cursor: pointer;
+}
+
+.cancelBtn:hover{
+  opacity: 1;
+  border-color: rgba(244, 179, 22, 0.55);
 }
 
 /* Responsive */

@@ -64,43 +64,7 @@
     <main class="main">
       <!-- Top bar: Location (simple prototype) + Cart -->
       <header class="topbar">
-        <div class="topbarLeft">
-          <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
-
-              <!-- Always-visible search input -->
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                type="text"
-                placeholder="Search a city…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
-
-              <!-- Show selected location (like a “result”) -->
-              <span class="locationSelected">{{ location }}</span>
-            </div>
-
-            <!-- Suggestions dropdown -->
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try “Chicago” or “Boston”.
-              </div>
-
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                type="button"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
-            </div>
-          </div>
-        </div>
+        <div> </div> <!-- empty div to balance the flex space on the left -->
 
         <div class="topbarRight">
           <!-- Sign In button -->
@@ -111,7 +75,7 @@
           <!-- Cart button -->
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
             <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartItems.length }}</span>
+            <span class="cartCount">{{ cartCount }}</span>
           </button>
         </div>
         </header>
@@ -139,7 +103,7 @@
                 <span class="tileName">{{ item.name }}</span>
 
                 <!-- ONLY this button adds to cart -->
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -164,7 +128,7 @@
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -189,7 +153,7 @@
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -214,7 +178,7 @@
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -239,7 +203,7 @@
               <div class="tileNameRow">
                 <span class="tileName">{{ item.name }}</span>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -256,17 +220,36 @@
           <button class="xBtn" type="button" @click="showCart = false">✕</button>
         </div>
 
-        <div v-if="cartItems.length === 0" class="emptyCart">
-          No items yet. Use the <b>+</b> button to add items.
+        <div v-if="cart.length === 0" class="emptyCart">
+  No items yet. Use the <b>+</b> button to add items.
+</div>
+
+      <ul v-else class="cartList">
+      <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+        <!-- left: image -->
+        <div class="cartThumb">
+          <img v-if="item.img" :src="item.img" :alt="item.name" />
+          <div v-else class="cartThumbFallback">PIC</div>
+        </div>      
+
+        <!-- middle: name + qty -->
+        <div class="cartMeta">
+          <div class="cartName">{{ item.name }}</div>
+          <div class="cartSub">Qty: {{ item.qty }}</div>
+        </div>      
+
+        <!-- right: price + remove -->
+        <div class="cartRight">
+          <div class="cartPrice">
+            ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}
+          </div>      
+
+          <button class="removeBtn" type="button" @click="removeFromCart(idx)">
+            Remove
+          </button>
         </div>
-
-        <ul v-else class="cartList">
-          <li v-for="(item, idx) in cartItems" :key="idx" class="cartItem">
-            <span class="cartItemName">{{ item }}</span>
-            <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
-          </li>
-        </ul>
-
+      </li>
+      </ul>
         <button class="checkoutBtn" type="button" @click="goToCheckout">
           Checkout
         </button>
@@ -277,67 +260,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-
-/** =========================
- *  Location prototype (simple)
- *  ========================= */
-const location = ref("Dubuque, IA");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-
-const locations = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
-];
-
 const filteredLocations = computed(() => {
   const q = locationQuery.value.trim().toLowerCase();
   if (!q) return locations.slice(0, 50);
@@ -398,7 +320,11 @@ function submitReview() {
  *  Cart
  *  ========================= */
 const showCart = ref(false);
-const cartItems = ref([]);
+const cart = useState("cart", () => []);
+const cartCount = computed(() =>
+  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
+);
+
 
 function toggleCart() {
   showCart.value = !showCart.value;
@@ -409,14 +335,29 @@ function goToCheckout() {
   navigateTo("/checkout");       // or "/Checkout" depending on your filename
 }
 
-function addToCart(name) {
-  cartItems.value.push(name);
+function addToCart(item) {
+  const existing = cart.value.find((x) => x.name === item.name);
+
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.value.push({
+      name: item.name,
+      qty: 1,
+      img: item.img,
+      basePrice: item.price ?? 0,
+      priceEach: item.price ?? 0,
+      custom: null,
+    });
+  }
+
   showCart.value = true;
 }
 
 function removeFromCart(index) {
-  cartItems.value.splice(index, 1);
+  cart.value.splice(index, 1);
 }
+
 
 /** =========================
  *  Page Content (images)
@@ -737,6 +678,15 @@ const Other = ref([
   overflow: hidden;         /* prevents it from spilling */
 }
 
+.cartList{
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 12px;
+  align-items: stretch; /* ✅ important: prevents centering shrink */
+}
+
 .dotsBtn {
   width: 40px;
   height: 40px;
@@ -806,6 +756,94 @@ const Other = ref([
 }
 .chev.open {
   transform: rotate(180deg);
+}
+
+.cartMini{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex:1;
+  min-width:0;
+}
+
+.cartMiniImg{
+  width:54px;
+  height:54px;
+  border-radius:14px;
+  overflow:hidden;
+  border: 1px solid rgba(75,52,41,0.12);
+  background:#fff;
+  flex:0 0 auto;
+}
+
+.cartMiniImg img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.cartMiniInfo{
+  flex:1;
+  min-width:0;
+}
+
+.cartMiniName{
+  font-weight:1000;
+  font-size:15px;
+  line-height:1.15;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.cartMiniQty{
+  margin-top:4px;
+  font-weight:900;
+  opacity:0.75;
+  font-size:13px;
+}
+
+/* make each cart row fill the panel width */
+.cartItem{
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* RIGHT side column (price + remove) */
+.cartRight{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-width: 90px;
+  text-align: right;
+}
+
+.cartPrice{
+  font-weight: 1000;
+  font-size: 16px;
+}
+
+.cartMiniPrice{
+  font-weight:1000;
+  font-size:16px;
+}
+
+.cartList{
+  justify-items: stretch;
+  align-items: stretch;
+}
+
+.cartMiniMeta{
+  margin-top:4px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  opacity:0.85;
+  font-weight:900;
+  font-size:13px;
 }
 
 .reviewPanel {
@@ -1156,6 +1194,64 @@ const Other = ref([
   flex-direction: column;
 }
 
+.cartThumb{
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.cartThumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cartThumbFallback{
+  font-weight: 1000;
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.cartMeta{
+  min-width: 0; /* ✅ SUPER IMPORTANT */
+}
+
+.cartName{
+  font-weight: 1000;
+  font-size: 14px;
+  line-height: 1.2;
+
+  /* ✅ stops long names pushing price away */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cartSub{
+  margin-top: 4px;
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.cartRight{
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.cartPrice{
+  font-weight: 1000;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
 .cartPanel.open {
   right: 0;
 }
@@ -1195,13 +1291,15 @@ const Other = ref([
   bottom: 14px;
 }
 
-.cartItem {
-  display: flex;
-  justify-content: space-between;
+.cartItem{
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
   align-items: center;
+
   border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 14px;
-  padding: 10px 10px;
+  border-radius: 16px;
+  padding: 10px;
   background: rgba(75, 52, 41, 0.03);
 }
 
