@@ -192,7 +192,7 @@
           <!-- right: price + remove -->
           <div class="cartRight">
             <div class="cartPrice">
-              ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}C49025A
+              ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}
             </div>
             <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
           </div>
