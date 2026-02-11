@@ -36,6 +36,27 @@
         </button>
       </header>
 
+      <!-- ✅ Verifying overlay -->
+      <div v-if="isVerifying" class="verifyOverlay" role="status" aria-live="polite">
+        <div class="verifyCard">
+          <!-- while loading -->
+          <div v-if="!verifyDone" class="spinner" aria-hidden="true"></div>
+      
+          <!-- after done: ✅ tick -->
+          <div v-else class="tickWrap" aria-hidden="true">
+            <svg class="tickSvg" viewBox="0 0 52 52">
+              <circle class="tickCircle" cx="26" cy="26" r="24" />
+              <path class="tickMark" d="M14 27 L22 35 L38 18" />
+            </svg>
+          </div>
+      
+          <div class="verifyText">
+            {{ verifyDone ? "Card verified!" : "Verifying card details…" }}
+          </div>
+        </div>
+      </div>
+
+
       <div class="shell">
         <!-- Left: form card -->
         <section class="panel" aria-labelledby="paymentHeading">
@@ -46,57 +67,98 @@
 
             <div class="badgeRow" aria-hidden="true">
               <span class="chip">VISA</span>
-              <span class="chip">Mastercard</span>
+              <span class="chip">MasterCard</span>
               <span class="chip">AMEX</span>
               <span class="chip">Discover</span>
               <span class="chip"> Pay</span>
             </div>
           </div>
 
-          <!-- Saved payment (premium “wallet” card) -->
-          <div v-if="cards.length" class="wallet">
-            <div class="walletTop">
-              <div class="walletTitle">Saved payment method</div>
-              <div class="walletPill">{{ cards[0].brandLabel }}</div>
+          <!-- Wallet: saved cards + default selector -->
+          <div v-if="cards.length" class="walletList">
+            <div class="walletListTop">
+              <div class="walletTitle">Saved payment methods</div>
+              <div class="walletCount">{{ cards.length }} saved</div>
             </div>
+          
+            <div class="walletItems">
+              <label
+                v-for="c in cards"
+                :key="c.id"
+                class="walletItem"
+                :class="{ active: c.id === defaultCardId }"
+              >
+                <input
+                  class="walletRadio"
+                  type="radio"
+                  name="defaultCard"
+                  :value="c.id"
+                  v-model="defaultCardId"
+                />
+          
+                  <div class="walletRow1">
+                    <div class="walletLeft">
+                      <!-- ✅ brand logo slot (white box, blends in) -->
+                      <div class="brandLogoBox" aria-hidden="true">
+                        <img
+                          v-if="brandLogoSrc(c.brand)"
+                          class="brandLogoImg"
+                          :src="brandLogoSrc(c.brand)"
+                          :alt="c.brandLabel"
+                        />
+                      </div>
+                
+                      <div class="walletBrand">{{ c.brandLabel }}</div>
+                    </div>
+                
+                    <div class="walletDefaultPill" v-if="c.id === defaultCardId">Default</div>
+                  </div>
 
-            <div class="walletBody">
-              <div class="walletNumber">{{ cards[0].masked }}</div>
-              <div class="walletMeta">
-                <span>Exp {{ cards[0].exp }}</span>
-                <span class="sep">•</span>
-                <span>{{ cards[0].nameOnCard }}</span>
-              </div>
+          
+                <button class="walletRemove" type="button" @click.prevent="removeCard(c.id)">
+                  Remove
+                </button>
+              </label>
             </div>
-
-            <div class="walletFine">This will show on Checkout.</div>
+          
+            <div class="walletFine">Your default card will be used on Checkout.</div>
           </div>
 
+
           <form class="form" @submit.prevent="saveCard" novalidate>
-            <!-- Card preview (Apple/Shopify vibe) -->
-            <div class="cardPreview" :data-brand="detected.brand">
-              <div class="cardPreviewTop">
-                <div class="miniChip" aria-hidden="true"></div>
-                <div class="brandMark">
-                  <span class="brandText">{{ detected.brandLabel }}</span>
-                </div>
-              </div>
 
-              <div class="cardPreviewNum">
-                {{ previewNumber }}
-              </div>
+              <!-- Card preview (shows ONLY while user is typing a new card) -->
+              <transition name="fade">
+                <div
+                  v-if="hasCardDraft"
+                  class="cardPreview"
+                  :data-brand="detected.brand"
+                >
+                  <div class="cardPreviewTop">
+                    <div class="miniChip" aria-hidden="true"></div>
+                    <div class="brandMark">
+                      <span class="brandText">{{ detected.brandLabel }}</span>
+                    </div>
+                  </div>
+              
+                  <div class="cardPreviewNum">
+                    {{ previewNumber }}
+                  </div>
+              
+                  <div class="cardPreviewBottom">
+                    <div class="pvCol">
+                      <div class="pvLabel">Name</div>
+                      <div class="pvValue">{{ previewName }}</div>
+                    </div>
+                    <div class="pvCol right">
+                      <div class="pvLabel">Expiry</div>
+                      <div class="pvValue">{{ previewExp }}</div>
+                    </div>
+                  </div>
+                </div>
+              </transition>
 
-              <div class="cardPreviewBottom">
-                <div class="pvCol">
-                  <div class="pvLabel">Name</div>
-                  <div class="pvValue">{{ previewName }}</div>
-                </div>
-                <div class="pvCol right">
-                  <div class="pvLabel">Expiry</div>
-                  <div class="pvValue">{{ previewExp }}</div>
-                </div>
-              </div>
-            </div>
+
 
             <!-- Card number -->
             <div class="field">
@@ -201,18 +263,9 @@
                   <div class="accTitle">Billing address</div>
                   <div class="accSub">Used for verification and receipts.</div>
                 </div>
-                <div class="accRight">
-                  <span class="accPill" v-if="useShipping">Using shipping address</span>
-                  <span class="chev" :class="{ open: billingOpen }">⌄</span>
-                </div>
               </button>
 
               <div class="accordionBody" v-show="billingOpen">
-                <label class="checkLine">
-                  <input type="checkbox" v-model="useShipping" />
-                  <span>Use my shipping address (demo)</span>
-                </label>
-
                 <div class="field">
                   <label class="label" for="country">Country/Region</label>
                   <div class="control">
@@ -284,11 +337,14 @@
 
             <!-- Actions -->
             <div class="actions">
-              <button class="primaryBtn" type="submit">
+              <button
+                class="primaryBtn"
+                type="submit"
+                :class="{ successPulse: savedPulse }"
+              >
                 <span>{{ cards.length ? "Add another card" : "Save card" }}</span>
                 <span class="btnArrow" aria-hidden="true">→</span>
               </button>
-
               <button class="secondaryBtn" type="button" @click="goBackToCheckout">
                 Continue to checkout
               </button>
@@ -312,7 +368,7 @@
             <div class="sumRow">
               <span>Payment method</span>
               <span class="sumValue">
-                {{ cards.length ? `${cards[0].brandLabel} •••• ${cards[0].last4}` : "Not saved yet" }}
+                {{ defaultCard ? `${defaultCard.brandLabel} •••• ${defaultCard.last4}` : "Not saved yet" }}
               </span>
             </div>
 
@@ -338,21 +394,65 @@
 <script setup>
 import { computed, reactive, ref } from "vue";
 
-/**
- * Shared state:
- * - cards is saved payment method state (shared across pages)
- */
-const cards = useState("cards", () => []);
+function brandLogoSrc(brand) {
+  // You will upload these images into /public/brands/
+  const map = {
+    visa: "/brands/visa.png",
+    mastercard: "/brands/mastercard.png",
+    amex: "/brands/amex.png",
+    discover: "/brands/discover.png",
+    jcb: "/brands/jcb.png",
+    diners: "/brands/diners.png",
+    unionpay: "/brands/UnionPay.png",
+    unknown: "/brands/card.png",
+  };
+  return map[brand] || map.unknown;
+}
 
 /** UI state */
 const billingOpen = ref(true);
 const showCvvHelp = ref(false);
+const isVerifying = ref(false);
+const savedPulse = ref(false);
+
+const hasCardDraft = computed(() => {
+  return (
+    onlyDigits(cardNumber.value).length > 0 ||
+    exp.value.trim().length > 0 ||
+    cvv.value.trim().length > 0 ||
+    nameOnCard.value.trim().length > 0
+  );
+});
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+const cards = useState("cards", () => []);
+const defaultCardId = useState("defaultCardId", () => null);
+
+const defaultCard = computed(() => {
+  if (!cards.value.length) return null;
+  return cards.value.find(c => c.id === defaultCardId.value) || cards.value[0];
+});
+
+function setDefault(id) {
+  defaultCardId.value = id;
+}
+
+function removeCard(id) {
+  cards.value = cards.value.filter(c => c.id !== id);
+  if (defaultCardId.value === id) {
+    defaultCardId.value = cards.value[0]?.id || null;
+  }
+}
 
 /** Form fields */
 const cardNumber = ref("");
 const exp = ref("");
 const cvv = ref("");
 const nameOnCard = ref("");
+const verifyDone = ref(false);
 
 const useShipping = ref(false);
 const country = ref("United States");
@@ -377,6 +477,7 @@ function goBackToCheckout() {
   navigateTo("/checkout");
 }
 
+
 /**
  * Helpers: cleaning + formatting
  */
@@ -390,8 +491,15 @@ function formatCardGroups(digits) {
 }
 
 function onCardNumberInput() {
-  const digits = onlyDigits(cardNumber.value);
-  cardNumber.value = formatCardGroups(digits).trim();
+  // strip non-digits
+  let digits = onlyDigits(cardNumber.value);
+
+  // ✅ HARD LIMIT: max 16 digits
+  digits = digits.slice(0, 16);
+
+  // reformat with spaces
+  cardNumber.value = formatCardGroups(digits);
+
   errors.cardNumber = "";
   formMsg.value = "";
 }
@@ -427,7 +535,7 @@ function detectBrand(digits) {
   const n = digits;
 
   if (n.startsWith("4")) {
-    return { brand: "visa", brandLabel: "VISA", validLengths: [13, 16, 19], cvvLen: [3], note: "Visa starts with 4." };
+    return { brand: "visa", brandLabel: "VISA", validLengths: [16], cvvLen: [3], note: "Visa starts with 4." };
   }
 
   if (n.startsWith("34") || n.startsWith("37")) {
@@ -438,7 +546,7 @@ function detectBrand(digits) {
   const first4 = parseInt(n.slice(0, 4) || "0", 10);
 
   if ((first2 >= 51 && first2 <= 55) || (first4 >= 2221 && first4 <= 2720)) {
-    return { brand: "mastercard", brandLabel: "Mastercard", validLengths: [16], cvvLen: [3], note: "Mastercard is 51–55 or 2221–2720." };
+    return { brand: "mastercard", brandLabel: "Mastercard", validLengths: [16], cvvLen: [3], note: "MasterCard is 51–55 or 2221–2720." };
   }
 
   const first3 = parseInt(n.slice(0, 3) || "0", 10);
@@ -536,54 +644,79 @@ function validate() {
  * - Saves card into shared `cards` state.
  * - Stores masked number for display, but also keeps full digits (demo).
  */
-function saveCard() {
-  formMsg.value = "";
-  const ok = validate();
-
-  if (!ok) {
-    formMsgType.value = "bad";
-    formMsg.value = "Fix the highlighted fields to save the card.";
-    return;
-  }
-
-  const digits = onlyDigits(cardNumber.value);
-  const brand = detectBrand(digits);
-
-  const last4 = digits.slice(-4);
-  const masked = `•••• •••• •••• ${last4}`;
-
-  cards.value = [
-    {
-      brand: brand.brand,
-      brandLabel: brand.brandLabel,
-      masked,
-      last4,
-      fullDigits: digits, // demo only (do not store in real systems)
-      exp: exp.value.trim(),
-      nameOnCard: nameOnCard.value.trim(),
-      billing: {
-        country: country.value,
-        firstName: firstName.value,
-        lastName: lastName.value,
-        street: street.value,
-        apt: apt.value,
-        zip: zip.value,
-        cityState: cityState.value,
-        useShipping: useShipping.value,
-      },
-      savedAt: Date.now(),
-    },
-  ];
-
-  formMsgType.value = "ok";
-  formMsg.value = `Saved ${brand.brandLabel} ending in ${last4}.`;
-
-  // Clear for “Add another card”
-  cardNumber.value = "";
-  exp.value = "";
-  cvv.value = "";
-  nameOnCard.value = "";
-}
+     async function saveCard() {
+       formMsg.value = "";
+     
+       const ok = validate();
+       if (!ok) {
+         formMsgType.value = "bad";
+         formMsg.value = "Fix the highlighted fields to save the card.";
+         return;
+       }
+     
+       // overlay + spinner
+       verifyDone.value = false;
+       isVerifying.value = true;
+     
+       await sleep(1800);      // buffering
+       verifyDone.value = true; // ✅ tick
+       await sleep(700);
+     
+       const digits = onlyDigits(cardNumber.value);
+       const brand = detectBrand(digits);
+     
+       const last4 = digits.slice(-4);
+       const masked = `•••• •••• •••• ${last4}`;
+     
+       const newCard = {
+         id: crypto?.randomUUID?.() || String(Date.now()),
+         brand: brand.brand,
+         brandLabel: brand.brandLabel,
+         masked,
+         last4,
+         fullDigits: digits, // demo only
+         exp: exp.value.trim(),
+         nameOnCard: nameOnCard.value.trim(),
+         billing: {
+           country: country.value,
+           firstName: firstName.value,
+           lastName: lastName.value,
+           street: street.value,
+           apt: apt.value,
+           zip: zip.value,
+           cityState: cityState.value,
+           useShipping: useShipping.value,
+         },
+         savedAt: Date.now(),
+       };
+     
+       // ✅ add to list (multiple cards)
+       cards.value.push(newCard);
+     
+       // ✅ first card becomes default automatically
+       if (!defaultCardId.value) {
+         defaultCardId.value = newCard.id;
+       }
+     
+       formMsgType.value = "ok";
+       formMsg.value = `Saved ${brand.brandLabel} ending in ${last4}.`;
+     
+       // hide overlay
+       isVerifying.value = false;
+     
+       // bounce
+       savedPulse.value = false;
+       await sleep(30);
+       savedPulse.value = true;
+       await sleep(550);
+       savedPulse.value = false;
+     
+       // clear fields
+       cardNumber.value = "";
+       exp.value = "";
+       cvv.value = "";
+       nameOnCard.value = "";
+     }
 </script>
 
 <style scoped>
@@ -653,6 +786,46 @@ function saveCard() {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.tickWrap{
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+}
+
+.tickSvg{
+  width: 56px;
+  height: 56px;
+}
+
+.tickCircle{
+  fill: none;
+  stroke: rgba(34,197,94,0.25);
+  stroke-width: 4;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: circleDraw 320ms ease-out forwards;
+}
+
+.tickMark{
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: tickDraw 260ms 220ms ease-out forwards;
+}
+
+@keyframes circleDraw{
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes tickDraw{
+  to { stroke-dashoffset: 0; }
 }
 
 .navItem {
@@ -1193,6 +1366,18 @@ function saveCard() {
   display: grid;
   place-items: center;
 }
+/* ✅ Success bounce for Save card */
+.successPulse {
+  animation: successBounce 520ms cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes successBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.06); }
+  55%  { transform: scale(0.97); }
+  80%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
 
 .primaryBtn:hover{
   background: var(--appleBlueHover);
@@ -1316,6 +1501,179 @@ function saveCard() {
   .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
   .grid2 { grid-template-columns: 1fr; }
   .topbar { align-items: flex-start; }
+}
+
+/* ===== Verifying overlay ===== */
+.verifyOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+
+.verifyCard{
+  width: min(420px, 92vw);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.18);
+  padding: 18px 16px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  animation: popIn 180ms ease-out;
+}
+
+.verifyText{
+  font-weight: 950;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+/* spinner */
+.spinner{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 4px solid rgba(15, 23, 42, 0.14);
+  border-top-color: rgba(10, 132, 255, 0.95);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes popIn {
+  from { transform: translateY(8px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.walletList{
+  margin: 14px 16px 0;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  padding: 14px;
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.08);
+}
+
+.walletListTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom: 10px;
+}
+
+.walletCount{
+  font-weight: 900;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.55);
+}
+
+.walletItems{
+  display:grid;
+  gap: 10px;
+}
+
+.walletItem{
+  display:grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: 12px;
+  align-items:center;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  background: rgba(255,255,255,0.65);
+  cursor: pointer;
+}
+
+.walletItem.active{
+  border-color: rgba(10, 132, 255, 0.35);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.12);
+}
+
+.walletRadio{
+  width: 18px;
+  height: 18px;
+}
+
+.walletRow1{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.walletBrand{
+  font-weight: 950;
+  font-size: 13px;
+}
+
+.walletDefaultPill{
+  font-weight: 950;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(10,132,255,0.25);
+  background: rgba(10,132,255,0.10);
+}
+
+.walletRemove{
+  border: 0;
+  background: transparent;
+  font-weight: 900;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.walletRemove:hover{
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.walletLeft{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ✅ White logo slot that blends into the row */
+.brandLogoBox{
+  width: 34px;
+  height: 22px;
+  border-radius: 8px;
+  background: #fff;          /* white = camo */
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+
+  /* optional: make it *really* invisible */
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Image fits nicely */
+.brandLogoImg{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(0.92);
 }
 
 /* Reduced motion */

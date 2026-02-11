@@ -63,57 +63,25 @@
     <main class="main">
       <!-- Top bar: Location (simple prototype) + Cart -->
       <header class="topbar">
-        <div class="topbarLeft">
-          <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
+  <div></div> <!-- empty left spacer (keeps title centered nicely) -->
 
-              <!-- Always-visible search input -->
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                type="text"
-                placeholder="Search a state…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
+  <div class="topbarRight">
+    <div class="locationWrap">
+      <div class="locationPill">
+        <span class="pin">📍 Dubuque, Iowa</span>
+      </div>
+    </div>
 
-              <!-- Show selected location (like a “result”) -->
-              <span class="locationSelected">{{ location }}</span>
-            </div>
+    <button class="signInBtn" type="button">
+      Sign In
+    </button>
 
-            <!-- Suggestions dropdown -->
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try “Chicago” or “Boston”.
-              </div>
-
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                type="button"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="topbarRight">
-          <!-- Sign In button -->
-          <button class="signInBtn" type="button">
-            Sign In
-          </button>
-
-          <!-- Cart button -->
-          <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
-            <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartCount }}</span>
-          </button>
-        </div>
-        </header>
+    <button class="cartBtn" type="button" @click="toggleCart">
+      <span class="cartIcon">🛒</span>
+      <span class="cartCount">{{ cartCount }}</span>
+     </button>
+    </div>
+    </header>
 
       <!-- Title -->
       <section class="hero">
@@ -134,17 +102,18 @@
               <img :src="item.img" :alt="item.name" />
             </div>
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span class="tilePrice">${{ item.price.toFixed(2) }}</span>
-                </div>
-
-                <!-- ONLY this button adds to cart -->
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
-                  +
-                </button>
-              </div>
+          <div class="tileNameRow">
+            <div class="namePrice">
+              <span class="tileName">{{ item.name }}</span>
+              <span v-if="item.price != null" class="pricePill">
+                ${{ Number(item.price).toFixed(2) }}
+              </span>
+            </div>
+          
+            <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
+              +
+            </button>
+          </div>
             </div>
           </article>
         </div>
@@ -163,14 +132,19 @@
               <img :src="item.img" :alt="item.name" />
             </div>
             <div class="tileFooter">
-              <div class="tileNameRow">
+            <div class="tileNameRow">
+              <div class="namePrice">
                 <span class="tileName">{{ item.name }}</span>
-
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item.name)">
-                  +
-                </button>
+                <span v-if="item.price != null" class="pricePill">
+                  ${{ Number(item.price).toFixed(2) }}
+                </span>
               </div>
-            </div>
+    <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
+      +
+    </button>
+  </div>
+</div>
+
           </article>
         </div>
       </section>
@@ -188,11 +162,32 @@
         </div>
 
         <ul v-else class="cartList">
-          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
-            <span class="cartItemName">{{ item.name }} (x{{ item.qty }})</span>
-            <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
-          </li>
-        </ul>
+        <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+          <!-- left: image -->
+          <div class="cartThumb">
+            <img v-if="item.img" :src="item.img" :alt="item.name" />
+            <div v-else class="cartThumbFallback">PIC</div>
+          </div>
+      
+          <!-- middle: name + qty -->
+          <div class="cartMeta">
+            <div class="cartName">{{ item.name }}</div>
+            <div class="cartSub">Qty: {{ item.qty }}</div>
+          </div>
+      
+          <!-- right: price + remove -->
+          <div class="cartRight">
+            <div class="cartPrice">
+              ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}
+            </div>
+      
+            <button class="removeBtn" type="button" @click="removeFromCart(idx)">
+              Remove
+            </button>
+          </div>
+        </li>
+      </ul>
+
 
         <button class="checkoutBtn" type="button" @click="goToCheckout">
           Checkout
@@ -315,6 +310,7 @@ const MENU = [
     ingredients: ["Pepperoni", "Swiss", "Asiago", "Red Onion", "Spinach", "Roasted Tomato Spread"],
     img: "/Pepperoni.png",
   },
+
   {
     id: 13,
     name: "Spicy Chicken",
@@ -333,67 +329,6 @@ const MENU = [
     ingredients: ["Cheddar", "Swiss", "Tomato", "Spinach", "Roasted Tomato Spread"],
     img: "/Cheesy.png",
   },
-];
-
-
-/** =========================
- *  Location prototype (simple)
- *  ========================= */
-const location = ref("Iowa");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-
-const locations = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
 ];
 
 const filteredLocations = computed(() => {
@@ -511,7 +446,7 @@ const bestSellers = ref([
   {
     id: 1,
     name: "Farm House Egg Sandwich",
-    price: 6.99,
+    price: 7.19,
     img: "/Farmhouse.png",
   },
   {
@@ -534,31 +469,37 @@ const classics = ref([
   {
     id: "c1",
     name: "Tastey Turkey Sandwich",
+    price: 7.99,
     img: "/Tastey.png",
   },
   {
     id: "c2",
     name: "Avocado Veg Out Sandwich",
+    price: 7.54,  
     img: "/Veg.png",
   },
   {
     id: "c3",
     name: "Nova Lox Sandwich",
+    price: 8.49,
     img: "/Nova.png",
   },
   {
     id: "c4",
     name: "Nova Lux Brunch Special",
+    price: 9.29,
     img: "/Special.png",
   },
   {
     id: "c5",
     name: "Ham & Swiss Sandwich",
+    price: 7.99,
     img: "/Ham.png",
   },
   {
     id: "c6",
     name: "Turkey, Bacon & Avacado Sandwich",
+    price: 7.49,
     img: "/TT.png",
   },
 ]);
@@ -612,6 +553,13 @@ const classics = ref([
   object-fit: contain;
 }
 
+.cartList{
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
 
 .page {
   min-height: 100vh;
@@ -634,6 +582,19 @@ const classics = ref([
   justify-content: center;  /* centers the logo */
   margin-bottom: 14px;
   overflow: hidden;         /* prevents it from spilling */
+}
+
+.pricePill{
+  flex: 0 0 auto;
+  background: #111;
+  color: #fff;
+  font-weight: 1000;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .dotsBtn {
@@ -998,17 +959,12 @@ const classics = ref([
 }
 
 .tileNameRow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.tileName {
-  font-size: 18px;
-  font-weight: 1000;
-  color: var(--brown);
-  letter-spacing: 0.2px;
-}
+.tileName { font-size: 18px; font-weight: 1000; color: var(--brown); letter-spacing: 0.2px; }
 
 /* Orange + button */
 .plusBtn {
@@ -1067,6 +1023,7 @@ const classics = ref([
   border-bottom: 1px solid rgba(75, 52, 41, 0.12);
 }
 
+
 .xBtn {
   border: none;
   background: transparent;
@@ -1094,13 +1051,15 @@ const classics = ref([
   bottom: 14px;
 }
 
-.cartItem {
-  display: flex;
-  justify-content: space-between;
+.cartItem{
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
   align-items: center;
+
   border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 14px;
-  padding: 10px 10px;
+  border-radius: 16px;
+  padding: 10px;
   background: rgba(75, 52, 41, 0.03);
 }
 
@@ -1108,24 +1067,82 @@ const classics = ref([
   font-weight: 900;
 }
 
-.removeBtn {
+.cartThumb{
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+
+
+.cartThumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cartThumbFallback{
+  font-weight: 1000;
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.cartMeta{
+  min-width: 0;
+}
+
+.cartName{
+  font-weight: 1000;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.cartSub{
+  margin-top: 4px;
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.cartRight{
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.cartPrice{
+  font-weight: 1000;
+  font-size: 14px;
+}
+
+.removeBtn{
   border: none;
   background: transparent;
   cursor: pointer;
   font-weight: 900;
   color: var(--brown2);
   opacity: 0.9;
+  padding: 0;
 }
 
 .checkoutBtn:hover {
   background: #ffbe21;
 }
 
-.namePrice {
+.namePrice{
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
+
+  width: 100%;
+  max-width: 260px; /* 👈 controls how far the price can go */
 }
+
 
 .tilePrice {
   font-weight: 1000;

@@ -2,13 +2,14 @@
   "name": "c49025a-web",
   "type": "module",
   "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
+"scripts": {
+  "build": "nuxt build",
+  "dev": "nuxt dev",
+  "generate": "nuxt generate",
+  "preview": "nuxt preview",
+  "postinstall": "nuxt prepare",
+  "start": "node .output/server/index.mjs"
+},
   "dependencies": {
     "nuxt": "^4.2.2",
     "vue": "^3.5.26",
