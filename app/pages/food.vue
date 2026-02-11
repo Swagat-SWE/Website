@@ -1106,7 +1106,7 @@ const Other = ref([
 .tileGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -1136,18 +1136,26 @@ const Other = ref([
   padding-top: 10px;
 }
 
-.tileNameRow {
-  display: inline-flex;
+.tileNameRow{
+  display: flex;                 /* ✅ not inline-flex */
   align-items: center;
-  gap: 10px;
+  justify-content: space-between; /* ✅ pushes + to the right */
+  gap: 12px;
+  width: 80%;                    /* ✅ match tileImg width */
 }
 
-.tileName {
+
+.tileName{
   font-size: 18px;
   font-weight: 1000;
   color: var(--brown);
-  letter-spacing: 0.2px;
+
+  flex: 1;               /* ✅ take remaining space */
+  min-width: 0;          /* ✅ important */
+  white-space: normal;   /* ✅ allow 2 lines */
+  line-height: 1.15;
 }
+
 
 /* Orange + button */
 .plusBtn {
