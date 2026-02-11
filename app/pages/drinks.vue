@@ -108,6 +108,7 @@
         </div>
       </section>
 
+      <!-- Tea and Smoothies -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Tea and Smoothies</h2>
@@ -116,6 +117,28 @@
 
         <div class="tileGrid">
           <article v-for="item in TeaAndSmoothies" :key="item.id" class="tileCard">
+            <div class="tileImg">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <span class="tileName">{{ item.name }}</span>
+                <button class="plusBtn" @click="openSizeModal(item)">+</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Bottled Drinks -->
+      <section class="section">
+        <div class="sectionHeader">
+          <h2 class="sectionTitle">Bottled Drinks</h2>
+          <div class="sectionLine" />
+        </div>
+
+        <div class="tileGrid">
+          <article v-for="item in bottledDrinks" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
@@ -383,6 +406,37 @@ const TeaAndSmoothies = ref ([
     { label: "Small", mod: 0 },
     { label: "Large", mod: 0.80 }]
    },
+])
+
+const bottledDrinks = ref([
+  { id: "b1", name: "Pepsi", img: "Pepsi.png", 
+    basePrice: 2.50},
+  { id: "b2", name: "Diet Pepsi", img: "DietPepsi.png", 
+    basePrice: 2.50},
+  { id: "b3", name: "Mountain Dew", img: "MountainDew.png", 
+    basePrice: 2.50},
+  { id: "b4", name: "Diet Mountain Dew", img: "DietMountainDew.png", 
+    basePrice: 2.50},
+  { id: "b5", name: "Orange Juice", img: "OrangeJuice.png", 
+    basePrice: 2.50},
+  { id: "b6", name: "Grape Juice", img: "GrapeJuice.png", 
+    basePrice: 2.50},
+  { id: "b7", name: "Apple Juice", img: "AppleJuice.png", 
+    basePrice: 2.50},
+  { id: "b8", name: "Raspberry Iced Tea", img: "RaspberryIcedTea.png", 
+    basePrice: 2.50},
+  { id: "b9", name: "Unsweetened Iced Tea", img: "UnsweetenedIcedTea.png", 
+    basePrice: 2.50},
+  { id: "b10", name: "Chocolate Milk", img: "ChocolateMilk.png", 
+    basePrice: 2.50},
+  { id: "b11", name: "White Milk", img: "WhiteMilk.png", 
+    basePrice: 2.50},
+  { id: "b12", name: "Water", img: "Water.png", 
+    basePrice: 2.50},
+  { id: "b14", name: "Lemon Lime Gatorade", img: "YellowGatorade.png", 
+    basePrice: 2.50},
+  { id: "b15", name: "Cool Blue Gatorade", img: "CoolBlueGatorade.png", 
+    basePrice: 2.50},
 ])
 </script>
 
