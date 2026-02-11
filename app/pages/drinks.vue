@@ -130,25 +130,39 @@
       </section>
 
       <!-- SIZE MODAL -->
-<div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
-  <div class="sizeModal" @click.stop>
-    <h3 class="sizeTitle">Choose a Size</h3>
-    <p class="sizeDrinkName">{{ selectedDrink?.name }}</p>
-
-    <div class="sizeOptions">
-      <button
-        v-for="size in selectedDrink?.sizes"
-        :key="size.label"
-        class="sizeBtn"
-        @click="selectSize(size)"
-      >
-        {{ size.label }} - ${{ (selectedDrink.basePrice + size.mod).toFixed(2) }}
-      </button>
-    </div>
-
-    <button class="cancelBtn" @click="showSizeModal = false">Cancel</button>
-  </div>
-</div>
+      <!-- SIZE MODAL -->
+      <div v-if="showSizeModal" class="sizeOverlay" @click="showSizeModal = false">
+        <div class="sizeModal" @click.stop>
+          <div class="sizeHead">
+            <h3 class="sizeTitle sizeDrinkTitle">
+              {{ selectedDrink?.name }}
+            </h3>
+            
+            <p class="sizeDrinkName">
+              Choose a Size
+            </p>
+            </div>
+      
+          <div class="sizeOptions">
+            <button
+              v-for="size in selectedDrink?.sizes"
+              :key="size.label"
+              class="sizeBtn"
+              @click="selectSize(size)"
+            >
+              <span class="sizeLeft">
+                <span class="sizeLabel">{{ size.label }}</span>
+              </span>
+      
+              <span class="sizePrice">
+                ${{ (selectedDrink.basePrice + size.mod).toFixed(2) }}
+              </span>
+            </button>
+          </div>
+      
+          <button class="cancelBtn" type="button" @click="showSizeModal = false">Cancel</button>
+        </div>
+      </div>
 
       <!-- CART -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
@@ -956,43 +970,73 @@ const TeaAndSmoothies = ref ([
   background: #ffbe21;
 }
 
-  /* ===== Size Modal ===== */
-.sizeOverlay {
-  position: fixed;   /* makes it float over the whole screen */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.4);
+/* ===== Size Modal (Premium) ===== */
+.sizeOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  padding: 18px;
+}
 
+.sizeModal{
+  width: min(420px, 92vw);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 26px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.25);
+  padding: 18px 18px 14px;
+}
+
+.sizeHead{
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  z-index: 9999;   /* ensures it sits above EVERYTHING */
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
-.sizeModal {
-  background: white;
-  padding: 24px;
-  border-radius: 20px;
-  width: 300px;
-  max-width: 90%;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-}
-
-.sizeTitle {
-  margin: 0 0 6px;
-  font-weight: 900;
+.sizeTitle{
+  margin: 0;
+  font-weight: 1000;
+  font-size: 22px;
   color: var(--brown);
+  letter-spacing: 0.2px;
 }
 
-.sizeDrinkName {
-  font-weight: 700;
-  margin-bottom: 16px;
-  opacity: 0.8;
+.sizeClose{
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 1000;
+  color: var(--brown);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--cardShadow);
 }
+.sizeClose:hover{ transform: translateY(-1px); }
+
+.sizeDrinkName{
+  margin: 0 0 14px;
+  font-weight: 900;
+  opacity: 0.75;
+  font-size: 15px;
+}
+
+.sizeOptions{
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+
 
 .sizeOptions {
   display: flex;
@@ -1000,26 +1044,74 @@ const TeaAndSmoothies = ref ([
   gap: 10px;
 }
 
-.sizeBtn {
-  padding: 10px;
-  border-radius: 12px;
-  border: none;
+.sizeBtn{
+  width: 100%;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 14px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+}
+
+.sizeBtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.12);
+  border-color: rgba(244, 179, 22, 0.55);
+}
+
+.sizeLeft{
+  display: grid;
+  gap: 3px;
+  text-align: left;
+}
+
+.sizeLabel{
+  font-weight: 1000;
+  font-size: 16px;
+  color: var(--brown);
+}
+
+.sizeHint{
   font-weight: 900;
-  cursor: pointer;
-  background: var(--yellow);
+  font-size: 12px;
+  opacity: 0.55;
 }
 
-.sizeBtn:hover {
-  background: #ffbe21;
+.sizePrice{
+  font-weight: 1000;
+  font-size: 15px;
+  color: #2c1b12;
+  background: rgba(244, 179, 22, 0.22);
+  border: 1px solid rgba(244, 179, 22, 0.35);
+  padding: 8px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.cancelBtn {
-  margin-top: 14px;
+.cancelBtn{
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
   background: transparent;
-  border: none;
-  font-weight: 800;
-  opacity: 0.7;
+  border-radius: 16px;
+  padding: 12px;
+  font-weight: 1000;
+  color: var(--brown);
+  opacity: 0.8;
   cursor: pointer;
+}
+
+.cancelBtn:hover{
+  opacity: 1;
+  border-color: rgba(244, 179, 22, 0.55);
 }
 
 /* Responsive */
