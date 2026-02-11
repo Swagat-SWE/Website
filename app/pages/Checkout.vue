@@ -25,6 +25,26 @@
         </button>
       </header>
 
+      <!-- ✅ Ordering overlay -->
+      <div v-if="isOrdering" class="verifyOverlay" role="status" aria-live="polite">
+        <div class="verifyCard">
+          <!-- while loading -->
+          <div v-if="!orderDone" class="spinner" aria-hidden="true"></div>       
+
+          <!-- after done: ✅ tick -->
+          <div v-else class="tickWrap" aria-hidden="true">
+            <svg class="tickSvg" viewBox="0 0 52 52">
+              <circle class="tickCircle" cx="26" cy="26" r="24" />
+              <path class="tickMark" d="M14 27 L22 35 L38 18" />
+            </svg>
+          </div>       
+
+          <div class="verifyText">
+            {{ orderDone ? "Order sent!" : orderStepText }}
+          </div>
+        </div>
+      </div>
+
       <div class="layout">
         <!-- Cart Card -->
         <section class="card">
@@ -109,14 +129,31 @@
           </label>
 
           <div v-if="hasPayment" class="paySummary">
-             <div class="payTitle">Payment method</div>
-             <div class="payLine">
-              <b>{{ cards[0].brandLabel }}</b> • {{ cards[0].masked }} • Exp {{ cards[0].exp }}
+            <div class="payTitle">Payment method</div>
+            <div class="payRow" v-if="defaultCard">
+              <!-- Mini Logo Box -->
+              <div class="payLogoBox">
+                <img
+                  :src="`/brands/${defaultCard.brand}.png`"
+                  :alt="defaultCard.brandLabel"
+                  class="payLogo"
+                />
+              </div>
+            
+              <!-- Card Info -->
+              <div class="payInfo">
+                <div class="payBrand">{{ defaultCard.brandLabel }}</div>
+                <div class="payNumber">
+                  {{ defaultCard.masked }} • Exp {{ defaultCard.exp }}
+                </div>
+              </div>
             </div>
+
             <button class="linkBtn" type="button" @click="goToPayment">
               Change payment method
             </button>
           </div>
+
           
           <button v-else class="addPaymentBtn" type="button" @click="goToPayment">
             Add Payment Method
@@ -126,13 +163,20 @@
             class="primaryBtn"
             :disabled="!confirmed || cart.length === 0 || !hasPayment"
             type="button"
-            @click="navigateTo('/tracking')"
+            @click="placeOrder"
+
           >
             Order Now
           </button>
           </aside>
         </div>
 
+        <div v-if="defaultCard">
+          {{ defaultCard.brandLabel }} •••• {{ defaultCard.last4 }}
+        </div>
+        <div v-else>
+          No default card selected
+        </div>
 
       <!-- EDIT MODAL -->
       <div v-if="editOpen" class="modalOverlay" @click="closeEdit">
@@ -191,7 +235,51 @@
 </template>
 
 <script setup>
+
 import { computed, ref } from "vue";
+
+const isOrdering = ref(false);
+const orderDone = ref(false);
+const orderStepText = ref("Creating an order number…");
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function placeOrder() {
+  if (!confirmed.value || cart.value.length === 0 || !hasPayment.value) return;
+
+  isOrdering.value = true;
+  orderDone.value = false;
+
+  // Step 1
+  orderStepText.value = "Creating an order number…";
+  await sleep(1400);
+
+  // Step 2
+  orderStepText.value = "Sending the info to the staff…";
+  await sleep(1400);
+
+  // Step 3 (optional short final step)
+  orderStepText.value = "Finalizing your order…";
+  await sleep(700);
+
+  // ✅ tick
+  orderDone.value = true;
+  await sleep(700);
+
+  isOrdering.value = false;
+
+  navigateTo("/tracking");
+}
+
+const cards = useState("cards", () => []);
+const defaultCardId = useState("defaultCardId", () => null);
+
+const defaultCard = computed(() => {
+  if (!cards.value.length) return null;
+  return cards.value.find(c => c.id === defaultCardId.value) || cards.value[0];
+});
 
 /** CART STATE (shared with index.vue) */
 const cart = useState("cart", () => []);
@@ -201,8 +289,7 @@ const cartCount = computed(() =>
   cart.value.reduce((sum, i) => sum + (i.qty || 1), 0)
 );
 
-const cards = useState("cards", () => []);
-const hasPayment = computed(() => cards.value.length > 0);
+const hasPayment = computed(() => !!defaultCard.value);
 
 function lineTotal(item) {
   return (item.priceEach ?? 0) * (item.qty || 1);
@@ -460,6 +547,74 @@ function saveEdit() {
   font-weight: 900;
 }
 
+.verifyOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+
+.verifyCard{
+  width: min(420px, 92vw);
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+  padding: 18px 16px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.verifyText{
+  font-weight: 900;
+  opacity: 0.9;
+}
+
+/* spinner */
+.spinner{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 4px solid rgba(0,0,0,0.12);
+  border-top-color: rgba(26, 115, 232, 0.95);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.tickWrap{
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+}
+.tickSvg{ width: 56px; height: 56px; }
+
+.tickCircle{
+  fill: none;
+  stroke: rgba(34,197,94,0.25);
+  stroke-width: 4;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: circleDraw 320ms ease-out forwards;
+}
+.tickMark{
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: tickDraw 260ms 220ms ease-out forwards;
+}
+@keyframes circleDraw{ to { stroke-dashoffset: 0; } }
+@keyframes tickDraw{ to { stroke-dashoffset: 0; } }
+
 .layout {
   display: grid;
   grid-template-columns: 1fr 320px;
@@ -518,21 +673,25 @@ function saveEdit() {
 
 .paySummary {
   margin-top: 12px;
-  padding: 12px;
+  padding: 14px;
   border-radius: 16px;
   border: 1px solid rgba(75, 52, 41, 0.12);
   background: rgba(75, 52, 41, 0.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .payTitle {
   font-weight: 1000;
-  margin-bottom: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
 }
 
 .payLine {
   font-weight: 900;
-  opacity: 0.9;
-  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  opacity: 0.92;
+  margin-bottom: 8px;
 }
 
 .thumb {
@@ -647,6 +806,7 @@ function saveEdit() {
   place-items: center;
   padding: 18px;
 }
+
 .modal {
   width: min(520px, 96vw);
   background: #fff;
@@ -693,6 +853,215 @@ function saveEdit() {
   background: rgba(75,52,41,0.03);
   font-weight: 900;
 }
+.payRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+/* White invisible box */
+.payLogoBox {
+  width: 48px;
+  height: 34px;
+  border-radius: 8px;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* Logo image */
+.payLogo {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.payInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payBrand {
+  font-weight: 1000;
+  font-size: 14px;
+}
+
+.payNumber {
+  font-weight: 900;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ===== Modal overlay (keep yours if you already have) ===== */
+.modalOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(6px);
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+/* ===== Modal card ===== */
+.modal{
+  width: min(620px, 96vw);             /* a bit wider, still responsive */
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid rgba(15,23,42,0.10);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.18);
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.modalHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(15,23,42,0.08);
+  background: linear-gradient(180deg, #ffffff, #fafafa);
+}
+
+.modalHeader h3{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -0.01em;
+}
+
+.xBtn{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,0.10);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  opacity: 0.85;
+}
+.xBtn:hover{ opacity: 1; }
+
+/* ===== Body spacing ===== */
+.modalBody{
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.modalTitle{
+  font-weight: 1000;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+/* Labels */
+.fieldLabel{
+  display:block;
+  font-weight: 950;
+  font-size: 13px;
+  margin: 10px 0 6px;
+  opacity: 0.9;
+}
+
+/* Inputs (select + textarea) */
+.select, .textarea{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,0.12);
+  padding: 12px 12px;
+  font: inherit;
+  outline: none;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+.select:focus, .textarea:focus{
+  border-color: rgba(26,115,232,0.35);
+  box-shadow: 0 0 0 4px rgba(26,115,232,0.12);
+  transform: translateY(-1px);
+}
+
+/* Extras list becomes a nice stacked card area */
+.extras{
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(15,23,42,0.02);
+}
+
+/* Each extra row */
+.checkLine{
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.88);
+  font-weight: 900;
+}
+
+.checkLine input[type="checkbox"]{
+  width: 18px;
+  height: 18px;
+}
+
+/* Notes */
+.textarea{
+  min-height: 50px;
+  resize: vertical;
+}
+
+/* ===== Footer: sticky-like bar ===== */
+.modalFooter{
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(15,23,42,0.08);
+
+  display: grid;
+  grid-template-columns: 1fr 260px; /* total left, button right */
+  align-items: center;
+  gap: 14px;
+}
+
+.modalTotal{
+  display: grid;
+  gap: 2px;
+  font-weight: 1000;
+}
+
+.modalTotal b{
+  font-size: 18px;
+}
+
+/* Make the Save button look premium */
+.modalFooter .primaryBtn{
+  width: 100%;
+  margin-top: 0;                 /* remove spacing */
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-weight: 1000;
+}
+
+/* Mobile: stack footer */
+@media (max-width: 520px){
+  .modalFooter{
+    grid-template-columns: 1fr;
+  }
+}
+
 .modalFooter {
   margin-top: 12px;
   display: flex;

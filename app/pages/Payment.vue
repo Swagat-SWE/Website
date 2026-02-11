@@ -397,10 +397,10 @@ import { computed, reactive, ref } from "vue";
 function brandLogoSrc(brand) {
   // You will upload these images into /public/brands/
   const map = {
-    visa: "/brands/Visa.png",
-    mastercard: "/brands/MasterCardd.png",
-    amex: "/brands/AMEXX.png",
-    discover: "/brands/Discover.png",
+    visa: "/brands/visa.png",
+    mastercard: "/brands/mastercard.png",
+    amex: "/brands/amex.png",
+    discover: "/brands/discover.png",
     jcb: "/brands/jcb.png",
     diners: "/brands/diners.png",
     unionpay: "/brands/UnionPay.png",
