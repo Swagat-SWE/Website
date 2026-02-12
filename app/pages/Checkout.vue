@@ -78,9 +78,16 @@
                 <div class="rowTop">
                   <div class="name">{{ item.name }}</div>
 
-                  <button class="linkBtn" type="button" @click="openEdit(idx)">
+                  <button
+                    v-if="item.category !== 'drink'"
+                    class="linkBtn"
+                    type="button"
+                    @click="openEdit(idx)"
+                  >
                     edit
                   </button>
+
+                  <span v-else class="muted">size picked</span>
                 </div>
 
                 <div class="subText">

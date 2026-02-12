@@ -258,7 +258,9 @@ function openSizeModal(drink) {
         img: drink.img?.startsWith("/") ? drink.img : `/${drink.img}`,
         qty: 1,
         basePrice: drink.basePrice,
-        priceEach: drink.basePrice
+        priceEach: drink.basePrice,
+        category: "drink",
+        custom: null,
       })
     }
 
@@ -293,6 +295,8 @@ function selectSize(size) {
       // ✅ make it match food items
       basePrice: selectedDrink.value.basePrice,
       priceEach: price, // <-- this is the real final price for that size
+      category: "drink",
+      custom: {size: size.label },
     });
   }
 

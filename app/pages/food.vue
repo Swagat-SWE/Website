@@ -261,6 +261,66 @@
 </template>
 
 <script setup>
+
+const PRICE_BY_NAME = {
+  // ===== Breakfast sandwiches (from your index MENU / common Einstein prices) =====
+  "Farm House Egg Sandwich": 6.99,
+  "All Nighter Egg Sandwich": 6.99,
+  "Garden Avacado Egg Sandwich": 6.39,
+  "Bacon Chedder Egg Sandwich": 6.59,
+  "Chedder Egg Sandwich": 6.59,
+  "Ham Swiss Egg Sandwich": 6.59,
+  "Turky Sausage Egg Sandwich": 6.59,
+  "Bacon Avocoado Tomato Sandwich": 6.59,
+  "Stanta Fe Egg White Sandwich": 6.59,
+  "Texas Brisket Egg Sandwich": 7.59,
+  "Big Breakfast Burrito": 7.49,
+  "Avocado Toast": 5.49,
+
+  // ===== Lunch sandwiches (from your index MENU / common items) =====
+  "Tastey Turkey Sandwich": 7.79,
+  "Avacado Veg Out Sandwich": 7.29,
+  "Nova Lox Sandwich": 8.29,
+  "Pepperoni Chicken": 7.59,
+  "Ham & Swiss Sandwich": 7.29,
+  "Turkey, Bacon & Avacado Sandwich": 7.99,
+  "Spicy Chicken": 7.59,
+  "Chessy Veggie Melt": 7.09,
+  "Cheese Pizza Bagel": 4.99,
+  "Pepperoni Pizza Bagel": 5.29,
+  "Turkey and Chedder": 7.49,
+  "Chicken Salad": 6.99,
+  "Albuquerque Turkey": 7.59,
+
+  // ===== Bagels =====
+  "Plain Bagel": 2.19,
+  "Cinnamon Rasin Bagel": 2.49,
+  "Everything Bagel": 2.49,
+  "Ancient Grain Bagel": 2.79,
+  "Sesame Seed Bagel": 2.49,
+  "Cheesy Hashbrown Bagel": 2.99,
+  "Six Cheese Bagel": 2.99,
+  "Aisago Bagle": 2.99,
+  "Blueberry Bagel": 2.49,
+  "Chocolate Chip Bagel": 2.59,
+
+  // ===== Smears =====
+  "Plain": 1.29,
+  "Strawberry": 1.49,
+  "Almond": 1.49,
+  "Country Pepper": 1.49,
+  "Garden Veggie": 1.49,
+  "Onion Chive": 1.49,
+
+  // ===== Other =====
+  "Cinnamon Chip Muffin": 2.99,
+  "Cinnamon Bliss Rolls": 3.49,
+  "Blueberry Muffin": 2.99,
+  "Chocolate Chip Cooke": 2.49,
+  "Twice Baked Hashbrown": 2.79,
+};
+
+
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 const filteredLocations = computed(() => {
   const q = locationQuery.value.trim().toLowerCase();
@@ -338,6 +398,8 @@ function goToCheckout() {
 }
 
 function addToCart(item) {
+  const price = item.price ?? PRICE_BY_NAME[item.name] ?? 0;
+
   const existing = cart.value.find((x) => x.name === item.name);
 
   if (existing) {
@@ -350,6 +412,7 @@ function addToCart(item) {
       basePrice: item.price ?? 0,
       priceEach: item.price ?? 0,
       custom: null,
+      category: "food",
     });
   }
 
@@ -378,17 +441,17 @@ const Breakfest = ref([
   },
   {
     id: "bs3",
-    name: "Garden Avacado Egg Sandwich",
+    name: "Garden Avocado Egg Sandwich",
     img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg",
   },
   {
     id: "bs4",
-    name: "Bacon Chedder Egg Sandwich",
+    name: "Bacon Cheddar Egg Sandwich",
     img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg",
   },
   {
     id: "bs5",
-    name: "Chedder Egg Sandwich",
+    name: "Cheddar Egg Sandwich",
     img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg",
   },
   {
@@ -403,12 +466,12 @@ const Breakfest = ref([
   },
   {
     id: "bs8",
-    name: "Bacon Avocoado Tomato Sandwich",
+    name: "Bacon Avocado Tomato Sandwich",
     img: "EBB-SignatureEgg-BaconAvocadoTomatoEggWhite-650x6501-1.jpg",
   },
   {
     id: "bs9",
-    name: "Stanta Fe Egg White Sandwich",
+    name: "Santa Fe Egg White Sandwich",
     img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg",
   },
   {
@@ -436,7 +499,7 @@ const Lunch = ref([
   },
   {
     id: "l2",
-    name: "Avacado Veg Out Sandwich",
+    name: "Avocado Veg Out Sandwich",
     img: "/Veg.png",
   },
   {
@@ -456,7 +519,7 @@ const Lunch = ref([
   },
   {
     id: "l6",
-    name: "Turkey, Bacon & Avacado Sandwich",
+    name: "Turkey, Bacon & Avocado Sandwich",
     img: "/TT.png",
   },
   {
@@ -481,7 +544,7 @@ const Lunch = ref([
   },
   {
     id: "l11",
-    name: "Turkey and Chedder",
+    name: "Turkey and Cheddar",
     img: "/Ham.png",
   },
   {
@@ -503,7 +566,7 @@ const Bagels = ref([
   },
   {
     id: "c2",
-    name: "Cinnamon Rasin Bagel",
+    name: "Cinnamon Raisin Bagel",
     img: "EBB-Bagel-Classic-Cinnamon-Raisin.jpg",
   },
   {
@@ -533,7 +596,7 @@ const Bagels = ref([
   },
   {
     id: "c8",
-    name: "Aisago Bagle",
+    name: "Asiago Bagle",
     img: "EBB-Bagel-Signature-Asiago-1.jpg",
   },
   {
@@ -597,7 +660,7 @@ const Other = ref([
   },
   {
     id: "o4",
-    name: "Chocolate Chip Cooke",
+    name: "Chocolate Chip Cookie",
     img: "EBB-Sweets-ChocolateChipCookie-650x6501-1.jpg",
   },
   {
