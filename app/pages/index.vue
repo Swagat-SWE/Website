@@ -422,6 +422,7 @@ function addToCart(input) {
   } else {
     cart.value.push({
       name: menuItem.name,
+      type: "sandwich",
       qty: 1,
       img: menuItem.img,
       basePrice: menuItem.price,

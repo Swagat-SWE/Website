@@ -254,14 +254,15 @@ function openSizeModal(drink) {
     } else {
       cart.value.push({
         id: drink.id,
+        type: "drink",
         name: drink.name,
         img: drink.img?.startsWith("/") ? drink.img : `/${drink.img}`,
         qty: 1,
         basePrice: drink.basePrice,
         priceEach: drink.basePrice,
-        category: "drink",
         custom: null,
-      })
+      });
+
     }
 
     showCart.value = true
@@ -287,17 +288,16 @@ function selectSize(size) {
   } else {
     cart.value.push({
       id: selectedDrink.value.id,
+      type: "drink",
       name: selectedDrink.value.name,
       img: selectedDrink.value.img?.startsWith("/") ? selectedDrink.value.img : `/${selectedDrink.value.img}`,
       size: size.label,
-      qty: 1,     
-
-      // ✅ make it match food items
+      qty: 1,
       basePrice: selectedDrink.value.basePrice,
-      priceEach: price, // <-- this is the real final price for that size
-      category: "drink",
-      custom: {size: size.label },
-    });
+      priceEach: price,
+      custom: null,
+});
+
   }
 
   showCart.value = true

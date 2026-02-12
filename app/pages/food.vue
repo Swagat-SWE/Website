@@ -266,7 +266,7 @@ const PRICE_BY_NAME = {
   // ===== Breakfast sandwiches (from your index MENU / common Einstein prices) =====
   "Farm House Egg Sandwich": 6.99,
   "All Nighter Egg Sandwich": 6.99,
-  "Garden Avoacado Egg Sandwich": 6.39,
+  "Garden Avocado Egg Sandwich": 6.39,
   "Bacon Cheddar Egg Sandwich": 6.59,
   "Cheddar Egg Sandwich": 6.59,
   "Ham Swiss Egg Sandwich": 6.59,
@@ -319,6 +319,14 @@ const PRICE_BY_NAME = {
   "Chocolate Chip Cookie": 2.49,
   "Twice Baked Hashbrown": 2.79,
 };
+
+function resolvePrice(item) {
+  // prefer the item's own price if it exists
+  if (typeof item.price === "number") return item.price;
+
+  // otherwise lookup by name
+  return PRICE_BY_NAME[item.name] ?? 0;
+}
 
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
@@ -397,6 +405,31 @@ function goToCheckout() {
   navigateTo("/checkout");       // or "/Checkout" depending on your filename
 }
 
+function inferType(name) {
+  const n = (name || "").toLowerCase();
+
+  if (
+    n.includes("coffee") || n.includes("latte") || n.includes("mocha") ||
+    n.includes("tea") || n.includes("cold brew") || n.includes("smoothie") ||
+    n.includes("pepsi") || n.includes("gatorade") || n.includes("juice") ||
+    n.includes("water") || n.includes("milk")
+  ) return "drink";
+
+  if (n.includes("sandwich") || n.includes("burrito") || n.includes("lox") || n.includes("melt") || n.includes("pizza bagel"))
+    return "sandwich";
+
+  if (n.includes("bagel")) return "bagel";
+
+  if (["plain","strawberry","almond","country pepper","garden veggie","onion chive"].includes(n))
+    return "shmear";
+
+  if (n.includes("muffin") || n.includes("cookie") || n.includes("roll"))
+    return "bakery";
+
+  return "other";
+}
+
+
 function addToCart(item) {
   // ✅ lookup price by name (fallback 0 so app doesn't crash)
   const price = PRICE_BY_NAME[item.name] ?? 0;
@@ -406,14 +439,19 @@ function addToCart(item) {
   if (existing) {
     existing.qty += 1;
   } else {
+    const price = resolvePrice(item);
+
     cart.value.push({
+      id: item.id,
       name: item.name,
+      type: inferType(item.name),
       qty: 1,
       img: item.img?.startsWith("/") ? item.img : `/${item.img}`,
       basePrice: price,
       priceEach: price,
       custom: null,
     });
+
   }
 
   showCart.value = true;
