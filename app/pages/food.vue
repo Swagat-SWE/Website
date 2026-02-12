@@ -266,41 +266,41 @@ const PRICE_BY_NAME = {
   // ===== Breakfast sandwiches (from your index MENU / common Einstein prices) =====
   "Farm House Egg Sandwich": 6.99,
   "All Nighter Egg Sandwich": 6.99,
-  "Garden Avacado Egg Sandwich": 6.39,
-  "Bacon Chedder Egg Sandwich": 6.59,
-  "Chedder Egg Sandwich": 6.59,
+  "Garden Avoacado Egg Sandwich": 6.39,
+  "Bacon Cheddar Egg Sandwich": 6.59,
+  "Cheddar Egg Sandwich": 6.59,
   "Ham Swiss Egg Sandwich": 6.59,
-  "Turky Sausage Egg Sandwich": 6.59,
-  "Bacon Avocoado Tomato Sandwich": 6.59,
-  "Stanta Fe Egg White Sandwich": 6.59,
+  "Turkey Sausage Egg Sandwich": 6.59,
+  "Bacon Avocado Tomato Sandwich": 6.59,
+  "Santa Fe Egg White Sandwich": 6.59,
   "Texas Brisket Egg Sandwich": 7.59,
   "Big Breakfast Burrito": 7.49,
   "Avocado Toast": 5.49,
 
   // ===== Lunch sandwiches (from your index MENU / common items) =====
   "Tastey Turkey Sandwich": 7.79,
-  "Avacado Veg Out Sandwich": 7.29,
+  "Avocado Veg Out Sandwich": 7.29,
   "Nova Lox Sandwich": 8.29,
   "Pepperoni Chicken": 7.59,
   "Ham & Swiss Sandwich": 7.29,
-  "Turkey, Bacon & Avacado Sandwich": 7.99,
+  "Turkey, Bacon & Avocado Sandwich": 7.99,
   "Spicy Chicken": 7.59,
-  "Chessy Veggie Melt": 7.09,
+  "Cheesy Veggie Melt": 7.09,
   "Cheese Pizza Bagel": 4.99,
   "Pepperoni Pizza Bagel": 5.29,
-  "Turkey and Chedder": 7.49,
+  "Turkey and Cheddar": 7.49,
   "Chicken Salad": 6.99,
   "Albuquerque Turkey": 7.59,
 
   // ===== Bagels =====
   "Plain Bagel": 2.19,
-  "Cinnamon Rasin Bagel": 2.49,
+  "Cinnamon Raisin Bagel": 2.49,
   "Everything Bagel": 2.49,
   "Ancient Grain Bagel": 2.79,
   "Sesame Seed Bagel": 2.49,
   "Cheesy Hashbrown Bagel": 2.99,
   "Six Cheese Bagel": 2.99,
-  "Aisago Bagle": 2.99,
+  "Asiago Bagel": 2.99,
   "Blueberry Bagel": 2.49,
   "Chocolate Chip Bagel": 2.59,
 
@@ -316,7 +316,7 @@ const PRICE_BY_NAME = {
   "Cinnamon Chip Muffin": 2.99,
   "Cinnamon Bliss Rolls": 3.49,
   "Blueberry Muffin": 2.99,
-  "Chocolate Chip Cooke": 2.49,
+  "Chocolate Chip Cookie": 2.49,
   "Twice Baked Hashbrown": 2.79,
 };
 
@@ -398,7 +398,8 @@ function goToCheckout() {
 }
 
 function addToCart(item) {
-  const price = item.price ?? PRICE_BY_NAME[item.name] ?? 0;
+  // ✅ lookup price by name (fallback 0 so app doesn't crash)
+  const price = PRICE_BY_NAME[item.name] ?? 0;
 
   const existing = cart.value.find((x) => x.name === item.name);
 
@@ -408,16 +409,16 @@ function addToCart(item) {
     cart.value.push({
       name: item.name,
       qty: 1,
-      img: item.img,
-      basePrice: item.price ?? 0,
-      priceEach: item.price ?? 0,
+      img: item.img?.startsWith("/") ? item.img : `/${item.img}`,
+      basePrice: price,
+      priceEach: price,
       custom: null,
-      category: "food",
     });
   }
 
   showCart.value = true;
 }
+
 
 function removeFromCart(index) {
   cart.value.splice(index, 1);
@@ -461,7 +462,7 @@ const Breakfest = ref([
   },
   {
     id: "bs7",
-    name: "Turky Sausage Egg Sandwich",
+    name: "Turkey Sausage Egg Sandwich",
     img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg",
   },
   {
@@ -529,7 +530,7 @@ const Lunch = ref([
   },
   {
     id: "l8",
-    name: "Chessy Veggie Melt",
+    name: "Cheesy Veggie Melt",
     img: "/Veg.png",
   },
   {
@@ -596,7 +597,7 @@ const Bagels = ref([
   },
   {
     id: "c8",
-    name: "Asiago Bagle",
+    name: "Asiago Bagel",
     img: "EBB-Bagel-Signature-Asiago-1.jpg",
   },
   {
