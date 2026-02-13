@@ -102,7 +102,12 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
+                <div class="namePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span v-if="item.price != null" class="pricePill">
+                   ${{ Number(item.price).toFixed(2) }}
+                  </span>
+                </div>
 
                 <!-- ONLY this button adds to cart -->
                 <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
@@ -128,7 +133,12 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
+                <div class="namePrice">
                 <span class="tileName">{{ item.name }}</span>
+                <span v-if="item.price != null" class="pricePill">
+                  ${{ Number(item.price).toFixed(2) }}
+                </span>
+              </div>
 
                 <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
@@ -458,8 +468,8 @@ function addToCart(item) {
       name: item.name,
       qty: 1,
       img: item.img,
-      basePrice: base,
-      priceEach: base,
+      basePrice: menuItem.price,
+      priceEach: menuItem.price,
       custom: null,
     });
   }
@@ -585,6 +595,7 @@ const Lunch = ref([
   {
     id: "l9",
     name: "Cheese Pizza Bagel",
+    price: 7.99,
     img: "ChessyPiz.png",
   },
   {
@@ -791,6 +802,18 @@ const Other = ref([
   justify-content: center;  /* centers the logo */
   margin-bottom: 14px;
   overflow: hidden;         /* prevents it from spilling */
+}
+.pricePill{
+  flex: 0 0 auto;
+  background: #111;
+  color: #fff;
+  font-weight: 1000;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .cartList{
