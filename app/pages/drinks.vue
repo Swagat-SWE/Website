@@ -247,62 +247,84 @@ const selectedDrink = ref(null)
 function openSizeModal(drink) {
   // If the drink has NO sizes → add straight to cart
   if (!drink.sizes || drink.sizes.length === 0) {
-    const existing = cart.value.find(item => item.id === drink.id)
+    // bottled drinks: no size
+    const existing = cart.value.find(
+      item => item.id === drink.id && item.category === "drink" && !item.size
+    );
 
     if (existing) {
-      existing.qty++
+      existing.qty++;
     } else {
       cart.value.push({
         id: drink.id,
-        type: "drink",
+        category: "drink", // ✅ checkout expects this
         name: drink.name,
         img: drink.img?.startsWith("/") ? drink.img : `/${drink.img}`,
         qty: 1,
         basePrice: drink.basePrice,
         priceEach: drink.basePrice,
-        custom: null,
-      });
 
+        // ✅ default drink customizations
+        custom: {
+          size: "",                 // bottled = no size
+          milk: "No milk",
+          sweetener: "No sweetener",
+          ice: "No ice",
+          upgrades: [],
+          notes: "",
+        },
+      });
     }
 
-    showCart.value = true
-    return
+    showCart.value = true;
+    return;
   }
 
   // Otherwise, open the size selector
-  selectedDrink.value = drink
-  showSizeModal.value = true
+  selectedDrink.value = drink;
+  showSizeModal.value = true;
 }
 
+
 function selectSize(size) {
-  const price = selectedDrink.value.basePrice + size.mod
+  const price = selectedDrink.value.basePrice + size.mod;
 
   const existing = cart.value.find(
-    item =>
-      item.id === selectedDrink.value.id &&
-      item.size === size.label
-  )
+    item => item.id === selectedDrink.value.id && item.size === size.label
+  );
 
   if (existing) {
-    existing.qty++
+    existing.qty++;
   } else {
     cart.value.push({
       id: selectedDrink.value.id,
-      type: "drink",
+      category: "drink", // ✅ important (checkout uses this)
       name: selectedDrink.value.name,
-      img: selectedDrink.value.img?.startsWith("/") ? selectedDrink.value.img : `/${selectedDrink.value.img}`,
+      img: selectedDrink.value.img?.startsWith("/")
+        ? selectedDrink.value.img
+        : `/${selectedDrink.value.img}`,
       size: size.label,
       qty: 1,
+
       basePrice: selectedDrink.value.basePrice,
       priceEach: price,
-      custom: null,
-});
 
+      // ✅ default drink customizations
+      custom: {
+        size: size.label,
+        milk: "2% milk",
+        sweetener: "No sweetener",
+        ice: "Regular ice",
+        upgrades: [],
+        notes: "",
+      },
+    });
   }
 
-  showCart.value = true
-  showSizeModal.value = false
+  showCart.value = true;
+  showSizeModal.value = false;
 }
+
 
 /* Review */
 const showReview = ref(false);

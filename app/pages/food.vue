@@ -262,6 +262,12 @@
 
 <script setup>
 
+const showLocationDropdown = ref(false);
+const locationQuery = ref("");
+const location = ref("");
+const locations = ref([]);
+
+
 const PRICE_BY_NAME = {
   // ===== Breakfast sandwiches (from your index MENU / common Einstein prices) =====
   "Farm House Egg Sandwich": 6.99,
@@ -319,6 +325,10 @@ const PRICE_BY_NAME = {
   "Chocolate Chip Cookie": 2.49,
   "Twice Baked Hashbrown": 2.79,
 };
+
+function priceByName(name) {
+  return PRICE_BY_NAME[name] ?? 0;
+}
 
 function resolvePrice(item) {
   // prefer the item's own price if it exists
@@ -405,57 +415,58 @@ function goToCheckout() {
   navigateTo("/checkout");       // or "/Checkout" depending on your filename
 }
 
-function inferType(name) {
+function inferCategory(name) {
   const n = (name || "").toLowerCase();
 
-  if (
-    n.includes("coffee") || n.includes("latte") || n.includes("mocha") ||
-    n.includes("tea") || n.includes("cold brew") || n.includes("smoothie") ||
-    n.includes("pepsi") || n.includes("gatorade") || n.includes("juice") ||
-    n.includes("water") || n.includes("milk")
-  ) return "drink";
-
-  if (n.includes("sandwich") || n.includes("burrito") || n.includes("lox") || n.includes("melt") || n.includes("pizza bagel"))
-    return "sandwich";
-
+  if (n.includes("sandwich") || n.includes("burrito") || n.includes("toast")) return "sandwich";
   if (n.includes("bagel")) return "bagel";
 
-  if (["plain","strawberry","almond","country pepper","garden veggie","onion chive"].includes(n))
+  // shmears list (these are your smear names)
+  if (["plain", "strawberry", "almond", "country pepper", "garden veggie", "onion chive"].includes(n)) {
     return "shmear";
+  }
 
-  if (n.includes("muffin") || n.includes("cookie") || n.includes("roll"))
-    return "bakery";
-
+  // muffins / rolls / hashbrown / cookie etc
   return "other";
 }
 
 
-function addToCart(item) {
-  // ✅ lookup price by name (fallback 0 so app doesn't crash)
-  const price = PRICE_BY_NAME[item.name] ?? 0;
 
+function getCategory(item) {
+  // use the list the item came from to decide category
+  // easiest: detect by id prefix since your ids already hint:
+  // bs/l = sandwiches, c = bagels, s = shmears, o = other
+  const id = item.id || "";
+  if (id.startsWith("bs") || id.startsWith("l")) return "sandwich";
+  if (id.startsWith("c")) return "bagel";
+  if (id.startsWith("s")) return "shmear";
+  if (id.startsWith("o")) return "other";
+  return "other";
+}
+
+function addToCart(item) {
   const existing = cart.value.find((x) => x.name === item.name);
+
+  const base = Number(item.price ?? priceByName(item.name) ?? 0); // keep your pricing working
 
   if (existing) {
     existing.qty += 1;
   } else {
-    const price = resolvePrice(item);
-
     cart.value.push({
       id: item.id,
+      category: getCategory(item),   // ✅ STEP 2 HERE
       name: item.name,
-      type: inferType(item.name),
       qty: 1,
-      img: item.img?.startsWith("/") ? item.img : `/${item.img}`,
-      basePrice: price,
-      priceEach: price,
+      img: item.img,
+      basePrice: base,
+      priceEach: base,
       custom: null,
     });
-
   }
 
   showCart.value = true;
 }
+
 
 
 function removeFromCart(index) {

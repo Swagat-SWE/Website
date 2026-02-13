@@ -79,7 +79,6 @@
                   <div class="name">{{ item.name }}</div>
 
                   <button
-                    v-if="item.category !== 'drink'"
                     class="linkBtn"
                     type="button"
                     @click="openEdit(idx)"
@@ -87,18 +86,37 @@
                     edit
                   </button>
 
-                  <span v-else class="muted">size picked</span>
                 </div>
 
                 <div class="subText">
-                  <span v-if="item.custom">
-                    <span v-if="item.custom.bagel"><b>{{ item.custom.bagel }}</b></span>
-                    <span v-if="item.custom.shmear"> • {{ item.custom.shmear }}</span>
-                    <span v-if="item.custom.extras?.length"> • Extras: {{ item.custom.extras.join(', ') }}</span>
-                    <span v-if="item.custom.notes"> • “{{ item.custom.notes }}”</span>
+                  <span v-if="item.category === 'drink'">
+                    <span v-if="item.size"><b>Size:</b> {{ item.size }}</span>
+                    <span v-if="item.custom?.milk"> • <b>Milk:</b> {{ item.custom.milk }}</span>
+                    <span v-if="item.custom?.sweetener"> • <b>Sweetener:</b> {{ item.custom.sweetener }}</span>
+                    <span v-if="item.custom?.ice"> • <b>Ice:</b> {{ item.custom.ice }}</span>
+                    <span v-if="item.custom?.upgrades?.length">
+                      • <b>Add-ons:</b> {{ item.custom.upgrades.join(', ') }}
+                    </span>
+                    <span v-if="item.custom?.notes"> • “{{ item.custom.notes }}”</span>
+
+                    <span
+                      v-if="!item.size && !item.custom?.milk && !item.custom?.sweetener && !item.custom?.ice && !(item.custom?.upgrades?.length) && !item.custom?.notes"
+                    >
+                      No customizations
+                    </span>
                   </span>
-                  <span v-else>No customizations</span>
+
+                  <span v-else>
+                    <span v-if="item.custom">
+                      <span v-if="item.custom.bagel"><b>{{ item.custom.bagel }}</b></span>
+                      <span v-if="item.custom.shmear"> • {{ item.custom.shmear }}</span>
+                      <span v-if="item.custom.extras?.length"> • Extras: {{ item.custom.extras.join(', ') }}</span>
+                      <span v-if="item.custom.notes"> • “{{ item.custom.notes }}”</span>
+                    </span>
+                    <span v-else>No customizations</span>
+                  </span>
                 </div>
+
 
                 <button class="removeBtn" type="button" @click="removeItem(idx)">
                   Remove
@@ -195,47 +213,75 @@
             <button class="xBtn" type="button" @click="closeEdit">✕</button>
           </div>
 
-          <div v-if="editingItem" class="modalBody">
-            <div class="modalTitle">{{ editingItem.name }}</div>
+      <div v-if="editingItem" class="modalBody">
+        <div class="modalTitle">{{ editingItem.name }}</div>
 
-            <label class="fieldLabel">Bagel</label>
-            <select v-model="editDraft.bagel" class="select">
-              <option value="">Select a bagel…</option>
-              <option v-for="b in getOptions(editingItem.name).bagels" :key="b" :value="b">
-                {{ b }}
-              </option>
-            </select>
+        <!-- ✅ DRINK FIELDS -->
+        <template v-if="editingCategory === 'drink'">
+          <label class="fieldLabel">Milk</label>
+          <select v-model="editDraft.milk" class="select">
+            <option value="">No milk</option>
+            <option v-for="m in (editingOptions.milks || [])" :key="m" :value="m">{{ m }}</option>
+          </select>
 
-            <label class="fieldLabel">Shmear</label>
-            <select v-model="editDraft.shmear" class="select">
-              <option value="">No shmear</option>
-              <option v-for="s in getOptions(editingItem.name).shmears" :key="s" :value="s">
-                {{ s }}
-              </option>
-            </select>
+          <label class="fieldLabel">Sweetener</label>
+          <select v-model="editDraft.sweetener" class="select">
+            <option value="">No sweetener</option>
+            <option v-for="s in (editingOptions.sweeteners || [])" :key="s" :value="s">{{ s }}</option>
+          </select>
 
-            <label class="fieldLabel">Extras</label>
-            <div class="extras">
-              <label v-for="ex in getOptions(editingItem.name).extras" :key="ex.name" class="checkLine">
-                <input type="checkbox" :value="ex.name" v-model="editDraft.extras" />
-                <span>{{ ex.name }}</span>
-                <b>+${{ ex.price.toFixed(2) }}</b>
-              </label>
-            </div>
+          <label class="fieldLabel">Ice</label>
+          <select v-model="editDraft.ice" class="select">
+            <option value="">Regular</option>
+            <option v-for="i in (editingOptions.ice || [])" :key="i" :value="i">{{ i }}</option>
+          </select>
 
-            <label class="fieldLabel">Notes</label>
-            <textarea v-model="editDraft.notes" class="textarea" rows="3" />
-
-            <div class="modalFooter">
-              <div class="modalTotal">
-                Item total: <b>${{ editedPriceEach.toFixed(2) }}</b>
-              </div>
-
-              <button class="primaryBtn" type="button" @click="saveEdit">
-                Save
-              </button>
-            </div>
+          <label class="fieldLabel">Upgrades</label>
+          <div class="extras">
+            <label v-for="u in (editingOptions.upgrades || [])" :key="u.name" class="checkLine">
+              <input type="checkbox" :value="u.name" v-model="editDraft.upgrades" />
+              <span>{{ u.name }}</span>
+              <b>+${{ u.price.toFixed(2) }}</b>
+            </label>
           </div>
+        </template>
+
+        <!-- ✅ SANDWICH / BAGEL / OTHER FIELDS -->
+        <template v-else>
+          <label v-if="editingOptions.bagels?.length" class="fieldLabel">Bagel</label>
+          <select v-if="editingOptions.bagels?.length" v-model="editDraft.bagel" class="select">
+            <option value="">Select a bagel…</option>
+            <option v-for="b in editingOptions.bagels" :key="b" :value="b">{{ b }}</option>
+          </select>
+
+          <label v-if="editingOptions.shmears?.length" class="fieldLabel">Shmear</label>
+          <select v-if="editingOptions.shmears?.length" v-model="editDraft.shmear" class="select">
+            <option value="">No shmear</option>
+            <option v-for="s in editingOptions.shmears" :key="s" :value="s">{{ s }}</option>
+          </select>
+
+          <label v-if="editingOptions.extras?.length" class="fieldLabel">Extras</label>
+          <div v-if="editingOptions.extras?.length" class="extras">
+            <label v-for="ex in editingOptions.extras" :key="ex.name" class="checkLine">
+              <input type="checkbox" :value="ex.name" v-model="editDraft.extras" />
+              <span>{{ ex.name }}</span>
+              <b>+${{ ex.price.toFixed(2) }}</b>
+            </label>
+          </div>
+        </template>
+
+        <label class="fieldLabel">Notes</label>
+        <textarea v-model="editDraft.notes" class="textarea" rows="3" />
+
+        <div class="modalFooter">
+          <div class="modalTotal">
+            Item total: <b>${{ editedPriceEach.toFixed(2) }}</b>
+          </div>
+
+          <button class="primaryBtn" type="button" @click="saveEdit">Save</button>
+        </div>
+      </div>
+
         </div>
       </div>
 
@@ -293,6 +339,11 @@ const defaultCard = computed(() => {
 /** CART STATE (shared with index.vue) */
 const cart = useState("cart", () => []);
 
+function itemCategory(item) {
+  return item.category || item.type || "other";
+}
+
+
 /** ORDER TOTALS */
 const cartCount = computed(() =>
   cart.value.reduce((sum, i) => sum + (i.qty || 1), 0)
@@ -331,37 +382,64 @@ function removeItem(idx) {
 const confirmed = ref(false);
 
 /** OPTIONS FOR CUSTOMIZATION (you can expand later) */
-const OPTIONS_BY_NAME = {
-  "Farm House Egg Sandwich": {
+const OPTIONS_BY_CATEGORY = {
+  sandwich: {
     bagels: ["Cheesy Hash", "Everything", "Plain", "Sesame", "Asiago"],
-    shmears: ["Plain Shmear", "Country Pepper Shmear", "Roasted Tomato Spread", "Jalapeno salsa shmear"],
+    shmears: ["No shmear", "Plain Shmear", "Country Pepper Shmear", "Roasted Tomato Spread"],
     extras: [
       { name: "Extra Cheese", price: 1.0 },
       { name: "Bacon", price: 1.5 },
       { name: "Avocado", price: 1.5 },
+      { name: "Extra Egg", price: 1.5 },
+    ],
+    remove: ["Cheese", "Egg", "Bacon", "Onion", "Tomato", "Spinach", "Sauce"],
+    toasts: ["Not toasted", "Light toast", "Toasted"],
+    cuts: ["Not cut", "Cut in half"],
+  },
+
+  bagel: {
+    toasts: ["Not toasted", "Light toast", "Toasted"],
+    slices: ["Not sliced", "Sliced"],
+    shmears: ["No shmear", "Plain", "Strawberry", "Almond", "Country Pepper", "Garden Veggie", "Onion Chive"],
+    extras: [
+      { name: "Butter", price: 0.5 },
+      { name: "Jam", price: 0.75 },
+      { name: "Extra shmear", price: 0.75 },
     ],
   },
-  "All Nighter Egg Sandwich": {
-    bagels: ["Cheesy Hash", "Everything", "Plain", "Sesame", "Asiago"],
-    shmears: ["Plain Shmear", "Country Pepper Shmear", "Roasted Tomato Spread"],
+
+  shmear: {
+    amounts: ["Regular", "Light", "Extra"],
+    serveAs: ["On the side", "On bagel"],
+    extras: [{ name: "Extra cup", price: 0.5 }],
+  },
+
+  other: {
+    warm: ["No", "Yes (warmed)"],
     extras: [
-      { name: "Extra Cheese", price: 1.0 },
-      { name: "Bacon", price: 1.5 },
+      { name: "Butter", price: 0.5 },
+      { name: "Jam", price: 0.75 },
     ],
   },
-  "Garden Avocado Egg Sandwich": {
-    bagels: ["Everything", "Plain", "Sesame", "Asiago"],
-    shmears: ["Plain Shmear", "Roasted Tomato Spread"],
-    extras: [
-      { name: "Avocado", price: 1.5 },
-      { name: "Extra Cheese", price: 1.0 },
+
+  drink: {
+    // you can tweak these
+    sizes: ["Small", "Medium", "Large"],
+    milks: ["No milk", "2% milk", "Whole milk", "Oat milk", "Almond milk"],
+    sweeteners: ["No sweetener", "Sugar", "Splenda", "Stevia", "Vanilla syrup", "Caramel syrup"],
+    ice: ["No ice", "Light ice", "Regular ice", "Extra ice"],
+    upgrades: [
+      { name: "Extra espresso shot", price: 1.25 },
+      { name: "Whipped cream", price: 0.75 },
     ],
   },
 };
 
-function getOptions(name) {
-  return OPTIONS_BY_NAME[name] || { bagels: ["Plain"], shmears: ["Plain Shmear"], extras: [] };
+function getOptionsFor(item) {
+  const cat = item?.category || item?.type || "other";
+  return OPTIONS_BY_CATEGORY[cat] || OPTIONS_BY_CATEGORY.other;
 }
+
 
 function goToPayment() {
   navigateTo("/Payment");
@@ -376,12 +454,34 @@ const editingItem = computed(() => {
   return cart.value[editingIndex.value];
 });
 
+const editingCategory = computed(() => {
+  const item = editingItem.value;
+  return item?.category || item?.type || "other";
+});
+
+const editingOptions = computed(() => {
+  return getOptionsFor(editingItem.value);
+});
+
+
 const editDraft = ref({
+  // sandwich / bagel
   bagel: "",
   shmear: "",
+  toasted: "",
+  sliced: "",
+
+  // drink
+  milk: "",
+  sweetener: "",
+  ice: "",
+  upgrades: [],
+
+  // shared
   extras: [],
   notes: "",
 });
+
 
 /** When opening edit, copy current custom values into the draft */
 function openEdit(idx) {
@@ -389,16 +489,29 @@ function openEdit(idx) {
 
   const item = cart.value[idx];
   const current = item.custom || {};
+  const cat = item.category || item.type || "other";
 
   editDraft.value = {
+    // sandwich/bagel
     bagel: current.bagel || "",
     shmear: current.shmear || "",
+    toasted: current.toasted || "",
+    sliced: current.sliced || "",
+
+    // drink
+    milk: current.milk || "",
+    sweetener: current.sweetener || "",
+    ice: current.ice || "",
+    upgrades: Array.isArray(current.upgrades) ? [...current.upgrades] : [],
+
+    // shared
     extras: Array.isArray(current.extras) ? [...current.extras] : [],
     notes: current.notes || "",
   };
 
   editOpen.value = true;
 }
+
 
 function closeEdit() {
   editOpen.value = false;
@@ -411,14 +524,19 @@ const editedPriceEach = computed(() => {
   if (!item) return 0;
 
   const base = item.basePrice ?? item.priceEach ?? 0;
-  const opts = getOptions(item.name);
+  const opts = getOptionsFor(item);
 
-  const extrasTotal = opts.extras
-    .filter((e) => editDraft.value.extras.includes(e.name))
+  const extrasTotal = (opts.extras || [])
+    .filter(e => editDraft.value.extras.includes(e.name))
     .reduce((sum, e) => sum + e.price, 0);
 
-  return base + extrasTotal;
+  const upgradesTotal = (opts.upgrades || [])
+    .filter(u => editDraft.value.upgrades.includes(u.name))
+    .reduce((sum, u) => sum + u.price, 0);
+
+  return base + extrasTotal + upgradesTotal;
 });
+
 
 /** Save changes back into the cart item */
 function saveEdit() {
@@ -428,18 +546,29 @@ function saveEdit() {
   const item = cart.value[idx];
 
   item.custom = {
+    // sandwich/bagel
     bagel: editDraft.value.bagel,
     shmear: editDraft.value.shmear,
+    toasted: editDraft.value.toasted,
+    sliced: editDraft.value.sliced,
+
+    // drink
+    milk: editDraft.value.milk,
+    sweetener: editDraft.value.sweetener,
+    ice: editDraft.value.ice,
+    upgrades: [...editDraft.value.upgrades],
+
+    // shared
     extras: [...editDraft.value.extras],
     notes: editDraft.value.notes,
   };
 
-  // keep base price stored once; update priceEach to include extras
   item.basePrice = item.basePrice ?? item.priceEach ?? 0;
   item.priceEach = editedPriceEach.value;
 
   closeEdit();
 }
+
 </script>
 
 <style scoped>
