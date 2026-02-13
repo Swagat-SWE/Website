@@ -575,7 +575,7 @@ const Lunch = ref([
   {
     id: "l7",
     name: "Spicy Chicken",
-    img: "/Tastey.png",
+    img: "/Chicken.png",
   },
   {
     id: "l8",
