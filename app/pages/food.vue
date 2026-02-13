@@ -532,12 +532,12 @@ const Breakfest = ref([
   {
     id: "bs11",
     name: "Big Breakfast Burrito",
-    img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg",
+    img: "Burriro.png",
   },
   {
     id: "bs12",
     name: "Avocado Toast",
-    img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg",
+    img: "ToastAvo.png",
   },
 ]);
 
@@ -585,12 +585,12 @@ const Lunch = ref([
   {
     id: "l9",
     name: "Cheese Pizza Bagel",
-    img: "/Nova.png",
+    img: "ChessyPiz.png",
   },
   {
     id: "l10",
     name: "Pepperoni Pizza Bagel",
-    img: "/Special.png",
+    img: "PeppyPiz.png",
   },
   {
     id: "l11",
