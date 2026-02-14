@@ -1,6 +1,15 @@
 export default defineNuxtConfig({
+  imports: {
+    dirs: ["composables"],
+  },
+
   nitro: {
-    preset: "node-server",
+    devProxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
   },
 
   devServer: import.meta.dev

@@ -69,10 +69,6 @@
         <div> </div> <!-- empty div to balance the flex space on the left -->
 
         <div class="topbarRight">
-          <!-- Sign In button -->
-          <button class="signInBtn" type="button">
-            Sign In
-          </button>
 
           <!-- Cart button -->
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
@@ -464,12 +460,12 @@ function addToCart(item) {
   } else {
     cart.value.push({
       id: item.id,
-      category: getCategory(item),   // ✅ STEP 2 HERE
+      category: getCategory(item),
       name: item.name,
       qty: 1,
       img: item.img,
-      basePrice: menuItem.price,
-      priceEach: menuItem.price,
+      basePrice: base,
+      priceEach: base,
       custom: null,
     });
   }

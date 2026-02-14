@@ -53,8 +53,6 @@
       <header class="topbar">
         <div> </div>
         <div class="topbarRight">
-          <button class="signInBtn">Sign In</button>
-
           <button class="cartBtn" @click="toggleCart">
            🛒 <span class="cartCount">{{ cartCount }}</span>
           </button>

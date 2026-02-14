@@ -72,11 +72,16 @@
       <div class="locationPill">
         <span class="pin">📍 Dubuque, Iowa</span>
       </div>
-    </div>
+     </div>
 
-    <button class="signInBtn" type="button">
-      Sign In
+     <button
+      class="signInBtn"
+      type="button"
+      @click="signIn"
+    >
+      {{ user ? "Logged In" : "Sign In" }}
     </button>
+
 
     <button class="cartBtn" type="button" @click="toggleCart">
       <span class="cartIcon">🛒</span>
@@ -201,6 +206,28 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+function signIn() {
+  navigateTo("/login");
+}
+const user = ref(null);
+
+async function checkAuth() {
+  const res = await fetch("/api/me", {
+    credentials: "include",
+  });
+
+  const data = await res.json();
+
+  if (data.user) {
+    user.value = data.user;
+  }
+}
+
+onMounted(() => {
+  checkAuth();
+});
+
 
 // ===== MENU DATA (from our excel) =====
 const MENU = [
@@ -344,6 +371,8 @@ function selectLocation(opt) {
   locationQuery.value = "";
   showLocationDropdown.value = false;
 }
+
+const showLocationDropdown = ref(false);
 
 /** close dropdown if user clicks outside */
 function handleDocClick(e) {

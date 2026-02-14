@@ -75,41 +75,14 @@
       <header class="topbar">
         <div class="topbarLeft">
           <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
-
-              <input
-                v-model="locationQuery"
-                class="locationInput"
-                type="text"
-                placeholder="Search a state…"
-                @focus="showLocationDropdown = true"
-                @input="showLocationDropdown = true"
-              />
-
+            <div class="locationPill" aria-label="Current location">
+              <span class="locDot" aria-hidden="true"></span>
               <span class="locationSelected">{{ location }}</span>
-            </div>
-
-            <div v-if="showLocationDropdown" class="locationDropdown">
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches. Try “Iowa” or “Illinois”.
-              </div>
-
-              <button
-                v-for="opt in filteredLocations"
-                :key="opt"
-                class="locationOption"
-                type="button"
-                @click="selectLocation(opt)"
-              >
-                {{ opt }}
-              </button>
             </div>
           </div>
         </div>
 
         <div class="topbarRight">
-          <button class="signInBtn" type="button">Sign In</button>
 
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
             <span class="cartIcon">🛒</span>
@@ -128,9 +101,11 @@
       <section class="contactGrid">
         <!-- Left column -->
         <div class="leftCol">
+          <!-- Address + Phone -->
           <div class="card">
             <div class="cardHeader">
               <h2 class="cardTitle">Loras College</h2>
+
               <p class="statusLine">
                 <span class="statusDot" :class="{ open: isOpenNow }"></span>
                 <span v-if="isOpenNow"><b>Open now</b></span>
@@ -149,36 +124,49 @@
 
               <div class="infoRow">
                 <div class="infoLabel">Phone</div>
-                <div class="infoValue">(563) 588-7067</div>
+                <div class="infoValue">
+                  <a class="phoneLink" href="tel:+15635887067">(563) 588-7067</a>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="card">
-            <h2 class="cardTitle">About Loras College Einstein Bros. Bagels</h2>
+          <!-- About -->
+          <div class="card aboutCard">
+            <h2 class="cardTitle">About Einstein Bros. Bagels at Loras</h2>
             <p class="aboutText">
-              Located on the campus of Loras College in Dubuque, Iowa, Einstein Bros. Bagels offers
-              fresh bagels, breakfast sandwiches, and coffee for students, faculty, and visitors.
-              Open weekdays from 7:30 AM to 1:30 PM, this convenient location is perfect for a quick
-              breakfast, lunch, or study break.
-            </p>
+              Right on Loras College’s campus in Dubuque, Einstein Bros. Bagels serves fresh-baked
+              bagels, breakfast sandwiches, and coffee</p>
+
+               <p class="aboutText">
+              Made for students, faculty, and visitors on the go.</p>
+              
+              <p class="aboutText">
+              We’re open weekdays from <b>7:30 AM to 1:30 PM</b>. </p>
+
             <p class="aboutText">
-              Whether you’re grabbing an All-Nighter before class or meeting friends for coffee,
-              Einstein Bros. at Loras provides quality food and friendly service in a comfortable
-              campus setting.
+              Whether you’re picking up bagel before class or meeting friends between lectures,
+              expect fast service, quality food, and a warm, campus friendly vibe.
             </p>
+
+            <div class="aboutHighlight">
+              <div class="aboutHighlightTitle">Quick tip</div>
+              <div class="aboutHighlightBody">
+                <p>Order ahead for faster pickup and head straight to the counter.</p>
+              </div>
+            </div>
           </div>
 
+          <!-- FAQ + Privacy + Message -->
           <div class="card">
-            <h2 class="cardTitle">FAQ’s</h2>
+            <h2 class="cardTitle">FAQ</h2>
 
             <button class="faqItem" type="button" @click="toggleFaq(0)">
-              <span>1) Ordered a wrong bagel?</span>
+              <span>1) Ordered the wrong item?</span>
               <span class="faqChev" :class="{ open: openFaq === 0 }">▾</span>
             </button>
             <div v-if="openFaq === 0" class="faqBody">
-              If your order is incorrect, call the store right away and we’ll help fix it. Keep your
-              receipt/order details ready.
+              Call the store as soon as you notice—share your receipt/order details and we’ll help make it right.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(1)">
@@ -186,8 +174,7 @@
               <span class="faqChev" :class="{ open: openFaq === 1 }">▾</span>
             </button>
             <div v-if="openFaq === 1" class="faqBody">
-              Use the Food/Drinks menu to add items to your cart, then go to Checkout to place the
-              order.
+              Use the Food/Drinks menu to add items, then go to Checkout to place your order.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(2)">
@@ -195,8 +182,7 @@
               <span class="faqChev" :class="{ open: openFaq === 2 }">▾</span>
             </button>
             <div v-if="openFaq === 2" class="faqBody">
-              Pick up at the counter inside the Loras College location. Ask a team member if you
-              don’t see your order.
+              Pick up at the counter inside the Loras College location. If you don’t see it, ask a team member.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(3)">
@@ -204,8 +190,7 @@
               <span class="faqChev" :class="{ open: openFaq === 3 }">▾</span>
             </button>
             <div v-if="openFaq === 3" class="faqBody">
-              Holiday hours can change. Check announcements or call the store for the most accurate
-              hours.
+              Holiday hours can change—check announcements or call the store for the most accurate info.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(4)">
@@ -213,12 +198,70 @@
               <span class="faqChev" :class="{ open: openFaq === 4 }">▾</span>
             </button>
             <div v-if="openFaq === 4" class="faqBody">
-              For account help, contact support. We can guide you through deleting or updating your
-              info.
+              Contact support and we’ll guide you through deleting or updating your account information.
             </div>
 
-            <div class="privacyBar">
-              Privacy and Disclaimer Information…
+            <!-- Premium stand-out section (Privacy + Message form) -->
+            <button class="privacyBar" type="button" @click="showPrivacy = !showPrivacy">
+              <span>Privacy & Disclaimers</span>
+              <span class="privacyChev" :class="{ open: showPrivacy }">▾</span>
+            </button>
+
+            <div v-if="showPrivacy" class="privacyPanel">
+              <div class="privacyCols">
+                <div class="privacyText">
+                  <p class="privacyP">
+                    <b>Message us:</b> Use the form to send a question or request. Please avoid sharing sensitive info
+                    (passwords, payment details, or private IDs).
+                  </p>
+                  <p class="privacyP">
+                    <b>Data use:</b> Your name/phone are used only to respond to your inquiry. This demo stores submissions
+                    locally in your browser for now (no server save).
+                  </p>
+                  <p class="privacyP">
+                    <b>Privacy policy:</b>
+                    <NuxtLink class="privacyLink" to="/privacy">View how we handle information</NuxtLink>
+                    <span class="privacyHint">(you can create this page later)</span>
+                  </p>
+                </div>
+
+                <form class="contactForm" @submit.prevent="submitMessage">
+                  <label class="fieldLabel" for="name">Name</label>
+                  <input
+                    id="name"
+                    v-model="msgName"
+                    class="fieldInput"
+                    type="text"
+                    placeholder="Your name"
+                    autocomplete="name"
+                    required
+                  />
+
+                  <label class="fieldLabel" for="phone">Phone</label>
+                  <input
+                    id="phone"
+                    v-model="msgPhone"
+                    class="fieldInput"
+                    type="tel"
+                    placeholder="(555) 555-5555"
+                    autocomplete="tel"
+                    required
+                  />
+
+                  <label class="fieldLabel" for="message">Message</label>
+                  <textarea
+                    id="message"
+                    v-model="msgBody"
+                    class="fieldTextarea"
+                    rows="4"
+                    placeholder="How can we help?"
+                    required
+                  />
+
+                  <button class="primaryBtn" type="submit">Send Message</button>
+                  <p v-if="msgSent" class="submitted">Got it — we’ll get back to you soon.</p>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -239,8 +282,6 @@
           <div class="card">
             <h2 class="cardTitle">Map</h2>
 
-            <!-- No API key needed (OpenStreetMap embed).
-                 You can replace this with Mapbox/Google later if you want. -->
             <div class="mapWrap">
               <iframe
                 title="Map"
@@ -288,41 +329,9 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
 /** =========================
- *  Location prototype
+ *  Simple location label (no dropdown code)
  *  ========================= */
-const location = ref("Dubuque, IA");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-
-const locations = [
-  "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia",
-  "Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
-  "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey",
-  "New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina",
-  "South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming",
-];
-
-const filteredLocations = computed(() => {
-  const q = locationQuery.value.trim().toLowerCase();
-  if (!q) return locations.slice(0, 12);
-  return locations.filter((x) => x.toLowerCase().includes(q)).slice(0, 8);
-});
-
-function selectLocation(opt) {
-  location.value = opt;
-  locationQuery.value = "";
-  showLocationDropdown.value = false;
-}
-
-/** close dropdown if user clicks outside */
-function handleDocClick(e) {
-  const target = e.target;
-  if (target?.closest?.(".locationWrap")) return;
-  showLocationDropdown.value = false;
-}
-
-onMounted(() => document.addEventListener("click", handleDocClick));
-onBeforeUnmount(() => document.removeEventListener("click", handleDocClick));
+const location = ref("Loras College • Dubuque, IA");
 
 /** =========================
  *  Sidebar Review
@@ -354,6 +363,40 @@ function toggleFaq(i) {
 }
 
 /** =========================
+ *  Privacy + Message form (meets FR-101/102/103)
+ *  ========================= */
+const showPrivacy = ref(false);
+const msgName = ref("");
+const msgPhone = ref("");
+const msgBody = ref("");
+const msgSent = ref(false);
+
+function submitMessage() {
+  // For now, keep it lightweight: store locally (no backend)
+  const payload = {
+    name: msgName.value.trim(),
+    phone: msgPhone.value.trim(),
+    message: msgBody.value.trim(),
+    ts: new Date().toISOString(),
+  };
+
+  try {
+    const key = "einstein_contact_messages";
+    const prev = JSON.parse(localStorage.getItem(key) || "[]");
+    prev.unshift(payload);
+    localStorage.setItem(key, JSON.stringify(prev.slice(0, 25)));
+  } catch {
+    // ignore localStorage errors
+  }
+
+  msgSent.value = true;
+  msgName.value = "";
+  msgPhone.value = "";
+  msgBody.value = "";
+  setTimeout(() => (msgSent.value = false), 2200);
+}
+
+/** =========================
  *  Hours + Open/Closed
  *  ========================= */
 const schedule = [
@@ -382,16 +425,16 @@ onMounted(() => {
 });
 onBeforeUnmount(() => clearInterval(timer));
 
-const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const todayName = computed(() => dayNames[now.value.getDay()]);
 
-const hours = computed(() => {
-  return schedule.map((s) => ({
+const hours = computed(() =>
+  schedule.map((s) => ({
     day: s.day,
     time: s.open ? `${fmtTime(s.open)} - ${fmtTime(s.close)}` : "Closed",
     isToday: s.day === todayName.value,
-  }));
-});
+  }))
+);
 
 function toMinutes(t) {
   const [hh, mm] = t.split(":").map(Number);
@@ -421,8 +464,10 @@ const todayOpenText = computed(() => {
 });
 
 function openMaps() {
-  // Opens Google Maps search (works without API key)
-  window.open("https://www.google.com/maps/search/?api=1&query=1450+Alta+Vista+Dubuque+IA+52001", "_blank");
+  window.open(
+    "https://www.google.com/maps/search/?api=1&query=1450+Alta+Vista+Dubuque+IA+52001",
+    "_blank"
+  );
 }
 
 /** =========================
@@ -509,9 +554,18 @@ function removeFromCart(index) {
   box-shadow: var(--cardShadow);
   border-color: rgba(244, 179, 22, 0.55);
 }
-.reviewBtn { text-align: left; cursor: pointer; }
-.chev { float: right; opacity: 0.7; transition: transform 0.15s ease; }
-.chev.open { transform: rotate(180deg); }
+.reviewBtn {
+  text-align: left;
+  cursor: pointer;
+}
+.chev {
+  float: right;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+.chev.open {
+  transform: rotate(180deg);
+}
 
 .reviewPanel {
   margin-top: -4px;
@@ -521,7 +575,11 @@ function removeFromCart(index) {
   background: #fff;
   box-shadow: var(--cardShadow);
 }
-.starsRow { display: flex; gap: 6px; margin-bottom: 8px; }
+.starsRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
 .starBtn {
   font-size: 22px;
   line-height: 1;
@@ -531,10 +589,25 @@ function removeFromCart(index) {
   opacity: 0.35;
   transition: opacity 0.08s ease, transform 0.08s ease;
 }
-.starBtn.on { opacity: 1; color: var(--yellow); text-shadow: 0 2px 8px rgba(244, 179, 22, 0.25); }
-.starBtn:hover { transform: translateY(-1px); }
-.ratingText { font-size: 0.9rem; opacity: 0.85; margin-bottom: 10px; }
-.commentLabel { font-size: 0.85rem; font-weight: 800; display: block; margin-bottom: 6px; }
+.starBtn.on {
+  opacity: 1;
+  color: var(--yellow);
+  text-shadow: 0 2px 8px rgba(244, 179, 22, 0.25);
+}
+.starBtn:hover {
+  transform: translateY(-1px);
+}
+.ratingText {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+.commentLabel {
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 6px;
+}
 .commentBox {
   width: 100%;
   border-radius: 12px;
@@ -555,18 +628,31 @@ function removeFromCart(index) {
   padding: 10px 12px;
   cursor: pointer;
 }
-.primaryBtn:hover { background: #ffbe21; }
-.submitted { margin-top: 8px; font-size: 0.85rem; opacity: 0.85; }
+.primaryBtn:hover {
+  background: #ffbe21;
+}
+.submitted {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
 
 /* Main */
-.main { position: relative; padding: 20px 26px 50px; }
+.main {
+  position: relative;
+  padding: 20px 26px 50px;
+}
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 18px;
 }
-.topbarRight { display: flex; align-items: center; gap: 12px; }
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
 .signInBtn {
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -581,15 +667,17 @@ function removeFromCart(index) {
 }
 .signInBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
   border-color: rgba(244, 179, 22, 0.5);
 }
 
 /* Location */
-.locationWrap { position: relative; }
+.locationWrap {
+  position: relative;
+}
 .locationPill {
   display: inline-flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   background: rgba(75, 52, 41, 0.06);
   border: 1px solid rgba(75, 52, 41, 0.12);
@@ -597,52 +685,19 @@ function removeFromCart(index) {
   border-radius: 999px;
   font-weight: 900;
 }
-.locationInput {
-  width: 200px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  font-weight: 900;
-  color: var(--brown);
+.locDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(244, 179, 22, 0.95);
+  box-shadow: 0 0 0 4px rgba(244, 179, 22, 0.16);
 }
 .locationSelected {
-  opacity: 0.75;
+  opacity: 0.85;
   font-weight: 900;
-  border-left: 1px solid rgba(75, 52, 41, 0.18);
-  padding-left: 12px;
 }
-.locationDropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  width: 320px;
-  max-height: 312px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 8px;
-  z-index: 50;
-}
-.locationOption {
-  width: 100%;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  text-align: left;
-  border: none;
-  background: transparent;
-  padding: 0 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 900;
-  color: #4b3429;
-}
-.locationOption:hover { background: rgba(244, 179, 22, 0.18); }
-.locationEmpty { padding: 10px; opacity: 0.75; font-weight: 800; }
 
+/* Cart */
 .cartBtn {
   position: relative;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -652,7 +707,9 @@ function removeFromCart(index) {
   cursor: pointer;
   box-shadow: var(--cardShadow);
 }
-.cartIcon { font-size: 18px; }
+.cartIcon {
+  font-size: 18px;
+}
 .cartCount {
   position: absolute;
   top: -8px;
@@ -670,9 +727,22 @@ function removeFromCart(index) {
 }
 
 /* Hero */
-.hero { text-align: center; padding: 8px 0 16px; }
-.title { margin: 0; font-size: 44px; letter-spacing: 2px; font-weight: 900; color: var(--brown); }
-.subtitle { margin: 8px 0 0; opacity: 0.75; font-weight: 800; }
+.hero {
+  text-align: center;
+  padding: 8px 0 16px;
+}
+.title {
+  margin: 0;
+  font-size: 44px;
+  letter-spacing: 2px;
+  font-weight: 900;
+  color: var(--brown);
+}
+.subtitle {
+  margin: 8px 0 0;
+  opacity: 0.75;
+  font-weight: 800;
+}
 
 /* Contact Layout */
 .contactGrid {
@@ -681,7 +751,12 @@ function removeFromCart(index) {
   gap: 18px;
   align-items: start;
 }
-.leftCol, .rightCol { display: flex; flex-direction: column; gap: 18px; }
+.leftCol,
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
 .card {
   background: #fff;
@@ -690,9 +765,26 @@ function removeFromCart(index) {
   box-shadow: var(--cardShadow);
   padding: 14px;
 }
-.cardHeader { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
-.cardTitle { margin: 0; font-size: 18px; font-weight: 1000; color: var(--brown); }
-.statusLine { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-weight: 900; opacity: 0.9; }
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: baseline;
+}
+.cardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 1000;
+  color: var(--brown);
+}
+.statusLine {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  opacity: 0.9;
+}
 .statusDot {
   width: 10px;
   height: 10px;
@@ -705,37 +797,81 @@ function removeFromCart(index) {
   box-shadow: 0 0 0 4px rgba(44, 138, 75, 0.15);
 }
 
-.crumbs {
-  margin: 10px 0 14px;
-  font-weight: 900;
-  opacity: 0.75;
-}
-.crumbLink { text-decoration: underline; cursor: default; }
-.crumbSep { margin: 0 8px; opacity: 0.6; }
-
 .infoRow {
   display: grid;
   grid-template-columns: 90px 1fr;
   gap: 10px;
   padding: 10px 0;
-  border-top: 1px solid rgba(75, 52, 41, 0.10);
+  border-top: 1px solid rgba(75, 52, 41, 0.1);
 }
-.infoLabel { font-weight: 1000; opacity: 0.8; }
-.infoValue { font-weight: 900; }
+.infoLabel {
+  font-weight: 1000;
+  opacity: 0.8;
+}
+.infoValue {
+  font-weight: 900;
+}
+.phoneLink {
+  color: var(--brown);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(75, 52, 41, 0.35);
+}
+.phoneLink:hover {
+  border-bottom-color: rgba(244, 179, 22, 0.9);
+}
 
-.aboutText { margin: 10px 0 0; line-height: 1.45; font-weight: 800; opacity: 0.9; }
+.aboutText {
+  margin: 10px 0 0;
+  line-height: 1.5;
+  font-weight: 800;
+  opacity: 0.92;
+}
 
-.hoursTable { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+/* Small “stand-out” callout inside About */
+.aboutCard {
+  position: relative;
+}
+.aboutHighlight {
+  margin-top: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(244, 179, 22, 0.4);
+  background: linear-gradient(180deg, rgba(244, 179, 22, 0.16), rgba(244, 179, 22, 0.08));
+  padding: 12px;
+}
+.aboutHighlightTitle {
+  font-weight: 1000;
+  margin-bottom: 4px;
+}
+.aboutHighlightBody {
+  font-weight: 900;
+  opacity: 0.9;
+}
+
+/* Hours */
+.hoursTable {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
 .hoursRow {
   display: flex;
   justify-content: space-between;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(75, 52, 41, 0.10);
+  border-bottom: 1px solid rgba(75, 52, 41, 0.1);
 }
-.hoursDay { font-weight: 1000; }
-.hoursDay.today { text-decoration: underline; }
-.hoursTime { font-weight: 900; opacity: 0.9; }
+.hoursDay {
+  font-weight: 1000;
+}
+.hoursDay.today {
+  text-decoration: underline;
+}
+.hoursTime {
+  font-weight: 900;
+  opacity: 0.9;
+}
 
+/* Map */
 .mapWrap {
   border-radius: 14px;
   overflow: hidden;
@@ -749,7 +885,6 @@ function removeFromCart(index) {
   border: 0;
   display: block;
 }
-
 .secondaryBtn {
   margin-top: 10px;
   width: 100%;
@@ -761,8 +896,12 @@ function removeFromCart(index) {
   padding: 12px;
   cursor: pointer;
 }
-.secondaryBtn:hover { border-color: rgba(244, 179, 22, 0.55); box-shadow: var(--cardShadow); }
+.secondaryBtn:hover {
+  border-color: rgba(244, 179, 22, 0.55);
+  box-shadow: var(--cardShadow);
+}
 
+/* FAQ */
 .faqItem {
   width: 100%;
   display: flex;
@@ -777,31 +916,110 @@ function removeFromCart(index) {
   font-weight: 1000;
   color: var(--brown);
 }
-.faqItem:hover { border-color: rgba(244, 179, 22, 0.55); box-shadow: var(--cardShadow); }
-.faqChev { opacity: 0.7; transition: transform 0.15s ease; }
-.faqChev.open { transform: rotate(180deg); }
-
+.faqItem:hover {
+  border-color: rgba(244, 179, 22, 0.55);
+  box-shadow: var(--cardShadow);
+}
+.faqChev {
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+.faqChev.open {
+  transform: rotate(180deg);
+}
 .faqBody {
   padding: 10px 12px;
   margin-top: 8px;
   border-radius: 14px;
   background: rgba(75, 52, 41, 0.04);
-  border: 1px solid rgba(75, 52, 41, 0.10);
+  border: 1px solid rgba(75, 52, 41, 0.1);
   font-weight: 900;
   opacity: 0.9;
 }
 
+/* Privacy + Message (premium, clean) */
 .privacyBar {
   margin-top: 14px;
+  width: 100%;
   padding: 12px 12px;
   border-radius: 14px;
   background: rgba(244, 179, 22, 0.18);
   border: 1px solid rgba(244, 179, 22, 0.35);
   font-weight: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.privacyChev {
+  opacity: 0.75;
+  transition: transform 0.15s ease;
+}
+.privacyChev.open {
+  transform: rotate(180deg);
+}
+.privacyPanel {
+  margin-top: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 12px;
+}
+.privacyCols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.privacyP {
+  margin: 0 0 10px;
+  font-weight: 900;
+  opacity: 0.92;
+  line-height: 1.45;
+}
+.privacyLink {
+  font-weight: 1000;
+  text-decoration: underline;
+  color: var(--brown);
+}
+.privacyHint {
+  margin-left: 8px;
+  opacity: 0.7;
+  font-weight: 900;
+}
+
+.contactForm {
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: #fff;
+  padding: 12px;
+}
+.fieldLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 1000;
+  margin: 8px 0 6px;
+}
+.fieldInput,
+.fieldTextarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(75, 52, 41, 0.18);
+  padding: 10px;
+  outline: none;
+  font-family: inherit;
+  font-weight: 900;
+}
+.fieldTextarea {
+  resize: vertical;
 }
 
 /* Cart slide-over */
-.overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.25); z-index: 20; }
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 20;
+}
 .cartPanel {
   position: fixed;
   top: 0;
@@ -817,7 +1035,9 @@ function removeFromCart(index) {
   display: flex;
   flex-direction: column;
 }
-.cartPanel.open { right: 0; }
+.cartPanel.open {
+  right: 0;
+}
 .cartHeader {
   display: flex;
   align-items: center;
@@ -825,8 +1045,17 @@ function removeFromCart(index) {
   padding-bottom: 10px;
   border-bottom: 1px solid rgba(75, 52, 41, 0.12);
 }
-.xBtn { border: none; background: transparent; cursor: pointer; font-size: 18px; opacity: 0.8; }
-.emptyCart { padding: 14px 0; opacity: 0.8; }
+.xBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.8;
+}
+.emptyCart {
+  padding: 14px 0;
+  opacity: 0.8;
+}
 .cartItem {
   display: flex;
   justify-content: space-between;
@@ -836,8 +1065,17 @@ function removeFromCart(index) {
   padding: 10px 10px;
   background: rgba(75, 52, 41, 0.03);
 }
-.cartItemName { font-weight: 900; }
-.removeBtn { border: none; background: transparent; cursor: pointer; font-weight: 900; color: var(--brown2); opacity: 0.9; }
+.cartItemName {
+  font-weight: 900;
+}
+.removeBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 900;
+  color: var(--brown2);
+  opacity: 0.9;
+}
 .checkoutBtn {
   width: 100%;
   border: none;
@@ -850,15 +1088,26 @@ function removeFromCart(index) {
   position: sticky;
   bottom: 14px;
 }
-.checkoutBtn:hover { background: #ffbe21; }
+.checkoutBtn:hover {
+  background: #ffbe21;
+}
 
 /* Responsive */
 @media (max-width: 980px) {
-  .page { grid-template-columns: 220px 1fr; }
-  .contactGrid { grid-template-columns: 1fr; }
+  .page {
+    grid-template-columns: 220px 1fr;
+  }
+  .contactGrid {
+    grid-template-columns: 1fr;
+  }
+  .privacyCols {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 720px) {
-  .page { grid-template-columns: 1fr; }
+  .page {
+    grid-template-columns: 1fr;
+  }
   .sidebar {
     position: sticky;
     top: 0;
@@ -866,7 +1115,5 @@ function removeFromCart(index) {
     border-right: none;
     border-bottom: 1px solid rgba(75, 52, 41, 0.12);
   }
-  .locationInput { width: 150px; }
-  .locationDropdown { min-width: 260px; }
 }
 </style>
