@@ -1,32 +1,62 @@
+// app/composables/useApi.ts
+
+type ApiOk<T = any> = { ok: true } & T;
+type ApiErr = { ok: false; error: string };
+export type ApiResponse<T = any> = ApiOk<T> | ApiErr;
+
 export const useApi = () => {
+  // ✅ IMPORTANT: no baseURL here — we use Nuxt proxy (/api -> backend)
+  const baseURL = "";
 
-  const createGuest = async (displayName: string) => {
-    const res = await fetch("http://localhost:3001/api/guest", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ displayName })
-    });
+  async function post<T = any>(
+    path: string,
+    body: Record<string, any>
+  ): Promise<ApiResponse<T>> {
+    try {
+      const res = await fetch(baseURL + path, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    return await res.json();
-  };
+      // try to read json (even for errors)
+      const data = await res.json().catch(() => null);
 
-  const guestMe = async () => {
-    const res = await fetch("http://localhost:3001/api/guest/me", {
-      credentials: "include"
-    });
+      if (!res.ok) {
+        return {
+          ok: false,
+          error: data?.error || `Request failed (${res.status})`,
+        };
+      }
 
-    if (res.status === 401) {
-      return { ok: false, guest: null };
+      // backend already returns { ok: true, ... }
+      return data;
+    } catch (e: any) {
+      return { ok: false, error: e?.message || "Failed to fetch" };
     }
+  }
 
-    return await res.json();
-  };
+  async function get<T = any>(path: string): Promise<ApiResponse<T>> {
+    try {
+      const res = await fetch(baseURL + path, {
+        credentials: "include",
+      });
 
-  return {
-    createGuest,
-    guestMe
-  };
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          ok: false,
+          error: data?.error || `Request failed (${res.status})`,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
+      return { ok: false, error: e?.message || "Failed to fetch" };
+    }
+  }
+
+  return { post, get };
 };

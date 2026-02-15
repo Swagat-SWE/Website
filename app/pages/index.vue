@@ -67,27 +67,42 @@
       <header class="topbar">
   <div></div> <!-- empty left spacer (keeps title centered nicely) -->
 
-  <div class="topbarRight">
-    <div class="locationWrap">
-      <div class="locationPill">
-        <span class="pin">📍 Dubuque, Iowa</span>
+    <!-- Topbar Right -->
+    <div class="topbarRight">
+      <div class="locationWrap">
+        <div class="locationPill">
+          <span class="pin">📍 Dubuque, Iowa</span>
+        </div>
       </div>
-     </div>
-
-     <button
-      class="signInBtn"
-      type="button"
-      @click="signIn"
-    >
-      {{ user ? "Logged In" : "Sign In" }}
-    </button>
-
-
-    <button class="cartBtn" type="button" @click="toggleCart">
-      <span class="cartIcon">🛒</span>
-      <span class="cartCount">{{ cartCount }}</span>
-     </button>
+    
+      <!-- Account / Sign in -->
+      <div class="accountWrap">
+        <button
+          class="signInBtn"
+          type="button"
+          @click="user ? toggleAccountMenu() : signIn()"
+        >
+          {{ user ? `Hi ${user.username}` : "Sign In" }}
+        </button>
+    
+        <!-- Dropdown -->
+        <div v-if="showAccountMenu" class="accountMenu">
+          <button class="menuItem" @click="goProfile">My Profile</button>
+          <button class="menuItem" @click="goOrders">My Orders</button>
+          <button class="menuItem" @click="goTracking">Order Tracking</button>
+    
+          <div class="menuDivider"></div>
+    
+          <button class="menuItem danger" @click="logout">Logout</button>
+        </div>
+      </div>
+    
+      <button class="cartBtn" type="button" @click="toggleCart">
+        <span class="cartIcon">🛒</span>
+        <span class="cartCount">{{ cartCount }}</span>
+      </button>
     </div>
+
     </header>
 
       <!-- Title -->
@@ -211,6 +226,42 @@ function signIn() {
   navigateTo("/login");
 }
 const user = ref(null);
+
+const showAccountMenu = ref(false);
+
+function toggleAccountMenu() {
+  showAccountMenu.value = !showAccountMenu.value;
+}
+
+function closeAccountMenu() {
+  showAccountMenu.value = false;
+}
+
+function goProfile() {
+  closeAccountMenu();
+  navigateTo("/profile");
+}
+
+function goOrders() {
+  closeAccountMenu();
+  navigateTo("/ordering");
+}
+
+function goTracking() {
+  closeAccountMenu();
+  navigateTo("/Tracking");
+}
+
+async function logout() {
+  closeAccountMenu();
+
+  // call your backend logout endpoint (adjust if your route name differs)
+  await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+  user.value = null;
+
+  // go back to main page
+  navigateTo("/");
+}
 
 async function checkAuth() {
   const res = await fetch("/api/me", {
@@ -377,8 +428,15 @@ const showLocationDropdown = ref(false);
 /** close dropdown if user clicks outside */
 function handleDocClick(e) {
   const target = e.target;
+
+  // keep dropdown open if clicking inside account wrap
+  if (target?.closest?.(".accountWrap")) return;
+
+  // keep your location rule
   if (target?.closest?.(".locationWrap")) return;
+
   showLocationDropdown.value = false;
+  showAccountMenu.value = false;
 }
 
 onMounted(() => {
@@ -1179,6 +1237,52 @@ const classics = ref([
 .tilePrice {
   font-weight: 1000;
   opacity: 0.85;
+}
+
+.accountWrap {
+  position: relative;
+}
+
+.accountMenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 200px;
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  padding: 8px;
+  z-index: 999;
+}
+
+.menuItem {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+  color: #4b3429;
+}
+
+.menuItem:hover {
+  background: rgba(244, 179, 22, 0.18);
+}
+
+.menuDivider {
+  height: 1px;
+  margin: 6px 0;
+  background: rgba(75, 52, 41, 0.12);
+}
+
+.menuItem.danger {
+  color: #b00020;
+}
+.menuItem.danger:hover {
+  background: rgba(176, 0, 32, 0.08);
 }
 
 

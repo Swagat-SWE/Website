@@ -1,10 +1,23 @@
-// nuxt.config.ts
 export default defineNuxtConfig({
-  imports: { dirs: ["composables"] },
-
   nitro: {
     devProxy: {
-      "/api": { target: "http://localhost:3001", changeOrigin: true },
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
+
+  // 👇 Add this too (important in dev because the browser hits Vite first)
+  vite: {
+    server: {
+      proxy: {
+        "/api": {
+          target: "http://localhost:3001",
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
   },
 
