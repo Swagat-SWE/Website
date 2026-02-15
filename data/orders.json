@@ -1,0 +1,2084 @@
+{
+  "store": "Campus Bagel Co.",
+  "period": {
+    "start": "2026-02-02",
+    "end": "2026-02-13"
+  },
+  "orders": [
+    {
+      "orderNumber": 10001,
+      "customerName": "Benjamin Clark",
+      "orderDateTime": "2026-02-02T07:35:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 7.48
+    },
+    {
+      "orderNumber": 10002,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-02T11:50:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10003,
+      "customerName": "Harper Anderson",
+      "orderDateTime": "2026-02-02T13:23:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 7.98
+    },
+    {
+      "orderNumber": 10004,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-02T07:37:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 2.49
+    },
+    {
+      "orderNumber": 10005,
+      "customerName": "Olivia Chen",
+      "orderDateTime": "2026-02-02T10:49:00",
+      "items": [
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        },
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        }
+      ],
+      "orderTotal": 16.27
+    },
+    {
+      "orderNumber": 10006,
+      "customerName": "Logan Scott",
+      "orderDateTime": "2026-02-02T13:43:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 9.67
+    },
+    {
+      "orderNumber": 10007,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-02T07:21:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        }
+      ],
+      "orderTotal": 11.48
+    },
+    {
+      "orderNumber": 10008,
+      "customerName": "Benjamin Clark",
+      "orderDateTime": "2026-02-02T10:39:00",
+      "items": [
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        },
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 9.09
+    },
+    {
+      "orderNumber": 10009,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-02T09:05:00",
+      "items": [
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 6.48
+    },
+    {
+      "orderNumber": 10010,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-02T08:52:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 7.49
+    },
+    {
+      "orderNumber": 10011,
+      "customerName": "Daniel King",
+      "orderDateTime": "2026-02-02T13:12:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 8.78
+    },
+    {
+      "orderNumber": 10012,
+      "customerName": "Noah Thompson",
+      "orderDateTime": "2026-02-02T11:14:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 2.49
+    },
+    {
+      "orderNumber": 10013,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-03T10:13:00",
+      "items": [
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        }
+      ],
+      "orderTotal": 7.99
+    },
+    {
+      "orderNumber": 10014,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-03T13:14:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 5.49
+    },
+    {
+      "orderNumber": 10015,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-03T07:04:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10016,
+      "customerName": "Harper Anderson",
+      "orderDateTime": "2026-02-03T07:47:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 2.49
+    },
+    {
+      "orderNumber": 10017,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-03T12:58:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10018,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-03T08:36:00",
+      "items": [
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        },
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        }
+      ],
+      "orderTotal": 17.27
+    },
+    {
+      "orderNumber": 10019,
+      "customerName": "Harper Anderson",
+      "orderDateTime": "2026-02-03T08:02:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 5.49
+    },
+    {
+      "orderNumber": 10020,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-03T07:24:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 17.37
+    },
+    {
+      "orderNumber": 10021,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-03T12:55:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10022,
+      "customerName": "Ethan Miller",
+      "orderDateTime": "2026-02-03T13:10:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 5.0
+    },
+    {
+      "orderNumber": 10023,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-03T08:26:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        },
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 17.97
+    },
+    {
+      "orderNumber": 10024,
+      "customerName": "Emma Johnson",
+      "orderDateTime": "2026-02-03T09:48:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 7.19
+    },
+    {
+      "orderNumber": 10025,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-04T11:23:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 11.88
+    },
+    {
+      "orderNumber": 10026,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-04T07:36:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 7.98
+    },
+    {
+      "orderNumber": 10027,
+      "customerName": "Daniel King",
+      "orderDateTime": "2026-02-04T07:59:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        },
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 17.97
+    },
+    {
+      "orderNumber": 10028,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-04T08:02:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 11.97
+    },
+    {
+      "orderNumber": 10029,
+      "customerName": "Grace Wright",
+      "orderDateTime": "2026-02-04T11:38:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 10.48
+    },
+    {
+      "orderNumber": 10030,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-04T13:22:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 7.49
+    },
+    {
+      "orderNumber": 10031,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-04T10:54:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 8.28
+    },
+    {
+      "orderNumber": 10032,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-04T13:07:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 4.99
+    },
+    {
+      "orderNumber": 10033,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-04T11:25:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 8.29
+    },
+    {
+      "orderNumber": 10034,
+      "customerName": "Harper Anderson",
+      "orderDateTime": "2026-02-04T07:57:00",
+      "items": [
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        },
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 8.68
+    },
+    {
+      "orderNumber": 10035,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-04T11:55:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        },
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 14.97
+    },
+    {
+      "orderNumber": 10036,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-04T09:08:00",
+      "items": [
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 6.99
+    },
+    {
+      "orderNumber": 10037,
+      "customerName": "Sophia Williams",
+      "orderDateTime": "2026-02-05T10:37:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 7.49
+    },
+    {
+      "orderNumber": 10038,
+      "customerName": "Logan Scott",
+      "orderDateTime": "2026-02-05T12:37:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        },
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 21.07
+    },
+    {
+      "orderNumber": 10039,
+      "customerName": "Mia Garcia",
+      "orderDateTime": "2026-02-05T12:29:00",
+      "items": [
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 6.59
+    },
+    {
+      "orderNumber": 10040,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-05T12:33:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 5.49
+    },
+    {
+      "orderNumber": 10041,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-05T12:55:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 12.38
+    },
+    {
+      "orderNumber": 10042,
+      "customerName": "Olivia Chen",
+      "orderDateTime": "2026-02-05T10:42:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10043,
+      "customerName": "Mia Garcia",
+      "orderDateTime": "2026-02-05T09:58:00",
+      "items": [
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        },
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 14.97
+    },
+    {
+      "orderNumber": 10044,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-05T11:35:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 11.28
+    },
+    {
+      "orderNumber": 10045,
+      "customerName": "Henry Allen",
+      "orderDateTime": "2026-02-05T13:01:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 4.99
+    },
+    {
+      "orderNumber": 10046,
+      "customerName": "Grace Wright",
+      "orderDateTime": "2026-02-05T12:17:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 5.29
+    },
+    {
+      "orderNumber": 10047,
+      "customerName": "Olivia Chen",
+      "orderDateTime": "2026-02-05T11:32:00",
+      "items": [
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        },
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 11.58
+    },
+    {
+      "orderNumber": 10048,
+      "customerName": "James Wilson",
+      "orderDateTime": "2026-02-05T07:09:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 4.98
+    },
+    {
+      "orderNumber": 10049,
+      "customerName": "Grace Wright",
+      "orderDateTime": "2026-02-06T07:00:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 11.87
+    },
+    {
+      "orderNumber": 10050,
+      "customerName": "Logan Scott",
+      "orderDateTime": "2026-02-06T08:36:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 17.47
+    },
+    {
+      "orderNumber": 10051,
+      "customerName": "Daniel King",
+      "orderDateTime": "2026-02-06T08:49:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        },
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        },
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 17.47
+    },
+    {
+      "orderNumber": 10052,
+      "customerName": "Emma Johnson",
+      "orderDateTime": "2026-02-06T08:52:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 9.98
+    },
+    {
+      "orderNumber": 10053,
+      "customerName": "Sophia Williams",
+      "orderDateTime": "2026-02-06T12:25:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 4.68
+    },
+    {
+      "orderNumber": 10054,
+      "customerName": "Mia Garcia",
+      "orderDateTime": "2026-02-06T11:58:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 5.29
+    },
+    {
+      "orderNumber": 10055,
+      "customerName": "Grace Wright",
+      "orderDateTime": "2026-02-06T08:38:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 19.07
+    },
+    {
+      "orderNumber": 10056,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-06T08:27:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 2.49
+    },
+    {
+      "orderNumber": 10057,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-06T09:56:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 4.69
+    },
+    {
+      "orderNumber": 10058,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-06T10:52:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 5.29
+    },
+    {
+      "orderNumber": 10059,
+      "customerName": "Sophia Williams",
+      "orderDateTime": "2026-02-06T10:59:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 10.78
+    },
+    {
+      "orderNumber": 10060,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-06T13:33:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 2.19
+    },
+    {
+      "orderNumber": 10061,
+      "customerName": "Noah Thompson",
+      "orderDateTime": "2026-02-09T07:21:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 14.08
+    },
+    {
+      "orderNumber": 10062,
+      "customerName": "Daniel King",
+      "orderDateTime": "2026-02-09T11:49:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 10.48
+    },
+    {
+      "orderNumber": 10063,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-09T11:09:00",
+      "items": [
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        }
+      ],
+      "orderTotal": 21.77
+    },
+    {
+      "orderNumber": 10064,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-09T13:28:00",
+      "items": [
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        },
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 20.37
+    },
+    {
+      "orderNumber": 10065,
+      "customerName": "Benjamin Clark",
+      "orderDateTime": "2026-02-09T07:41:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10066,
+      "customerName": "Ethan Miller",
+      "orderDateTime": "2026-02-09T10:19:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        },
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 14.37
+    },
+    {
+      "orderNumber": 10067,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-09T07:25:00",
+      "items": [
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        }
+      ],
+      "orderTotal": 11.98
+    },
+    {
+      "orderNumber": 10068,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-09T08:03:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 5.29
+    },
+    {
+      "orderNumber": 10069,
+      "customerName": "Harper Anderson",
+      "orderDateTime": "2026-02-09T07:00:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 5.29
+    },
+    {
+      "orderNumber": 10070,
+      "customerName": "Noah Thompson",
+      "orderDateTime": "2026-02-09T07:32:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 5.79
+    },
+    {
+      "orderNumber": 10071,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-09T11:51:00",
+      "items": [
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 6.59
+    },
+    {
+      "orderNumber": 10072,
+      "customerName": "Henry Allen",
+      "orderDateTime": "2026-02-09T07:30:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        },
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        }
+      ],
+      "orderTotal": 12.18
+    },
+    {
+      "orderNumber": 10073,
+      "customerName": "James Wilson",
+      "orderDateTime": "2026-02-10T13:09:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 5.29
+    },
+    {
+      "orderNumber": 10074,
+      "customerName": "Noah Thompson",
+      "orderDateTime": "2026-02-10T09:05:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 9.68
+    },
+    {
+      "orderNumber": 10075,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-10T07:15:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 4.69
+    },
+    {
+      "orderNumber": 10076,
+      "customerName": "Olivia Chen",
+      "orderDateTime": "2026-02-10T10:04:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 5.79
+    },
+    {
+      "orderNumber": 10077,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-10T11:13:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 2.19
+    },
+    {
+      "orderNumber": 10078,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-10T07:44:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 2.19
+    },
+    {
+      "orderNumber": 10079,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-10T10:30:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 13.77
+    },
+    {
+      "orderNumber": 10080,
+      "customerName": "Emma Johnson",
+      "orderDateTime": "2026-02-10T08:04:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        }
+      ],
+      "orderTotal": 10.48
+    },
+    {
+      "orderNumber": 10081,
+      "customerName": "Daniel King",
+      "orderDateTime": "2026-02-10T11:30:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 17.07
+    },
+    {
+      "orderNumber": 10082,
+      "customerName": "Harper Anderson",
+      "orderDateTime": "2026-02-10T08:49:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 9.09
+    },
+    {
+      "orderNumber": 10083,
+      "customerName": "James Wilson",
+      "orderDateTime": "2026-02-10T11:22:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 5.79
+    },
+    {
+      "orderNumber": 10084,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-10T08:22:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 14.87
+    },
+    {
+      "orderNumber": 10085,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-11T12:46:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 2.19
+    },
+    {
+      "orderNumber": 10086,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-11T10:51:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 5.49
+    },
+    {
+      "orderNumber": 10087,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-11T08:16:00",
+      "items": [
+        {
+          "name": "Big Breakfast Burrito",
+          "customizations": [],
+          "price": 7.49
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 14.48
+    },
+    {
+      "orderNumber": 10088,
+      "customerName": "Grace Wright",
+      "orderDateTime": "2026-02-11T11:38:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 13.28
+    },
+    {
+      "orderNumber": 10089,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-11T07:44:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 4.69
+    },
+    {
+      "orderNumber": 10090,
+      "customerName": "Henry Allen",
+      "orderDateTime": "2026-02-11T08:38:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        }
+      ],
+      "orderTotal": 7.79
+    },
+    {
+      "orderNumber": 10091,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-11T11:20:00",
+      "items": [
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 6.59
+    },
+    {
+      "orderNumber": 10092,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-11T10:13:00",
+      "items": [
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 2.49
+    },
+    {
+      "orderNumber": 10093,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-11T13:50:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 5.79
+    },
+    {
+      "orderNumber": 10094,
+      "customerName": "Olivia Chen",
+      "orderDateTime": "2026-02-11T07:35:00",
+      "items": [
+        {
+          "name": "Mocha Hot Medium",
+          "customizations": [],
+          "price": 4.69
+        }
+      ],
+      "orderTotal": 4.69
+    },
+    {
+      "orderNumber": 10095,
+      "customerName": "Ethan Miller",
+      "orderDateTime": "2026-02-11T09:23:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10096,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-11T13:23:00",
+      "items": [
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        }
+      ],
+      "orderTotal": 10.98
+    },
+    {
+      "orderNumber": 10097,
+      "customerName": "Mia Garcia",
+      "orderDateTime": "2026-02-12T12:00:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 12.78
+    },
+    {
+      "orderNumber": 10098,
+      "customerName": "Emma Johnson",
+      "orderDateTime": "2026-02-12T12:45:00",
+      "items": [
+        {
+          "name": "Pepsi",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10099,
+      "customerName": "Emma Johnson",
+      "orderDateTime": "2026-02-12T12:43:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 13.47
+    },
+    {
+      "orderNumber": 10100,
+      "customerName": "Ethan Miller",
+      "orderDateTime": "2026-02-12T10:38:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        },
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        }
+      ],
+      "orderTotal": 10.47
+    },
+    {
+      "orderNumber": 10101,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-12T08:30:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Turkey Sausage Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 14.87
+    },
+    {
+      "orderNumber": 10102,
+      "customerName": "Elijah Walker",
+      "orderDateTime": "2026-02-12T08:01:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 5.79
+    },
+    {
+      "orderNumber": 10103,
+      "customerName": "Emma Johnson",
+      "orderDateTime": "2026-02-12T11:16:00",
+      "items": [
+        {
+          "name": "Pepperoni Pizza Bagel",
+          "customizations": [],
+          "price": 5.29
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 12.28
+    },
+    {
+      "orderNumber": 10104,
+      "customerName": "Logan Scott",
+      "orderDateTime": "2026-02-12T07:47:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 12.08
+    },
+    {
+      "orderNumber": 10105,
+      "customerName": "Lucas Davis",
+      "orderDateTime": "2026-02-12T13:18:00",
+      "items": [
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        },
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 13.18
+    },
+    {
+      "orderNumber": 10106,
+      "customerName": "Ethan Miller",
+      "orderDateTime": "2026-02-12T13:13:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    },
+    {
+      "orderNumber": 10107,
+      "customerName": "James Wilson",
+      "orderDateTime": "2026-02-12T07:06:00",
+      "items": [
+        {
+          "name": "Plain Bagel",
+          "customizations": [],
+          "price": 2.19
+        }
+      ],
+      "orderTotal": 2.19
+    },
+    {
+      "orderNumber": 10108,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-12T12:40:00",
+      "items": [
+        {
+          "name": "Turkey, Bacon & Avocado Sandwich",
+          "customizations": [],
+          "price": 7.99
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 10.49
+    },
+    {
+      "orderNumber": 10109,
+      "customerName": "Isabella Lewis",
+      "orderDateTime": "2026-02-13T07:01:00",
+      "items": [
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 9.78
+    },
+    {
+      "orderNumber": 10110,
+      "customerName": "Noah Thompson",
+      "orderDateTime": "2026-02-13T12:15:00",
+      "items": [
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 6.99
+    },
+    {
+      "orderNumber": 10111,
+      "customerName": "Olivia Chen",
+      "orderDateTime": "2026-02-13T09:00:00",
+      "items": [
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 5.79
+    },
+    {
+      "orderNumber": 10112,
+      "customerName": "Benjamin Clark",
+      "orderDateTime": "2026-02-13T12:01:00",
+      "items": [
+        {
+          "name": "Cold Brew Classic Large",
+          "customizations": [],
+          "price": 3.99
+        }
+      ],
+      "orderTotal": 3.99
+    },
+    {
+      "orderNumber": 10113,
+      "customerName": "Amelia Hall",
+      "orderDateTime": "2026-02-13T07:52:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        }
+      ],
+      "orderTotal": 5.49
+    },
+    {
+      "orderNumber": 10114,
+      "customerName": "Charlotte Young",
+      "orderDateTime": "2026-02-13T08:52:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Everything Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 7.49
+    },
+    {
+      "orderNumber": 10115,
+      "customerName": "Sophia Williams",
+      "orderDateTime": "2026-02-13T12:41:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        }
+      ],
+      "orderTotal": 7.48
+    },
+    {
+      "orderNumber": 10116,
+      "customerName": "Ava Brown",
+      "orderDateTime": "2026-02-13T12:03:00",
+      "items": [
+        {
+          "name": "Cinnamon Raisin Bagel",
+          "customizations": [],
+          "price": 2.49
+        },
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Farm House Egg Sandwich",
+          "customizations": [],
+          "price": 6.99
+        }
+      ],
+      "orderTotal": 14.97
+    },
+    {
+      "orderNumber": 10117,
+      "customerName": "Ethan Miller",
+      "orderDateTime": "2026-02-13T09:24:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        },
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 8.29
+    },
+    {
+      "orderNumber": 10118,
+      "customerName": "Liam Martinez",
+      "orderDateTime": "2026-02-13T13:43:00",
+      "items": [
+        {
+          "name": "Vanilla Cream Cold Brew Large",
+          "customizations": [],
+          "price": 5.79
+        },
+        {
+          "name": "Bacon Cheddar Egg Sandwich",
+          "customizations": [],
+          "price": 6.59
+        }
+      ],
+      "orderTotal": 12.38
+    },
+    {
+      "orderNumber": 10119,
+      "customerName": "Sophia Williams",
+      "orderDateTime": "2026-02-13T13:24:00",
+      "items": [
+        {
+          "name": "Caramel Macchiato Iced Large",
+          "customizations": [],
+          "price": 5.49
+        },
+        {
+          "name": "Strawberry Banana Smoothie Large",
+          "customizations": [],
+          "price": 5.79
+        }
+      ],
+      "orderTotal": 11.28
+    },
+    {
+      "orderNumber": 10120,
+      "customerName": "Noah Thompson",
+      "orderDateTime": "2026-02-13T12:55:00",
+      "items": [
+        {
+          "name": "Water",
+          "customizations": [],
+          "price": 2.5
+        }
+      ],
+      "orderTotal": 2.5
+    }
+  ]
+}
