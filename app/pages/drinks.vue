@@ -1091,9 +1091,8 @@ const bottledDrinks = ref([
 .pricePill {
   font-weight: 900;
   font-size: 14px;
-  color: #2c1b12;
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
+  color: #fff;
+  background: #111;
   padding: 4px 8px;
   border-radius: 999px;
   width: fit-content;
