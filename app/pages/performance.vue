@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import ordersData from '~/data/orders.json'
+import ordersData from '../data/orders.json'
 
 const orders = ordersData.orders
 
