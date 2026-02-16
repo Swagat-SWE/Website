@@ -7,12 +7,24 @@
         <h2 class="rightTitle">Sign in</h2>
 
         <label class="label">Username</label>
-        <input v-model="username" class="input" placeholder="Bagel_67" />
+        <input 
+          v-model="username" 
+          class="input" 
+          placeholder="10 characters max"
+          maxlength="10"
+        />
+
 
         <label class="label">Password</label>
-        <input v-model="password" class="input" type="password" placeholder="••••••••" />
+        <input 
+          v-model="password" 
+          class="input" 
+          type="password" 
+          placeholder="••••••••"
+          maxlength="12"
+        />
 
-        <button class="primary" :disabled="!usernameTrim || !password || loading" @click="login">
+        <button class="primary" :disabled="!usernameTrim || usernameTrim.length > 10 || !password || password.length > 12 || loading">
           {{ loading ? "Signing in..." : "Sign In" }}
         </button>
 
