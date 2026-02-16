@@ -4,7 +4,6 @@
     <!-- Left Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
-
         <NuxtLink to="/" class="logoLink" aria-label="Main Page">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
@@ -63,47 +62,71 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- Top bar: Location (simple prototype) + Cart -->
+      <!-- Top bar -->
       <header class="topbar">
-  <div></div> <!-- empty left spacer (keeps title centered nicely) -->
+        <div></div>
 
-    <!-- Topbar Right -->
-    <div class="topbarRight">
-      <div class="locationWrap">
-        <div class="locationPill">
-          <span class="pin">📍 Dubuque, Iowa</span>
-        </div>
-      </div>
-    
-      <!-- Account / Sign in -->
-      <div class="accountWrap">
-        <button
-          class="signInBtn"
-          type="button"
-          @click="user ? toggleAccountMenu() : signIn()"
-        >
-          {{ user ? `Hi ${user.username}` : "Sign In" }}
-        </button>
-    
-        <!-- Dropdown -->
-        <div v-if="showAccountMenu" class="accountMenu">
-          <button class="menuItem" @click="goProfile">My Profile</button>
-          <button class="menuItem" @click="goOrders">My Orders</button>
-          <button class="menuItem" @click="goTracking">Order Tracking</button>
-    
-          <div class="menuDivider"></div>
-    
-          <button class="menuItem danger" @click="logout">Logout</button>
-        </div>
-      </div>
-    
-      <button class="cartBtn" type="button" @click="toggleCart">
-        <span class="cartIcon">🛒</span>
-        <span class="cartCount">{{ cartCount }}</span>
-      </button>
-    </div>
+        <!-- Topbar Right -->
+        <div class="topbarRight">
+          <div class="locationWrap">
+            <div class="locationPill">
+              <span class="pin">📍</span>
 
-    </header>
+              <!-- If you later want a dropdown/search, this is already wired -->
+              <span class="locationSelected">{{ location }}</span>
+            </div>
+
+            <!-- Optional dropdown UI (kept here for later use) -->
+            <div v-if="showLocationDropdown" class="locationDropdown">
+              <input
+                class="locationInput"
+                v-model="locationQuery"
+                placeholder="Search locations…"
+                @input="showLocationDropdown = true"
+              />
+              <div v-if="filteredLocations.length === 0" class="locationEmpty">
+                No matches
+              </div>
+              <button
+                v-for="opt in filteredLocations"
+                :key="opt"
+                class="locationOption"
+                type="button"
+                @click="selectLocation(opt)"
+              >
+                {{ opt }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Account / Sign in -->
+          <div class="accountWrap">
+            <button
+              class="signInBtn"
+              type="button"
+              @click="user ? toggleAccountMenu() : signIn()"
+            >
+              {{ user ? `Hi ${user.username}` : "Sign In" }}
+            </button>
+
+            <!-- Dropdown -->
+            <div v-if="showAccountMenu" class="accountMenu">
+              <button class="menuItem" @click="goProfile">My Profile</button>
+              <button class="menuItem" @click="goOrders">My Orders</button>
+              <button class="menuItem" @click="goTracking">Order Tracking</button>
+
+              <div class="menuDivider"></div>
+
+              <button class="menuItem danger" @click="logout">Logout</button>
+            </div>
+          </div>
+
+          <button class="cartBtn" type="button" @click="toggleCart">
+            <span class="cartIcon">🛒</span>
+            <span class="cartCount">{{ cartCount }}</span>
+          </button>
+        </div>
+      </header>
 
       <!-- Title -->
       <section class="hero">
@@ -117,25 +140,29 @@
           <div class="sectionLine" />
         </div>
 
-        <!-- Einstein-style image tiles (3 across) -->
         <div class="tileGrid">
           <article v-for="item in bestSellers" :key="item.id" class="tileCard">
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
             <div class="tileFooter">
-          <div class="tileNameRow">
-            <div class="namePrice">
-              <span class="tileName">{{ item.name }}</span>
-              <span v-if="item.price != null" class="pricePill">
-                ${{ Number(item.price).toFixed(2) }}
-              </span>
-            </div>
-          
-            <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
-              +
-            </button>
-          </div>
+              <div class="tileNameRow">
+                <div class="namePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span v-if="item.price != null" class="pricePill">
+                    ${{ Number(item.price).toFixed(2) }}
+                  </span>
+                </div>
+
+                <button
+                  class="plusBtn"
+                  type="button"
+                  aria-label="Add to cart"
+                  @click="addToCart(item)"
+                >
+                  +
+                </button>
+              </div>
             </div>
           </article>
         </div>
@@ -153,20 +180,26 @@
             <div class="tileImg">
               <img :src="item.img" :alt="item.name" />
             </div>
-            <div class="tileFooter">
-            <div class="tileNameRow">
-              <div class="namePrice">
-                <span class="tileName">{{ item.name }}</span>
-                <span v-if="item.price != null" class="pricePill">
-                  ${{ Number(item.price).toFixed(2) }}
-                </span>
-              </div>
-    <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
-      +
-    </button>
-  </div>
-</div>
 
+            <div class="tileFooter">
+              <div class="tileNameRow">
+                <div class="namePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span v-if="item.price != null" class="pricePill">
+                    ${{ Number(item.price).toFixed(2) }}
+                  </span>
+                </div>
+
+                <button
+                  class="plusBtn"
+                  type="button"
+                  aria-label="Add to cart"
+                  @click="addToCart(item)"
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </article>
         </div>
       </section>
@@ -184,32 +217,30 @@
         </div>
 
         <ul v-else class="cartList">
-        <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
-          <!-- left: image -->
-          <div class="cartThumb">
-            <img v-if="item.img" :src="item.img" :alt="item.name" />
-            <div v-else class="cartThumbFallback">PIC</div>
-          </div>
-      
-          <!-- middle: name + qty -->
-          <div class="cartMeta">
-            <div class="cartName">{{ item.name }}</div>
-            <div class="cartSub">Qty: {{ item.qty }}</div>
-          </div>
-      
-          <!-- right: price + remove -->
-          <div class="cartRight">
-            <div class="cartPrice">
-              ${{ ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2) }}
+          <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
+            <div class="cartThumb">
+              <img v-if="item.img" :src="item.img" :alt="item.name" />
+              <div v-else class="cartThumbFallback">PIC</div>
             </div>
-      
-            <button class="removeBtn" type="button" @click="removeFromCart(idx)">
-              Remove
-            </button>
-          </div>
-        </li>
-      </ul>
 
+            <div class="cartMeta">
+              <div class="cartName">{{ item.name }}</div>
+              <div class="cartSub">Qty: {{ item.qty }}</div>
+            </div>
+
+            <div class="cartRight">
+              <div class="cartPrice">
+                ${{
+                  ((item.priceEach ?? item.basePrice ?? 0) * (item.qty || 1)).toFixed(2)
+                }}
+              </div>
+
+              <button class="removeBtn" type="button" @click="removeFromCart(idx)">
+                Remove
+              </button>
+            </div>
+          </li>
+        </ul>
 
         <button class="checkoutBtn" type="button" @click="goToCheckout">
           Checkout
@@ -221,12 +252,15 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useApi } from "~/composables/useApi"; // ✅ IMPORTANT
+
+const api = useApi(); // ✅ IMPORTANT
 
 function signIn() {
   navigateTo("/login");
 }
-const user = ref(null);
 
+const user = ref(null);
 const showAccountMenu = ref(false);
 
 function toggleAccountMenu() {
@@ -255,32 +289,118 @@ function goTracking() {
 async function logout() {
   closeAccountMenu();
 
-  // call your backend logout endpoint (adjust if your route name differs)
-  await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+  // ✅ MUST use api (NOT fetch("/api/...")) so prod goes to backend URL
+  await api.post("/api/auth/logout", {});
   user.value = null;
 
-  // go back to main page
   navigateTo("/");
 }
 
 async function checkAuth() {
-  const res = await fetch("/api/me", {
-    credentials: "include",
-  });
-
-  const data = await res.json();
-
-  if (data.user) {
-    user.value = data.user;
-  }
+  // ✅ MUST use api (NOT fetch("/api/me"))
+  const data = await api.get("/api/me");
+  if (data?.ok && data.user) user.value = data.user;
+  else user.value = null;
 }
 
 onMounted(() => {
   checkAuth();
 });
 
+/** =========================
+ *  Location (simple prototype)
+ *  ========================= */
+const location = ref("Dubuque, Iowa");
+const locationQuery = ref("");
+const showLocationDropdown = ref(false);
 
-// ===== MENU DATA (from our excel) =====
+// Simple list (you can expand later)
+const locations = ref([
+  "Dubuque, Iowa",
+  "Cedar Rapids, Iowa",
+  "Iowa City, Iowa",
+  "Madison, Wisconsin",
+  "Chicago, Illinois",
+]);
+
+const filteredLocations = computed(() => {
+  const q = locationQuery.value.trim().toLowerCase();
+  if (!q) return locations.value.slice(0, 50);
+  return locations.value.filter((x) => x.toLowerCase().includes(q)).slice(0, 8);
+});
+
+function selectLocation(opt) {
+  location.value = opt;
+  locationQuery.value = "";
+  showLocationDropdown.value = false;
+}
+
+/** close dropdown if user clicks outside */
+function handleDocClick(e) {
+  const target = e.target;
+
+  // keep dropdown open if clicking inside account wrap
+  if (target?.closest?.(".accountWrap")) return;
+
+  // keep dropdown open if clicking in location
+  if (target?.closest?.(".locationWrap")) return;
+
+  showLocationDropdown.value = false;
+  showAccountMenu.value = false;
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleDocClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleDocClick);
+});
+
+/** =========================
+ *  Sidebar Review
+ *  ========================= */
+const showReview = ref(false);
+const rating = ref(0);
+const hoverRating = ref(0);
+const comment = ref("");
+const submitted = ref(false);
+
+function toggleReview() {
+  showReview.value = !showReview.value;
+}
+
+function submitReview() {
+  submitted.value = true;
+
+  rating.value = 0;
+  hoverRating.value = 0;
+  comment.value = "";
+
+  setTimeout(() => (submitted.value = false), 2000);
+}
+
+/** =========================
+ *  Cart
+ *  ========================= */
+const showCart = ref(false);
+const cart = useState("cart", () => []);
+const cartCount = computed(() =>
+  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
+);
+
+function toggleCart() {
+  showCart.value = !showCart.value;
+}
+
+function goToCheckout() {
+  showCart.value = false;
+  navigateTo("/checkout");
+}
+
+/** =========================
+ *  MENU DATA
+ *  ========================= */
 const MENU = [
   {
     id: 1,
@@ -390,7 +510,6 @@ const MENU = [
     ingredients: ["Pepperoni", "Swiss", "Asiago", "Red Onion", "Spinach", "Roasted Tomato Spread"],
     img: "/Pepperoni.png",
   },
-
   {
     id: 13,
     name: "Spicy Chicken",
@@ -411,92 +530,7 @@ const MENU = [
   },
 ];
 
-const filteredLocations = computed(() => {
-  const q = locationQuery.value.trim().toLowerCase();
-  if (!q) return locations.slice(0, 50);
-  return locations.filter((x) => x.toLowerCase().includes(q)).slice(0, 8);
-});
-
-function selectLocation(opt) {
-  location.value = opt;
-  locationQuery.value = "";
-  showLocationDropdown.value = false;
-}
-
-const showLocationDropdown = ref(false);
-
-/** close dropdown if user clicks outside */
-function handleDocClick(e) {
-  const target = e.target;
-
-  // keep dropdown open if clicking inside account wrap
-  if (target?.closest?.(".accountWrap")) return;
-
-  // keep your location rule
-  if (target?.closest?.(".locationWrap")) return;
-
-  showLocationDropdown.value = false;
-  showAccountMenu.value = false;
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleDocClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleDocClick);
-});
-
-/** =========================
- *  Sidebar Review
- *  ========================= */
-const showReview = ref(false);
-const rating = ref(0);
-const hoverRating = ref(0);
-const comment = ref("");
-const submitted = ref(false);
-
-function toggleReview() {
-  showReview.value = !showReview.value;
-}
-
-function submitReview() {
-  // show message
-  submitted.value = true;
-
-  // reset the form
-  rating.value = 0;
-  hoverRating.value = 0;
-  comment.value = "";
-
-  // optional: close the review panel after submit
-  // showReview.value = false;
-
-  setTimeout(() => (submitted.value = false), 2000);
-}
-
-
-/** =========================
- *  Cart
- *  ========================= */
-const showCart = ref(false);
-const cart = useState("cart", () => []);
-const cartCount = computed(() =>
-  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
-)
-
-
-function toggleCart() {
-  showCart.value = !showCart.value;
-}
-
-function goToCheckout() {
-  showCart.value = false;        // optional: close the cart
-  navigateTo("/checkout");       // or "/Checkout" depending on your filename
-}
-
 function addToCart(input) {
-  // allow passing either the whole object OR just a name string
   const menuItem =
     typeof input === "string"
       ? MENU.find((m) => m.name === input) || { name: input, price: 0 }
@@ -521,77 +555,26 @@ function addToCart(input) {
   showCart.value = true;
 }
 
-
-
 function removeFromCart(index) {
-  cart.value.splice(index, 1)
+  cart.value.splice(index, 1);
 }
 
 /** =========================
  *  Page Content (images)
- *  Replace URLs later with your own images in /public
  *  ========================= */
-// ===== Best Sellers (from MENU) =====
 const bestSellers = ref([
-  {
-    id: 1,
-    name: "Farm House Egg Sandwich",
-    price: 7.19,
-    img: "/Farmhouse.png",
-  },
-  {
-    id: 2,
-    name: "All Nighter Egg Sandwich",
-    price: 6.99,
-    // IMPORTANT: your file in /public is AllNIght.png (capital I)
-    img: "/AllNIght.png",
-  },
-  {
-    id: 3,
-    name: "Garden Avocado Egg Sandwich",
-    price: 6.39,
-    img: "/Garden.png",
-  },
+  { id: 1, name: "Farm House Egg Sandwich", price: 7.19, img: "/Farmhouse.png" },
+  { id: 2, name: "All Nighter Egg Sandwich", price: 6.99, img: "/AllNIght.png" },
+  { id: 3, name: "Garden Avocado Egg Sandwich", price: 6.39, img: "/Garden.png" },
 ]);
 
-
 const classics = ref([
-  {
-    id: "c1",
-    name: "Tastey Turkey Sandwich",
-    price: 7.99,
-    img: "/Tastey.png",
-  },
-  {
-    id: "c2",
-    name: "Avocado Veg Out Sandwich",
-    price: 7.54,  
-    img: "/Veg.png",
-  },
-  {
-    id: "c3",
-    name: "Nova Lox Sandwich",
-    price: 8.49,
-    img: "/Nova.png",
-  },
-  {
-    id: "c4",
-    name: "Nova Lux Brunch Special",
-    price: 9.29,
-    img: "/Special.png",
-  },
-  {
-    id: "c5",
-    name: "Ham & Swiss Sandwich",
-    price: 7.99,
-    img: "/Ham.png",
-  },
-  {
-    id: "c6",
-    name: "Turkey, Bacon & Avacado Sandwich",
-    price: 7.49,
-    img: "/TT.png",
-  },
+  { id: "c1", name: "Tastey Turkey Sandwich", price: 7.99, img: "/Tastey.png" },
+  { id: "c2", name: "Avocado Veg Out Sandwich", price: 7.54, img: "/Veg.png" },
+  { id: "c3", name: "Nova Lox Sandwich", price: 8.49, img: "/Nova.png" },
+  { id: "c4", name: "Nova Lux Brunch Special", price: 9.29, img: "/Special.png" },
+  { id: "c5", name: "Ham & Swiss Sandwich", price: 7.99, img: "/Ham.png" },
+  { id: "c6", name: "Turkey, Bacon & Avacado Sandwich", price: 7.49, img: "/TT.png" },
 ]);
 </script>
 
@@ -631,19 +614,19 @@ const classics = ref([
 
 .signInBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
   border-color: rgba(244, 179, 22, 0.5);
 }
 
 .logoImg {
   width: 100%;
-  max-width: 160px;   /* controls how big it can get */
+  max-width: 160px;
   height: auto;
   display: block;
   object-fit: contain;
 }
 
-.cartList{
+.cartList {
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
@@ -669,12 +652,12 @@ const classics = ref([
 .sidebarTop {
   display: flex;
   align-items: center;
-  justify-content: center;  /* centers the logo */
+  justify-content: center;
   margin-bottom: 14px;
-  overflow: hidden;         /* prevents it from spilling */
+  overflow: hidden;
 }
 
-.pricePill{
+.pricePill {
   flex: 0 0 auto;
   background: #111;
   color: #fff;
@@ -683,39 +666,8 @@ const classics = ref([
   padding: 6px 10px;
   border-radius: 999px;
   letter-spacing: 0.3px;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-.dotsBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  gap: 3px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 99px;
-  background: var(--brown);
-  opacity: 0.9;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--brown);
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
-  padding: 8px 10px;
-  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .nav {
@@ -852,12 +804,6 @@ const classics = ref([
   margin-bottom: 18px;
 }
 
-.topbarLeft {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
 /* Location (simple prototype) */
 .locationWrap {
   position: relative;
@@ -875,20 +821,21 @@ const classics = ref([
 }
 
 .locationInput {
-  width: 200px;
-  border: none;
+  width: 100%;
+  border: 1px solid rgba(75, 52, 41, 0.18);
   outline: none;
-  background: transparent;
+  background: #fff;
   font: inherit;
   font-weight: 900;
   color: var(--brown);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
 }
 
 .locationSelected {
   opacity: 0.75;
   font-weight: 900;
-  border-left: 1px solid rgba(75, 52, 41, 0.18);
-  padding-left: 12px;
 }
 
 /* dropdown container */
@@ -898,14 +845,14 @@ const classics = ref([
   left: 0;
 
   width: 320px;
-  max-height: 312px;       /* fixed box height */
-  overflow-y: auto;       /* scroll */
+  max-height: 312px;
+  overflow-y: auto;
   overflow-x: hidden;
 
   background: #fff;
   border: 1px solid rgba(75, 52, 41, 0.14);
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 8px;
 
   z-index: 50;
@@ -914,7 +861,7 @@ const classics = ref([
 /* each row */
 .locationOption {
   width: 100%;
-  height: 44px;           /* fixed row height */
+  height: 44px;
   display: flex;
   align-items: center;
 
@@ -933,7 +880,6 @@ const classics = ref([
 .locationOption:hover {
   background: rgba(244, 179, 22, 0.18);
 }
-
 
 .locationEmpty {
   padding: 10px;
@@ -984,12 +930,6 @@ const classics = ref([
   color: var(--brown);
 }
 
-.subtitle {
-  margin: 8px 0 0;
-  opacity: 0.75;
-  font-weight: 800;
-}
-
 .section {
   margin-top: 26px;
 }
@@ -1014,7 +954,7 @@ const classics = ref([
   background: linear-gradient(90deg, rgba(75, 52, 41, 0.25), rgba(75, 52, 41, 0));
 }
 
-/* === Einstein-style big tiles === */
+/* tiles */
 .tileGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(240px, 1fr));
@@ -1022,16 +962,15 @@ const classics = ref([
   align-items: start;
 }
 
-
 .tileCard {
   background: transparent;
 }
 
 .tileImg {
   width: 80%;
-  aspect-ratio: 1 / 1;      /* ✅ makes the box the same shape (square like Einstein tiles) */
+  aspect-ratio: 1 / 1;
   border-radius: 22px;
-  overflow: hidden;         /* ✅ prevents overflow outside rounded corners */
+  overflow: hidden;
   box-shadow: var(--cardShadow);
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
@@ -1040,7 +979,7 @@ const classics = ref([
 .tileImg img {
   width: 100%;
   height: 100%;
-  object-fit: cover;        /* ✅ fills the box perfectly */
+  object-fit: cover;
   display: block;
 }
 
@@ -1054,9 +993,14 @@ const classics = ref([
   gap: 10px;
 }
 
-.tileName { font-size: 18px; font-weight: 1000; color: var(--brown); letter-spacing: 0.2px; }
+.tileName {
+  font-size: 18px;
+  font-weight: 1000;
+  color: var(--brown);
+  letter-spacing: 0.2px;
+}
 
-/* Orange + button */
+/* plus btn */
 .plusBtn {
   width: 32px;
   height: 32px;
@@ -1077,7 +1021,7 @@ const classics = ref([
   background: var(--orangeHover);
 }
 
-/* Cart slide-over */
+/* cart */
 .overlay {
   position: fixed;
   inset: 0;
@@ -1113,7 +1057,6 @@ const classics = ref([
   border-bottom: 1px solid rgba(75, 52, 41, 0.12);
 }
 
-
 .xBtn {
   border: none;
   background: transparent;
@@ -1136,28 +1079,22 @@ const classics = ref([
   border-radius: 14px;
   padding: 12px;
   cursor: pointer;
-
   position: sticky;
   bottom: 14px;
 }
 
-.cartItem{
+.cartItem {
   display: grid;
   grid-template-columns: 64px 1fr auto;
   gap: 12px;
   align-items: center;
-
   border: 1px solid rgba(75, 52, 41, 0.12);
   border-radius: 16px;
   padding: 10px;
   background: rgba(75, 52, 41, 0.03);
 }
 
-.cartItemName {
-  font-weight: 900;
-}
-
-.cartThumb{
+.cartThumb {
   width: 56px;
   height: 56px;
   border-radius: 14px;
@@ -1168,48 +1105,48 @@ const classics = ref([
   place-items: center;
 }
 
-
-.cartThumb img{
+.cartThumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-.cartThumbFallback{
+
+.cartThumbFallback {
   font-weight: 1000;
   opacity: 0.6;
   font-size: 12px;
 }
 
-.cartMeta{
+.cartMeta {
   min-width: 0;
 }
 
-.cartName{
+.cartName {
   font-weight: 1000;
   font-size: 14px;
   line-height: 1.2;
 }
 
-.cartSub{
+.cartSub {
   margin-top: 4px;
   font-weight: 900;
   opacity: 0.7;
   font-size: 12px;
 }
 
-.cartRight{
+.cartRight {
   display: grid;
   justify-items: end;
   gap: 6px;
 }
 
-.cartPrice{
+.cartPrice {
   font-weight: 1000;
   font-size: 14px;
 }
 
-.removeBtn{
+.removeBtn {
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1223,22 +1160,16 @@ const classics = ref([
   background: #ffbe21;
 }
 
-.namePrice{
+.namePrice {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-
   width: 100%;
-  max-width: 260px; /* 👈 controls how far the price can go */
+  max-width: 260px;
 }
 
-
-.tilePrice {
-  font-weight: 1000;
-  opacity: 0.85;
-}
-
+/* account dropdown */
 .accountWrap {
   position: relative;
 }
@@ -1251,7 +1182,7 @@ const classics = ref([
   background: #fff;
   border: 1px solid rgba(75, 52, 41, 0.14);
   border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
   padding: 8px;
   z-index: 999;
 }
@@ -1285,7 +1216,6 @@ const classics = ref([
   background: rgba(176, 0, 32, 0.08);
 }
 
-
 /* Responsive */
 @media (max-width: 980px) {
   .page {
@@ -1306,9 +1236,6 @@ const classics = ref([
   }
   .tileGrid {
     grid-template-columns: 1fr;
-  }
-  .locationInput {
-    width: 150px;
   }
   .locationDropdown {
     min-width: 260px;
