@@ -8,28 +8,18 @@ require("dotenv").config();
 
 const { PrismaClient } = require("@prisma/client");
 
-// -------------------
-// App + Prisma
-// -------------------
 const app = express();
+const prisma = new PrismaClient();
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL,
-});
-
-// -------------------
-// Env + Safety
-// -------------------
 const isProd = process.env.NODE_ENV === "production";
 
-// Render sits behind a proxy (HTTPS terminates before Node)
+// Render runs behind a proxy (HTTPS terminates before Node)
 if (isProd) {
   app.set("trust proxy", 1);
 }
 
-// In production, do NOT allow missing secret
 if (isProd && !process.env.SESSION_SECRET) {
-  console.error("❌ SESSION_SECRET is missing in production environment!");
+  console.error("❌ SESSION_SECRET missing in production");
   process.exit(1);
 }
 
@@ -38,7 +28,6 @@ if (isProd && !process.env.SESSION_SECRET) {
 // -------------------
 app.use(express.json());
 
-// ✅ CORS allowlist (frontend + local dev)
 const allowedOrigins = [
   "http://localhost:3000",
   "https://localhost:3000",
@@ -50,18 +39,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      // allow no-origin requests (curl, health checks, etc.)
-      if (!origin) return cb(null, true);
-
+      if (!origin) return cb(null, true); // allow curl/health checks
       if (allowedOrigins.includes(origin)) return cb(null, true);
-
       return cb(new Error("Not allowed by CORS: " + origin));
     },
     credentials: true,
   })
 );
 
-// ✅ Sessions (cross-domain cookie works in prod)
 app.use(
   session({
     name: "sid",
@@ -71,8 +56,8 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: isProd ? "none" : "lax", // "none" required for cross-site cookies
-      secure: isProd, // must be true on HTTPS
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd, // true on HTTPS
     },
   })
 );
@@ -80,16 +65,16 @@ app.use(
 // -------------------
 // Routes
 // -------------------
-app.get("/", (req, res) => {
-  res.send("Einstein Backend is running");
-});
+app.get("/", (req, res) => res.send("Einstein Backend is running"));
 
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    env: isProd ? "production" : "development",
-    timestamp: new Date().toISOString(),
-  });
+app.get("/health", async (req, res) => {
+  // optional: quick DB check
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ ok: true, db: "connected", env: isProd ? "prod" : "dev" });
+  } catch (e) {
+    res.status(500).json({ ok: false, db: "failed", error: "DB not reachable" });
+  }
 });
 
 // -------------------
@@ -101,16 +86,13 @@ app.post("/api/auth/register", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Username & password required" });
+      return res.status(400).json({ ok: false, error: "Username & password required" });
     }
 
     if (!/^[a-zA-Z0-9_]{3,10}$/.test(username)) {
       return res.status(400).json({
         ok: false,
-        error:
-          "Username must be 3-10 characters and only letters, numbers, underscore.",
+        error: "Username must be 3-10 characters and only letters, numbers, underscore.",
       });
     }
 
@@ -144,20 +126,14 @@ app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Username & password required" });
+      return res.status(400).json({ ok: false, error: "Username & password required" });
     }
 
     const user = await prisma.user.findUnique({ where: { username } });
-    if (!user) {
-      return res.status(401).json({ ok: false, error: "Invalid credentials" });
-    }
+    if (!user) return res.status(401).json({ ok: false, error: "Invalid credentials" });
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) {
-      return res.status(401).json({ ok: false, error: "Invalid credentials" });
-    }
+    if (!valid) return res.status(401).json({ ok: false, error: "Invalid credentials" });
 
     req.session.user = { id: user.id, username: user.username };
     delete req.session.guest;
@@ -174,10 +150,7 @@ app.post("/api/auth/login", async (req, res) => {
 // -------------------
 app.post("/api/auth/logout", (req, res) => {
   req.session.destroy(() => {
-    res.clearCookie("sid", {
-      sameSite: isProd ? "none" : "lax",
-      secure: isProd,
-    });
+    res.clearCookie("sid", { sameSite: isProd ? "none" : "lax", secure: isProd });
     res.json({ ok: true });
   });
 });
@@ -188,7 +161,6 @@ app.post("/api/auth/logout", (req, res) => {
 app.post("/api/guest", async (req, res) => {
   try {
     const { name } = req.body;
-
     if (!name) return res.status(400).json({ ok: false, error: "Name required" });
 
     const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
@@ -209,21 +181,16 @@ app.post("/api/guest", async (req, res) => {
 });
 
 // -------------------
-// GUEST LOGOUT (Deletes guest)
+// GUEST LOGOUT (Deletes guest row)
 // -------------------
 app.post("/api/guest/logout", async (req, res) => {
   try {
     if (req.session.guest?.id) {
-      await prisma.guest
-        .delete({ where: { id: req.session.guest.id } })
-        .catch(() => null);
+      await prisma.guest.delete({ where: { id: req.session.guest.id } }).catch(() => null);
     }
 
     req.session.destroy(() => {
-      res.clearCookie("sid", {
-        sameSite: isProd ? "none" : "lax",
-        secure: isProd,
-      });
+      res.clearCookie("sid", { sameSite: isProd ? "none" : "lax", secure: isProd });
       res.json({ ok: true });
     });
   } catch (e) {
@@ -236,26 +203,14 @@ app.post("/api/guest/logout", async (req, res) => {
 // WHO AM I
 // -------------------
 app.get("/api/me", (req, res) => {
-  if (req.session.user)
-    return res.json({ ok: true, type: "user", user: req.session.user });
-  if (req.session.guest)
-    return res.json({ ok: true, type: "guest", guest: req.session.guest });
-
+  if (req.session.user) return res.json({ ok: true, type: "user", user: req.session.user });
+  if (req.session.guest) return res.json({ ok: true, type: "guest", guest: req.session.guest });
   return res.status(401).json({ ok: false, type: null });
 });
 
-// -------------------
 // 404
-// -------------------
-app.use((req, res) => {
-  res.status(404).json({ ok: false, error: "Route not found" });
-});
+app.use((req, res) => res.status(404).json({ ok: false, error: "Route not found" }));
 
-// -------------------
 // Start
-// -------------------
 const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));

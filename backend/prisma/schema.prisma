@@ -20,5 +20,3 @@ model Guest {
   createdAt DateTime @default(now())
   expiresAt DateTime
 }
-
-
