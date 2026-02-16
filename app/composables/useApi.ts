@@ -5,23 +5,15 @@ type ApiErr = { ok: false; error: string };
 export type ApiResponse<T = any> = ApiOk<T> | ApiErr;
 
 export const useApi = () => {
-  /**
-   * ✅ Use Nuxt runtime config (works in browser + server)
-   *
-   * In DEV:
-   *   NUXT_PUBLIC_API_BASE = "" (or not set)
-   *   => requests go to "/api/..." and your Nuxt dev proxy forwards to localhost:3001
-   *
-   * In PROD:
-   *   NUXT_PUBLIC_API_BASE = "https://backend-rj5c.onrender.com"
-   *   => requests go directly to your backend
-   */
+  // Uses NUXT runtime config:
+  // - dev: apiBase = ""  -> calls /api/* and your devProxy sends to localhost:3001
+  // - prod: apiBase = "https://backend-rj5c.onrender.com" -> calls backend directly
   const config = useRuntimeConfig();
   const baseURL = (config.public.apiBase as string) || "";
 
   async function post<T = any>(
     path: string,
-    body: Record<string, any>
+    body: Record<string, any> = {}
   ): Promise<ApiResponse<T>> {
     try {
       const res = await fetch(baseURL + path, {
@@ -34,10 +26,7 @@ export const useApi = () => {
       const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        return {
-          ok: false,
-          error: data?.error || `Request failed (${res.status})`,
-        };
+        return { ok: false, error: data?.error || `Request failed (${res.status})` };
       }
 
       return data;
@@ -48,17 +37,12 @@ export const useApi = () => {
 
   async function get<T = any>(path: string): Promise<ApiResponse<T>> {
     try {
-      const res = await fetch(baseURL + path, {
-        credentials: "include",
-      });
+      const res = await fetch(baseURL + path, { credentials: "include" });
 
       const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        return {
-          ok: false,
-          error: data?.error || `Request failed (${res.status})`,
-        };
+        return { ok: false, error: data?.error || `Request failed (${res.status})` };
       }
 
       return data;
