@@ -140,14 +140,16 @@
 
             <!-- Dropdown -->
             <div v-if="showAccountMenu" class="accountMenu">
-              <button class="menuItem" @click="goProfile">My Profile</button>
-              <button class="menuItem" @click="goOrders">My Orders</button>
-              <button class="menuItem" @click="goTracking">Order Tracking</button>
+              <button v-if="authType !== 'guest'" class="menuItem" @click="goProfile">My Profile</button>
+              <button v-if="authType !== 'guest'" class="menuItem" @click="goOrders">My Orders</button>            
 
-              <div class="menuDivider"></div>
+              <button class="menuItem" @click="goTracking">Order Tracking</button>            
+
+              <div class="menuDivider"></div>            
 
               <button class="menuItem danger" @click="logout">Logout</button>
             </div>
+
           </div>
 
           <button class="cartBtn" type="button" @click="toggleCart">
@@ -297,6 +299,7 @@ function signIn() {
 }
 
 const user = ref(null);
+const authType = ref(null); // "user" | "guest" | null
 const showAccountMenu = ref(false);
 
 function toggleAccountMenu() {
@@ -349,10 +352,15 @@ async function logout() {
 }
 
 async function checkAuth() {
-  // ✅ MUST use api (NOT fetch("/api/me"))
   const data = await api.get("/api/me");
-  if (data?.ok && data.user) user.value = data.user;
-  else user.value = null;
+
+  if (data?.ok && data.user) {
+    user.value = data.user;
+    authType.value = data.type || null; // <-- store "user" or "guest"
+  } else {
+    user.value = null;
+    authType.value = null;
+  }
 }
 
 onMounted(() => {
