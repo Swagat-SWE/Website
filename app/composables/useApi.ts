@@ -5,9 +5,17 @@ type ApiErr = { ok: false; error: string };
 export type ApiResponse<T = any> = ApiOk<T> | ApiErr;
 
 export const useApi = () => {
-  // ✅ Use Nuxt runtime config (safe in browser + server)
-  // - In dev: apiBase = "" -> uses your /api proxy to localhost:3001
-  // - In prod: apiBase = "https://backend-rj5c.onrender.com"
+  /**
+   * ✅ Use Nuxt runtime config (works in browser + server)
+   *
+   * In DEV:
+   *   NUXT_PUBLIC_API_BASE = "" (or not set)
+   *   => requests go to "/api/..." and your Nuxt dev proxy forwards to localhost:3001
+   *
+   * In PROD:
+   *   NUXT_PUBLIC_API_BASE = "https://backend-rj5c.onrender.com"
+   *   => requests go directly to your backend
+   */
   const config = useRuntimeConfig();
   const baseURL = (config.public.apiBase as string) || "";
 
@@ -32,7 +40,6 @@ export const useApi = () => {
         };
       }
 
-      // backend returns { ok: true, ... }
       return data;
     } catch (e: any) {
       return { ok: false, error: e?.message || "Failed to fetch" };

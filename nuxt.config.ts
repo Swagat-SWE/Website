@@ -1,7 +1,10 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
-  // ✅ Runtime config for production API base
-  // In Render Website env vars set:
+
+  // ===============================
+  // Runtime Config (VERY IMPORTANT)
+  // ===============================
+  // In Render → Website → Environment:
   // NUXT_PUBLIC_API_BASE = https://backend-rj5c.onrender.com
   runtimeConfig: {
     public: {
@@ -9,7 +12,9 @@ export default defineNuxtConfig({
     },
   },
 
-  // ✅ Dev proxy (Nitro) - helps server-side / dev requests
+  // ==================================
+  // Nitro Dev Proxy (Server-side dev)
+  // ==================================
   nitro: {
     devProxy: {
       "/api": {
@@ -19,7 +24,9 @@ export default defineNuxtConfig({
     },
   },
 
-  // ✅ Dev proxy (Vite) - helps browser requests in dev
+  // ==================================
+  // Vite Dev Proxy (Browser-side dev)
+  // ==================================
   vite: {
     server: {
       proxy: {
@@ -32,11 +39,19 @@ export default defineNuxtConfig({
     },
   },
 
-  // ✅ Local HTTPS
+  // ==================================
+  // Local HTTPS (Development only)
+  // ==================================
   devServer: {
     https: {
       key: "./certs/localhost-key.pem",
       cert: "./certs/localhost.pem",
     },
   },
+
+  // ==================================
+  // Compatibility + Stability
+  // ==================================
+  compatibilityDate: "2024-10-01",
+
 });
