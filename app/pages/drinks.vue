@@ -78,7 +78,12 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
+                <div class="tileNamePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span class="pricePill">
+                    ${{ Number(item.basePrice).toFixed(2) }}
+                  </span>
+                </div>
                 <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
@@ -100,8 +105,13 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="openSizeModal(item)">+</button>
+                <div class="tileNamePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span class="pricePill">
+                    ${{ Number(item.basePrice).toFixed(2) }}
+                  </span>
+                </div>
+              <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
@@ -122,8 +132,13 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="openSizeModal(item)">+</button>
+                <div class="tileNamePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span class="pricePill">
+                    ${{ Number(item.basePrice).toFixed(2) }}
+                  </span>
+                </div>
+              <button class="plusBtn" @click="openSizeModal(item)">+</button>
               </div>
             </div>
           </article>
@@ -144,9 +159,14 @@
             </div>
             <div class="tileFooter">
               <div class="tileNameRow">
-                <span class="tileName">{{ item.name }}</span>
-                <button class="plusBtn" @click="openSizeModal(item)">+</button>
-              </div>
+                <div class="tileNamePrice">
+                  <span class="tileName">{{ item.name }}</span>
+                  <span class="pricePill">
+                    ${{ Number(item.basePrice).toFixed(2) }}
+                  </span>
+                </div>
+                 <button class="plusBtn" @click="openSizeModal(item)">+</button>
+                </div>
             </div>
           </article>
         </div>
@@ -900,6 +920,7 @@ const bottledDrinks = ref([
 
   line-height: 1.15;
   max-width: 100%;
+  font-weight: 800;
 }
 
 
@@ -1059,6 +1080,22 @@ const bottledDrinks = ref([
   display: grid;
   justify-items: end;
   gap: 6px;
+}
+
+.tileNamePrice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pricePill {
+  font-weight: 900;
+  font-size: 14px;
+  color: #fff;
+  background: #111;
+  padding: 4px 8px;
+  border-radius: 999px;
+  width: fit-content;
 }
 
 .cartPrice{
