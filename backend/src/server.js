@@ -96,6 +96,10 @@ app.post("/api/auth/register", async (req, res) => {
       });
     }
 
+    if (password.length > 12) {
+      return res.status(400).json({ ok: false, error: "Password max 12 characters." });
+    }
+
     const existing = await prisma.user.findUnique({ where: { username } });
     if (existing) {
       return res.status(409).json({ ok: false, error: "Username already exists" });
@@ -129,6 +133,17 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(400).json({ ok: false, error: "Username & password required" });
     }
 
+    if (!/^[a-zA-Z0-9_]{1,10}$/.test(username)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Username must be 1-10 characters and only letters, numbers, underscore.",
+      });
+    }
+    
+    if (password.length > 12) {
+      return res.status(400).json({ ok: false, error: "Password max 12 characters." });
+    }
+
     const user = await prisma.user.findUnique({ where: { username } });
     if (!user) return res.status(401).json({ ok: false, error: "Invalid credentials" });
 
@@ -144,6 +159,102 @@ app.post("/api/auth/login", async (req, res) => {
     return res.status(500).json({ ok: false, error: "Server error" });
   }
 });
+
+app.post("/api/auth/reset/check", async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ ok: false, error: "Username required" });
+    }
+
+    // match your rules
+    if (!/^[a-zA-Z0-9_]{1,10}$/.test(username)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Username must be 1-10 characters and only letters, numbers, underscore.",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+
+    return res.json({ ok: true, exists: !!user });
+  } catch (e) {
+    console.error("RESET CHECK ERROR:", e);
+    return res.status(500).json({ ok: false, error: "Server error" });
+  }
+});
+
+app.post("/api/auth/reset", async (req, res) => {
+  try {
+    const { username, newPassword } = req.body;
+
+    if (!username || !newPassword) {
+      return res.status(400).json({ ok: false, error: "Username & new password required" });
+    }
+
+    if (!/^[a-zA-Z0-9_]{1,10}$/.test(username)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Username must be 1-10 characters and only letters, numbers, underscore.",
+      });
+    }
+
+    if (newPassword.length > 12) {
+      return res.status(400).json({ ok: false, error: "Password max 12 characters." });
+    }
+
+    const user = await prisma.user.findUnique({ where: { username }, select: { id: true } });
+    if (!user) return res.status(404).json({ ok: false, error: "User not found" });
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      where: { username },
+      data: { password: hashed },
+    });
+
+    // optional: log them out everywhere
+    req.session.destroy(() => {
+      res.clearCookie("sid", { sameSite: isProd ? "none" : "lax", secure: isProd });
+      res.json({ ok: true });
+    });
+  } catch (e) {
+    console.error("RESET PASSWORD ERROR:", e);
+    return res.status(500).json({ ok: false, error: "Server error" });
+  }
+});
+    // -------------------
+    // DELETE ACCOUNT
+    // -------------------
+    app.delete("/api/auth/delete", async (req, res) => {
+      try {
+        if (!req.session.user) {
+          return res.status(401).json({ ok: false, error: "Not authenticated" });
+        }    
+
+        const userId = req.session.user.id;    
+
+        await prisma.user.delete({
+          where: { id: userId },
+        });    
+
+        req.session.destroy(() => {
+          res.clearCookie("sid", {
+            sameSite: isProd ? "none" : "lax",
+            secure: isProd,
+          });
+          res.json({ ok: true });
+        });    
+
+      } catch (e) {
+        console.error("DELETE ACCOUNT ERROR:", e);
+        return res.status(500).json({ ok: false, error: "Server error" });
+      }
+    });
 
 // -------------------
 // LOGOUT (User)

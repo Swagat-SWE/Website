@@ -60,6 +60,26 @@
       </nav>
     </aside>
 
+    <!-- ✅ Logging out overlay -->
+    <div v-if="isLoggingOut" class="verifyOverlay" role="status" aria-live="polite">
+      <div class="verifyCard">
+        <!-- while loading -->
+        <div v-if="!logoutDone" class="spinner" aria-hidden="true"></div>
+    
+        <!-- after done: ✅ tick -->
+        <div v-else class="tickWrap" aria-hidden="true">
+          <svg class="tickSvg" viewBox="0 0 52 52">
+            <circle class="tickCircle" cx="26" cy="26" r="24" />
+            <path class="tickMark" d="M14 27 L22 35 L38 18" />
+          </svg>
+        </div>
+    
+        <div class="verifyText">
+          {{ logoutDone ? "Success!" : "Logging you out…" }}
+        </div>
+      </div>
+    </div>
+
     <!-- Main content area -->
     <main class="main">
       <!-- Top bar -->
@@ -101,13 +121,22 @@
 
           <!-- Account / Sign in -->
           <div class="accountWrap">
-            <button
-              class="signInBtn"
-              type="button"
-              @click="user ? toggleAccountMenu() : signIn()"
-            >
-              {{ user ? `Hi ${user.username}` : "Sign In" }}
-            </button>
+        <button
+          class="signInBtn"
+          type="button"
+          @click="user ? toggleAccountMenu() : signIn()"
+        >
+        <template v-if="user">
+          <span class="helloText">
+            Hello, {{ user.username }}
+          </span>
+        </template>
+
+          <template v-else>
+            Sign In
+          </template>
+        </button>
+
 
             <!-- Dropdown -->
             <div v-if="showAccountMenu" class="accountMenu">
@@ -253,6 +282,13 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useApi } from "~/composables/useApi"; // ✅ IMPORTANT
+const isLoggingOut = ref(false);
+const logoutDone = ref(false);
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 
 const api = useApi(); // ✅ IMPORTANT
 
@@ -289,11 +325,27 @@ function goTracking() {
 async function logout() {
   closeAccountMenu();
 
-  // ✅ MUST use api (NOT fetch("/api/...")) so prod goes to backend URL
-  await api.post("/api/auth/logout", {});
-  user.value = null;
+  // show overlay
+  logoutDone.value = false;
+  isLoggingOut.value = true;
 
-  navigateTo("/");
+  try {
+    // call backend logout
+    await api.post("/api/auth/logout", {});
+    user.value = null;
+
+    // "buffering" feel (like your payment page)
+    await sleep(1800);
+    logoutDone.value = true;
+    await sleep(600);
+
+    // refresh entire page (hard reload)
+    window.location.reload();
+  } catch (e) {
+    // hide overlay + show error if something fails
+    isLoggingOut.value = false;
+    err.value = e?.message || "Logout failed";
+  }
 }
 
 async function checkAuth() {
@@ -601,20 +653,29 @@ const classics = ref([
 }
 
 .signInBtn {
-  border: 1px solid rgba(75, 52, 41, 0.14);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid rgba(75, 52, 41, 0.12);
   background: #fff;
-  border-radius: 14px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-weight: 900;
+  border-radius: 16px;
+
+  padding: 8px 14px;
+  min-height: 44px;
+
+  font-size: 15px;
+  font-weight: 800;
   color: var(--brown);
-  box-shadow: var(--cardShadow);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
 }
 
 .signInBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
   border-color: rgba(244, 179, 22, 0.5);
 }
 
@@ -1215,6 +1276,83 @@ const classics = ref([
 .menuItem.danger:hover {
   background: rgba(176, 0, 32, 0.08);
 }
+
+/* ===== Logout overlay (same as payment verifyOverlay) ===== */
+.verifyOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+
+.verifyCard{
+  width: min(420px, 92vw);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.18);
+  padding: 18px 16px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  animation: popIn 180ms ease-out;
+}
+
+.verifyText{
+  font-weight: 950;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+/* spinner */
+.spinner{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 4px solid rgba(15, 23, 42, 0.14);
+  border-top-color: rgba(10, 132, 255, 0.95);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes popIn {
+  from { transform: translateY(8px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* tick */
+.tickWrap{
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+}
+.tickSvg{ width: 56px; height: 56px; }
+
+.tickCircle{
+  fill: none;
+  stroke: rgba(34,197,94,0.25);
+  stroke-width: 4;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: circleDraw 320ms ease-out forwards;
+}
+
+.tickMark{
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: tickDraw 260ms 220ms ease-out forwards;
+}
+
+@keyframes circleDraw{ to { stroke-dashoffset: 0; } }
+@keyframes tickDraw{ to { stroke-dashoffset: 0; } }
 
 /* Responsive */
 @media (max-width: 980px) {

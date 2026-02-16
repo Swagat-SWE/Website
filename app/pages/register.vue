@@ -18,6 +18,15 @@
         Limit exceeded: username max 10 characters.
       </p>
 
+      <p v-else-if="usernameBadChars" class="hintErr">
+        Only letters, numbers, underscore.
+      </p>
+      
+      <p v-else-if="usernameTrim && usernameTrim.length < 3" class="hintErr">
+        Username must be at least 3 characters.
+      </p>
+
+
       <!-- PASSWORD -->
       <label class="label">Password</label>
 
@@ -26,7 +35,7 @@
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
           class="input passwordInput"
-          placeholder="At least 8 characters"
+          placeholder="12 characters max"
           autocomplete="new-password"
           maxlength="12"
           @input="onPasswordInput"
@@ -79,11 +88,17 @@ const usernameTrim = computed(() => username.value.trim());
 
 const usernameTooLong = computed(() => username.value.length > USERNAME_MAX);
 const passwordTooLong = computed(() => password.value.length > PASSWORD_MAX);
+const usernameBadChars = computed(
+  () => username.value.length > 0 && !/^[a-zA-Z0-9_]*$/.test(username.value)
+);
+
 
 const disableCreate = computed(() => {
   if (!usernameTrim.value) return true;
-  if (password.value.length < 8) return true;
+  if (usernameTrim.value.length < 3) return true; // matches backend
+  if (password.value.length < 1) return true;
   if (usernameTooLong.value || passwordTooLong.value) return true;
+  if (usernameBadChars.value) return true;
   return loading.value;
 });
 
@@ -108,6 +123,8 @@ async function register() {
     // final check before API
     if (usernameTooLong.value) throw new Error("Limit exceeded: username max 10 characters.");
     if (passwordTooLong.value) throw new Error("Limit exceeded: password max 12 characters.");
+    if (usernameTrim.value.length < 3) throw new Error("Username must be at least 3 characters.");
+    if (usernameBadChars.value) throw new Error("Only letters, numbers, underscore.");
 
     const res = await api.post("/api/auth/register", {
       username: usernameTrim.value,

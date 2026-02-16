@@ -7,16 +7,19 @@
         <h2 class="rightTitle">Sign in</h2>
 
         <label class="label">Username</label>
-        <input v-model="username" class="input" placeholder="Bagel_67" />
+        <input v-model="username" class="input" placeholder="10 characters max" maxlength="10" />
 
         <label class="label">Password</label>
-        <input v-model="password" class="input" type="password" placeholder="••••••••" />
+        <input v-model="password" class="input" type="password" placeholder="••••••••" maxlength="12" />
 
-        <button class="primary" :disabled="!usernameTrim || !password || loading" @click="login">
+        <button class="primary" :disabled="!usernameTrim || !password || loading || usernameTooLong || passwordTooLong || usernameBadChars" @click="login">
           {{ loading ? "Signing in..." : "Sign In" }}
         </button>
 
-        <!-- ✅ show errors for login/register -->
+        <!-- show errors for login/register -->
+        <p v-if="usernameTooLong" class="err">Username max 10 characters.</p>
+        <p v-else-if="usernameBadChars" class="err">Only letters, numbers, underscore.</p>
+        <p v-if="passwordTooLong" class="err">Password max 12 characters.</p>
         <p v-if="err" class="err">{{ err }}</p>
 
         <p class="muted">
@@ -24,9 +27,11 @@
           <NuxtLink to="/register" class="link">Create one</NuxtLink>
         </p>
 
-        <p class="tiny">
-          Staff? Go to <NuxtLink to="/staff" class="link">/staff</NuxtLink>
+        <p class="muted">
+          Forgot your password?
+          <NuxtLink to="/reset" class="link">Reset it</NuxtLink>
         </p>
+
       </section>
 
       <!-- LEFT: Guest -->
@@ -68,6 +73,12 @@ const loading = ref(false);
 const err = ref("");
 
 const usernameTrim = computed(() => username.value.trim());
+const usernameTooLong = computed(() => username.value.length > 10);
+const passwordTooLong = computed(() => password.value.length > 12);
+const usernameBadChars = computed(
+  () => username.value.length > 0 && !/^[a-zA-Z0-9_]*$/.test(username.value)
+);
+
 const guestNameTrim = computed(() => guestName.value.trim());
 
 async function register() {
