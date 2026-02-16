@@ -5,8 +5,11 @@ type ApiErr = { ok: false; error: string };
 export type ApiResponse<T = any> = ApiOk<T> | ApiErr;
 
 export const useApi = () => {
-  // ✅ IMPORTANT: no baseURL here — we use Nuxt proxy (/api -> backend)
-  const baseURL = "";
+  // ✅ Use Nuxt runtime config (safe in browser + server)
+  // - In dev: apiBase = "" -> uses your /api proxy to localhost:3001
+  // - In prod: apiBase = "https://backend-rj5c.onrender.com"
+  const config = useRuntimeConfig();
+  const baseURL = (config.public.apiBase as string) || "";
 
   async function post<T = any>(
     path: string,
@@ -20,7 +23,6 @@ export const useApi = () => {
         body: JSON.stringify(body),
       });
 
-      // try to read json (even for errors)
       const data = await res.json().catch(() => null);
 
       if (!res.ok) {
@@ -30,7 +32,7 @@ export const useApi = () => {
         };
       }
 
-      // backend already returns { ok: true, ... }
+      // backend returns { ok: true, ... }
       return data;
     } catch (e: any) {
       return { ok: false, error: e?.message || "Failed to fetch" };
