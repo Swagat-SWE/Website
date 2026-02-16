@@ -29,7 +29,7 @@ if (isProd) {
 
 // In production, do NOT allow missing secret
 if (isProd && !process.env.SESSION_SECRET) {
-  console.error("❌ SESSION_SECRET is missing in production!");
+  console.error("❌ SESSION_SECRET is missing in production environment!");
   process.exit(1);
 }
 
@@ -38,7 +38,7 @@ if (isProd && !process.env.SESSION_SECRET) {
 // -------------------
 app.use(express.json());
 
-// ✅ CORS: allow your frontend + localhost
+// ✅ CORS allowlist (frontend + local dev)
 const allowedOrigins = [
   "http://localhost:3000",
   "https://localhost:3000",
@@ -50,7 +50,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      // allow no-origin requests (curl, Render health checks, etc.)
+      // allow no-origin requests (curl, health checks, etc.)
       if (!origin) return cb(null, true);
 
       if (allowedOrigins.includes(origin)) return cb(null, true);
@@ -61,7 +61,7 @@ app.use(
   })
 );
 
-// ✅ Session cookie config for cross-domain cookies (frontend + backend on different domains)
+// ✅ Sessions (cross-domain cookie works in prod)
 app.use(
   session({
     name: "sid",
@@ -71,8 +71,8 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: isProd ? "none" : "lax", // MUST be "none" for cross-domain cookies
-      secure: isProd, // MUST be true on HTTPS
+      sameSite: isProd ? "none" : "lax", // "none" required for cross-site cookies
+      secure: isProd, // must be true on HTTPS
     },
   })
 );
@@ -94,20 +94,23 @@ app.get("/health", (req, res) => {
 
 // -------------------
 // REGISTER (Persistent User)
+// Username: 3–10 chars, letters/numbers/_
 // -------------------
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ ok: false, error: "Username & password required" });
+      return res
+        .status(400)
+        .json({ ok: false, error: "Username & password required" });
     }
 
-    // ✅ Username rules: 3–10 chars, letters/numbers/underscore only
     if (!/^[a-zA-Z0-9_]{3,10}$/.test(username)) {
       return res.status(400).json({
         ok: false,
-        error: "Username must be 3-10 characters and only letters, numbers, underscore.",
+        error:
+          "Username must be 3-10 characters and only letters, numbers, underscore.",
       });
     }
 
@@ -141,14 +144,20 @@ app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ ok: false, error: "Username & password required" });
+      return res
+        .status(400)
+        .json({ ok: false, error: "Username & password required" });
     }
 
     const user = await prisma.user.findUnique({ where: { username } });
-    if (!user) return res.status(401).json({ ok: false, error: "Invalid credentials" });
+    if (!user) {
+      return res.status(401).json({ ok: false, error: "Invalid credentials" });
+    }
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ ok: false, error: "Invalid credentials" });
+    if (!valid) {
+      return res.status(401).json({ ok: false, error: "Invalid credentials" });
+    }
 
     req.session.user = { id: user.id, username: user.username };
     delete req.session.guest;
@@ -179,6 +188,7 @@ app.post("/api/auth/logout", (req, res) => {
 app.post("/api/guest", async (req, res) => {
   try {
     const { name } = req.body;
+
     if (!name) return res.status(400).json({ ok: false, error: "Name required" });
 
     const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
@@ -204,7 +214,9 @@ app.post("/api/guest", async (req, res) => {
 app.post("/api/guest/logout", async (req, res) => {
   try {
     if (req.session.guest?.id) {
-      await prisma.guest.delete({ where: { id: req.session.guest.id } }).catch(() => null);
+      await prisma.guest
+        .delete({ where: { id: req.session.guest.id } })
+        .catch(() => null);
     }
 
     req.session.destroy(() => {
@@ -224,8 +236,11 @@ app.post("/api/guest/logout", async (req, res) => {
 // WHO AM I
 // -------------------
 app.get("/api/me", (req, res) => {
-  if (req.session.user) return res.json({ ok: true, type: "user", user: req.session.user });
-  if (req.session.guest) return res.json({ ok: true, type: "guest", guest: req.session.guest });
+  if (req.session.user)
+    return res.json({ ok: true, type: "user", user: req.session.user });
+  if (req.session.guest)
+    return res.json({ ok: true, type: "guest", guest: req.session.guest });
+
   return res.status(401).json({ ok: false, type: null });
 });
 
