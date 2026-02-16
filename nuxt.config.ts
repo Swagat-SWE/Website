@@ -2,31 +2,25 @@
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      // On Render (Website service) set:
-      // NUXT_PUBLIC_API_BASE = https://backend-rj5c.onrender.com
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || "",
+      // keep this but we will NOT use it for browser calls anymore
+      apiBase: "",
     },
   },
 
-  // Dev-only proxy (Nitro)
   nitro: {
+    // ✅ DEV proxy (when you run locally)
     devProxy: {
       "/api": {
         target: "http://localhost:3001",
         changeOrigin: true,
       },
     },
-  },
 
-  // Dev-only proxy (Vite) for browser requests
-  vite: {
-    server: {
-      proxy: {
-        "/api": {
-          target: "http://localhost:3001",
-          changeOrigin: true,
-          secure: false,
-        },
+    // ✅ PROD proxy (when deployed on Render)
+    // Any request to https://einsteinstogo.com/api/... will be proxied to your backend
+    routeRules: {
+      "/api/**": {
+        proxy: "https://backend-rj5c.onrender.com/**",
       },
     },
   },
