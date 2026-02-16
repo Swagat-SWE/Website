@@ -24,9 +24,13 @@
           maxlength="12"
         />
 
-        <button class="primary" :disabled="!usernameTrim || usernameTrim.length > 10 || !password || password.length > 12 || loading">
-          {{ loading ? "Signing in..." : "Sign In" }}
-        </button>
+       <button
+         class="primary"
+         :disabled="!usernameTrim || usernameTrim.length > 10 || !password || password.length > 12 || loading"
+         @click="login"
+       >
+         {{ loading ? "Signing in..." : "Sign In" }}
+       </button>
 
         <!-- ✅ show errors for login/register -->
         <p v-if="err" class="err">{{ err }}</p>
@@ -84,6 +88,14 @@ const guestNameTrim = computed(() => guestName.value.trim());
 
 async function register() {
   err.value = "";
+  if (usernameTrim.value.length > 10) {
+    err.value = "Username must be 10 characters or less";
+    return;
+  }
+  if (password.value.length > 12) {
+    err.value = "Password must be 12 characters or less";
+    return;
+  }
   loading.value = true;
   try {
     const res = await api.post("/api/auth/register", {
@@ -102,6 +114,15 @@ async function register() {
 
 async function login() {
   err.value = "";
+  if (usernameTrim.value.length > 10) {
+    err.value = "Username must be 10 characters or less";
+    return;
+  }
+  if (password.value.length > 12) {
+    err.value = "Password must be 12 characters or less";
+    return;
+  }
+
   loading.value = true;
   try {
     const res = await api.post("/api/auth/login", {
