@@ -22,14 +22,14 @@ const prisma = new PrismaClient({
 // -------------------
 const isProd = process.env.NODE_ENV === "production";
 
-// IMPORTANT: Render sits behind a proxy (HTTPS terminates before Node)
+// Render sits behind a proxy (HTTPS terminates before Node)
 if (isProd) {
   app.set("trust proxy", 1);
 }
 
-// In production, DO NOT allow missing secret
+// In production, do NOT allow missing secret
 if (isProd && !process.env.SESSION_SECRET) {
-  console.error("❌ SESSION_SECRET is missing in production environment!");
+  console.error("❌ SESSION_SECRET is missing in production!");
   process.exit(1);
 }
 
@@ -38,7 +38,7 @@ if (isProd && !process.env.SESSION_SECRET) {
 // -------------------
 app.use(express.json());
 
-// ✅ CORS: allow your real frontend domains + localhost
+// ✅ CORS: allow your frontend + localhost
 const allowedOrigins = [
   "http://localhost:3000",
   "https://localhost:3000",
@@ -50,7 +50,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      // allow server-to-server/no-origin requests (curl, render checks, etc.)
+      // allow no-origin requests (curl, Render health checks, etc.)
       if (!origin) return cb(null, true);
 
       if (allowedOrigins.includes(origin)) return cb(null, true);
@@ -61,7 +61,7 @@ app.use(
   })
 );
 
-// ✅ Session cookie config for HTTPS cross-site (frontend + backend on different domains)
+// ✅ Session cookie config for cross-domain cookies (frontend + backend on different domains)
 app.use(
   session({
     name: "sid",
@@ -71,8 +71,8 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: isProd ? "none" : "lax", // ✅ must be "none" for cross-domain cookies
-      secure: isProd, // ✅ must be true on HTTPS
+      sameSite: isProd ? "none" : "lax", // MUST be "none" for cross-domain cookies
+      secure: isProd, // MUST be true on HTTPS
     },
   })
 );
@@ -80,13 +80,10 @@ app.use(
 // -------------------
 // Routes
 // -------------------
-
-// Root
 app.get("/", (req, res) => {
   res.send("Einstein Backend is running");
 });
 
-// Health
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
@@ -103,19 +100,16 @@ app.post("/api/auth/register", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Username & password required" });
+      return res.status(400).json({ ok: false, error: "Username & password required" });
     }
 
-    // Username rules: 3–10 characters, letters/numbers/underscore only
+    // ✅ Username rules: 3–10 chars, letters/numbers/underscore only
     if (!/^[a-zA-Z0-9_]{3,10}$/.test(username)) {
       return res.status(400).json({
         ok: false,
         error: "Username must be 3-10 characters and only letters, numbers, underscore.",
       });
-  }
-
+    }
 
     const existing = await prisma.user.findUnique({ where: { username } });
     if (existing) {
@@ -147,20 +141,14 @@ app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Username & password required" });
+      return res.status(400).json({ ok: false, error: "Username & password required" });
     }
 
     const user = await prisma.user.findUnique({ where: { username } });
-    if (!user) {
-      return res.status(401).json({ ok: false, error: "Invalid credentials" });
-    }
+    if (!user) return res.status(401).json({ ok: false, error: "Invalid credentials" });
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) {
-      return res.status(401).json({ ok: false, error: "Invalid credentials" });
-    }
+    if (!valid) return res.status(401).json({ ok: false, error: "Invalid credentials" });
 
     req.session.user = { id: user.id, username: user.username };
     delete req.session.guest;
@@ -191,7 +179,6 @@ app.post("/api/auth/logout", (req, res) => {
 app.post("/api/guest", async (req, res) => {
   try {
     const { name } = req.body;
-
     if (!name) return res.status(400).json({ ok: false, error: "Name required" });
 
     const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
@@ -204,10 +191,10 @@ app.post("/api/guest", async (req, res) => {
     req.session.guest = { id: guest.id, name: guest.name };
     delete req.session.user;
 
-    res.json({ ok: true, guest });
+    return res.json({ ok: true, guest });
   } catch (e) {
     console.error("GUEST ERROR:", e);
-    res.status(500).json({ ok: false, error: "Server error" });
+    return res.status(500).json({ ok: false, error: "Server error" });
   }
 });
 
@@ -217,9 +204,7 @@ app.post("/api/guest", async (req, res) => {
 app.post("/api/guest/logout", async (req, res) => {
   try {
     if (req.session.guest?.id) {
-      await prisma.guest
-        .delete({ where: { id: req.session.guest.id } })
-        .catch(() => null);
+      await prisma.guest.delete({ where: { id: req.session.guest.id } }).catch(() => null);
     }
 
     req.session.destroy(() => {
@@ -231,7 +216,7 @@ app.post("/api/guest/logout", async (req, res) => {
     });
   } catch (e) {
     console.error("GUEST LOGOUT ERROR:", e);
-    res.status(500).json({ ok: false, error: "Server error" });
+    return res.status(500).json({ ok: false, error: "Server error" });
   }
 });
 
