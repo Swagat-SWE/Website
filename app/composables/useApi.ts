@@ -5,9 +5,8 @@ type ApiErr = { ok: false; error: string };
 export type ApiResponse<T = any> = ApiOk<T> | ApiErr;
 
 export const useApi = () => {
-  // Uses NUXT runtime config:
-  // - dev: apiBase = ""  -> calls /api/* and your devProxy sends to localhost:3001
-  // - prod: apiBase = "https://backend-rj5c.onrender.com" -> calls backend directly
+  // dev: apiBase = "" -> calls /api/* (Nuxt proxy sends to localhost:3001)
+  // prod: apiBase = "https://backend-xxxx.onrender.com" -> calls backend directly
   const config = useRuntimeConfig();
   const baseURL = (config.public.apiBase as string) || "";
 
@@ -38,6 +37,24 @@ export const useApi = () => {
   async function get<T = any>(path: string): Promise<ApiResponse<T>> {
     try {
       const res = await fetch(baseURL + path, { credentials: "include" });
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return { ok: false, error: data?.error || `Request failed (${res.status})` };
+      }
+
+      return data;
+    } catch (e: any) {
+      return { ok: false, error: e?.message || "Failed to fetch" };
+    }
+  }
+
+  async function del<T = any>(path: string): Promise<ApiResponse<T>> {
+    try {
+      const res = await fetch(baseURL + path, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       const data = await res.json().catch(() => null);
 
@@ -51,5 +68,5 @@ export const useApi = () => {
     }
   }
 
-  return { post, get };
+  return { post, get, del };
 };
