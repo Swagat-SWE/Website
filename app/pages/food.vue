@@ -591,7 +591,6 @@ const Lunch = ref([
   {
     id: "l9",
     name: "Cheese Pizza Bagel",
-    price: 7.99,
     img: "ChessyPiz.png",
   },
   {
