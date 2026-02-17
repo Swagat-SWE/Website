@@ -92,22 +92,49 @@
     <main class="main">
       <!-- Top bar -->
       <header class="topbar">
-      <button class="hamburger" type="button" @click="mobileNavOpen = true" aria-label="Open menu">
-        ☰
-      </button>
-
-
-        <!-- Topbar Right -->
-        <div class="topbarRight">
+        <!-- Row 1 -->
+        <div class="topbarRow">
+          <button class="hamburger" type="button" @click="mobileNavOpen = true" aria-label="Open menu">
+            ☰
+          </button>
+      
+          <div class="topbarActions">
+            <div class="accountWrap">
+              <button
+                class="signInBtn"
+                type="button"
+                @click="user ? toggleAccountMenu() : signIn()"
+              >
+                <template v-if="user">
+                  <span class="helloText">Hello, {{ user.username }}</span>
+                </template>
+                <template v-else>Sign In</template>
+              </button>
+      
+              <div v-if="showAccountMenu" class="accountMenu">
+                <button v-if="authType !== 'guest'" class="menuItem" @click="goProfile">My Profile</button>
+                <button v-if="authType !== 'guest'" class="menuItem" @click="goOrders">My Orders</button>
+                <button class="menuItem" @click="goTracking">Order Tracking</button>
+                <div class="menuDivider"></div>
+                <button class="menuItem danger" @click="logout">Logout</button>
+              </div>
+            </div>
+      
+            <button class="cartBtn" type="button" @click="toggleCart">
+              <span class="cartIcon">🛒</span>
+              <span class="cartCount">{{ cartCount }}</span>
+            </button>
+          </div>
+        </div>
+      
+        <!-- Row 2 -->
+        <div class="topbarRow2">
           <div class="locationWrap">
             <div class="locationPill">
               <span class="pin">📍</span>
-
-              <!-- If you later want a dropdown/search, this is already wired -->
               <span class="locationSelected">{{ location }}</span>
             </div>
-
-            <!-- Optional dropdown UI (kept here for later use) -->
+      
             <div v-if="showLocationDropdown" class="locationDropdown">
               <input
                 class="locationInput"
@@ -115,9 +142,7 @@
                 placeholder="Search locations…"
                 @input="showLocationDropdown = true"
               />
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches
-              </div>
+              <div v-if="filteredLocations.length === 0" class="locationEmpty">No matches</div>
               <button
                 v-for="opt in filteredLocations"
                 :key="opt"
@@ -129,46 +154,9 @@
               </button>
             </div>
           </div>
-
-          <!-- Account / Sign in -->
-          <div class="accountWrap">
-        <button
-          class="signInBtn"
-          type="button"
-          @click="user ? toggleAccountMenu() : signIn()"
-        >
-        <template v-if="user">
-          <span class="helloText">
-            Hello, {{ user.username }}
-          </span>
-        </template>
-
-          <template v-else>
-            Sign In
-          </template>
-        </button>
-
-
-            <!-- Dropdown -->
-            <div v-if="showAccountMenu" class="accountMenu">
-              <button v-if="authType !== 'guest'" class="menuItem" @click="goProfile">My Profile</button>
-              <button v-if="authType !== 'guest'" class="menuItem" @click="goOrders">My Orders</button>            
-
-              <button class="menuItem" @click="goTracking">Order Tracking</button>            
-
-              <div class="menuDivider"></div>            
-
-              <button class="menuItem danger" @click="logout">Logout</button>
-            </div>
-
-          </div>
-
-          <button class="cartBtn" type="button" @click="toggleCart">
-            <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartCount }}</span>
-          </button>
         </div>
       </header>
+
 
       <!-- Title -->
       <section class="hero">
@@ -1388,30 +1376,54 @@ const classics = ref([
 .mobileNavOverlay {
   display: none;
 }
+.topbarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbarRow2 {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
 
 @media (max-width: 720px) {
 
-  .tileImg {
-    width: 100%;
-  }
-  
-  .title {
-    font-size: 34px;
-    letter-spacing: 1px;
+  /* ===== topbar mobile layout ===== */
+  .main {
+    padding: 14px 14px 50px;
   }
 
-  .topbar {
+   .topbar {
+    display: flex;
+    flex-direction: column;   /* IMPORTANT */
+    align-items: stretch;
     gap: 10px;
-  }
+  }  
 
-  .topbarRight {
-    flex-wrap: wrap;
+  .topbarRow {
+    width: 100%;
+  }  
+
+  .topbarActions {
     justify-content: flex-end;
   }
 
   .locationPill {
+    width: fit-content;
+    max-width: 92vw;
     padding: 8px 12px;
     font-size: 14px;
+    justify-content: center;
   }
 
   .signInBtn {
@@ -1423,7 +1435,23 @@ const classics = ref([
     padding: 8px 10px;
   }
 
-  /* show hamburger */
+  /* title sizing */
+  .title {
+    font-size: 34px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== grid on mobile ===== */
+  .tileGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .tileImg {
+    width: 100%;
+  }
+
+  /* ===== drawer sidebar ===== */
   .hamburger {
     display: inline-flex;
     align-items: center;
@@ -1432,7 +1460,6 @@ const classics = ref([
     min-width: 44px;
   }
 
-  /* turn sidebar into a drawer */
   .sidebar {
     position: fixed;
     top: 0;
@@ -1444,13 +1471,11 @@ const classics = ref([
     border-right: 1px solid rgba(75, 52, 41, 0.12);
     border-bottom: none;
     transition: left 0.2s ease;
+    background: #fff8ee;
   }
 
-  .sidebar.open {
-    left: 0;
-  }
+  .sidebar.open { left: 0; }
 
-  /* overlay behind drawer */
   .mobileNavOverlay {
     display: block;
     position: fixed;
@@ -1459,7 +1484,6 @@ const classics = ref([
     z-index: 55;
   }
 
-  /* main content should not be pushed down by sidebar anymore */
   .page {
     grid-template-columns: 1fr;
   }
