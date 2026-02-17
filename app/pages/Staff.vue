@@ -1,13 +1,47 @@
 <!-- app/pages/staff.vue -->
 <template>
   <div class="page">
-    <!-- Left Sidebar (same vibe as your other pages) -->
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink" aria-label="Main Page">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
       </div>
+
+      <div class="staffTag">
+        <div class="staffUser">User: {{ staffUser }}</div>
+        <div class="staffMode">EMPLOYEE MODE</div>
+      </div>
+
+      <nav class="staffNav">
+        <button
+          class="staffNavBtn"
+          :class="{ active: activeTab === 'availability' }"
+          type="button"
+          @click="activeTab = 'availability'"
+        >
+          Availability
+        </button>
+
+        <button
+          class="staffNavBtn"
+          :class="{ active: activeTab === 'orders' }"
+          type="button"
+          @click="activeTab = 'orders'"
+        >
+          Orders
+        </button>
+
+        <button
+          class="staffNavBtn"
+          :class="{ active: activeTab === 'menu' }"
+          type="button"
+          @click="activeTab = 'menu'"
+        >
+          Menu (later)
+        </button>
+      </nav>
 
       <nav class="nav">
         <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
@@ -16,239 +50,252 @@
         <NuxtLink class="navItem" to="/checkout">Checkout</NuxtLink>
         <NuxtLink class="navItem" to="/tracking">Tracking</NuxtLink>
       </nav>
-
-      <div class="sideNote">
-  <div class="sideTitle">STAFF</div>
-  <div class="sideText">
-    This page controls the live order status using
-    <code>useOrderStatus()</code>.
-    Updates sync instantly with the Tracking page.
-  </div>
-</div>
-</aside>
+    </aside>
 
     <!-- Main -->
     <main class="main">
       <header class="topbar">
-        <div>
-          <h1 class="title">STAFF DASHBOARD</h1>
-          <div class="subtitle">Update the order status — Tracking page will react instantly.</div>
-        </div>
-
-        <div class="topActions">
-          <button class="ghostBtn" type="button" @click="navigateTo('/tracking')">View Tracking →</button>
-          <button class="dangerBtn" type="button" @click="resetStatus">Reset</button>
-        </div>
+        <h1 class="title">Einstein Bros</h1>
+        <button class="ghostBtn" type="button" @click="navigateTo('/')">
+          Back
+        </button>
       </header>
 
-      <!-- Card -->
-      <section class="card">
-        <div class="cardHeader">
-          <h2>Order Control</h2>
-          <div class="meta">
-            <span class="pill">
-              <span class="dot" :class="currentKey" />
-              <span>Current: {{ currentLabel }}</span>
-            </span>
-            <span class="muted">Shared state: <code>useOrderStatus()</code></span>
+      <!-- ===== AVAILABILITY TAB ===== -->
+      <!-- ============ AVAILABILITY TAB ============ -->
+      <section v-if="activeTab === 'availability'" class="card">
+        <div class="sectionHeader">
+          <h2>AVAILABILITY</h2>
+          <div class="muted">Click an item to cycle: Gray → Green → Red</div>
+        </div>
+
+        <!-- Groups -->
+        <div class="availGroups">
+          <div
+            v-for="groupKey in orderedGroupKeys"
+            :key="groupKey"
+            class="availGroup"
+          >
+            <div class="availGroupTitle">{{ groupKey }}</div>
+
+            <div class="availItems">
+              <button
+                v-for="it in availabilityGroups[groupKey]"
+                :key="it.id"
+                class="availItemBtn"
+                :class="availability.getStatus(it.id)"
+                type="button"
+                @click="availability.toggle(it.id)"
+              >
+                <div class="availItemName">{{ it.name }}</div>
+                <div class="availItemStatus">
+                  {{ statusLabel(availability.getStatus(it.id)) }}
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Step buttons -->
-        <div class="grid">
-          <button
-            v-for="(s, i) in steps"
-            :key="s.key"
-            class="stepBtn"
-            :class="{
-              active: i === statusIndex,
-              done: i < statusIndex,
-              oven: s.key === 'oven',
-              ready: s.key === 'ready'
-            }"
-            type="button"
-            @click="setStatus(i)"
-          >
-            <div class="stepTop">
-              <div class="stepIndex">{{ i + 1 }}</div>
-              <div class="stepName">{{ s.label }}</div>
-            </div>
-            <div class="stepDesc">{{ s.desc }}</div>
+        <div class="legend">
+          <span class="pill green">Green = Available</span>
+          <span class="pill red">Red = Unavailable</span>
+          <span class="pill gray">Gray = Not set</span>
 
-            <div class="stepBottom">
-              <span class="badge" :class="s.key">{{ badgeText(i) }}</span>
-              <span class="hint" v-if="i === statusIndex">Live now</span>
-            </div>
+          <button class="miniBtn" type="button" @click="availability.resetAll()">
+            Reset all
           </button>
         </div>
+      </section>
 
-        <!-- Quick actions -->
-        <div class="controls">
-          <div class="controlsLeft">
-            <button class="smallBtn" type="button" @click="prevStep" :disabled="statusIndex === 0">
-              ← Back one step
-            </button>
-            <button class="smallBtn" type="button" @click="nextStep" :disabled="statusIndex === steps.length - 1">
-              Next step →
-            </button>
-          </div>
 
-          <div class="controlsRight">
-            <label class="toggle">
-              <input type="checkbox" v-model="autoDemo" />
-              <span class="toggleUi" />
-              <span class="toggleText">Auto demo loop</span>
-            </label>
-
-            <button class="smallBtn" type="button" @click="pushPulse">
-              Send “update pulse”
-            </button>
-          </div>
+      <!-- ===== ORDERS TAB ===== -->
+      <section v-else-if="activeTab === 'orders'" class="card">
+        <div class="sectionHeader">
+          <h2>ORDERS</h2>
+          <div class="muted">Layout only (fake orders)</div>
         </div>
 
-        <!-- Log -->
-        <div class="log">
-          <div class="logTitle">Recent updates</div>
-          <div v-if="logs.length === 0" class="logEmpty">No updates yet.</div>
+        <div class="kanban">
+          <div class="col" v-for="col in orderColumns" :key="col.key">
+            <div class="colHeader">{{ col.label }}</div>
 
-          <div v-else class="logList">
-            <div v-for="(l, idx) in logs" :key="idx" class="logRow">
-              <span class="time">{{ l.time }}</span>
-              <span class="msg">{{ l.msg }}</span>
+            <div v-if="ordersByStatus(col.key).length === 0" class="emptyCol">
+              No orders
+            </div>
+
+            <div
+              v-for="o in ordersByStatus(col.key)"
+              :key="o.id"
+              class="orderCard"
+            >
+              <div class="orderTop">
+                <b>Order {{ o.id }}</b>
+                <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
+              </div>
+
+              <ul class="orderItems">
+                <li v-for="(it, idx) in o.items" :key="idx">
+                  {{ it }}
+                </li>
+              </ul>
+
+              <div class="orderBtns">
+                <button
+                  class="miniBtn"
+                  type="button"
+                  @click="moveOrder(col.key, o.id)"
+                  :disabled="col.key === 'completed'"
+                >
+                  Move →
+                </button>
+                <button class="miniBtn ghost" type="button" @click="openDetails(o)">
+                  Details
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- ===== MENU TAB (placeholder) ===== -->
+      <section v-else class="card">
+        <div class="sectionHeader">
+          <h2>MENU</h2>
+          <div class="muted">We’ll build the “mark unavailable” controls here next.</div>
+        </div>
+
+        <div class="placeholder">Coming soon…</div>
+      </section>
+
+      <!-- ===== DETAILS MODAL (layout only) ===== -->
+      <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
+        <div class="modal" @click.stop>
+          <div class="modalHeader">
+            <h3>Order {{ detailsOrder?.id }}</h3>
+            <button class="xBtn" type="button" @click="closeDetails">✕</button>
+          </div>
+
+          <div class="modalBody" v-if="detailsOrder">
+            <div class="muted">Placed: {{ detailsOrder.time }} • {{ detailsOrder.date }}</div>
+
+            <div class="modalSectionTitle">Items</div>
+            <ul class="modalList">
+              <li v-for="(it, idx) in detailsOrder.items" :key="idx">{{ it }}</li>
+            </ul>
+
+            <div class="modalFooter">
+              <button class="ghostBtn" type="button" @click="closeDetails">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, ref } from "vue";
+import { MENU_ITEMS } from "@/data/menu";
 
-/**
- * ✅ Shared status across pages (Tracking reads this).
- * 0: ordered, 1: preparing, 2: oven, 3: ready
- */
-const orderStatus = useOrderStatus();
+const staffUser = "1234";
+const activeTab = ref("availability");
 
-/** Optional: “pulse” counter to force animations / effects if you want later */
-const orderPulse = useState("orderPulse", () => 0);
-
-const steps = [
-  { key: "ordered", label: "Ordered", desc: "Order received and confirmed in the system." },
-  { key: "preparing", label: "Preparing", desc: "Staff is assembling and prepping the items." },
-  { key: "oven", label: "In the Oven", desc: "Toasting / heating step in progress." },
-  { key: "ready", label: "Ready", desc: "Order finished and ready for pickup." },
+/** Orders board (fake, but Move works) */
+const orderColumns = [
+  { key: "new", label: "New" },
+  { key: "progress", label: "In Progress" },
+  { key: "ready", label: "Ready" },
+  { key: "completed", label: "Completed" },
 ];
 
-function clamp(n, min, max) {
-  return Math.min(max, Math.max(min, n));
-}
-
-const statusIndex = computed(() => clamp(orderStatus.value, 0, steps.length - 1));
-const currentKey = computed(() => steps[statusIndex.value]?.key || "ordered");
-const currentLabel = computed(() => steps[statusIndex.value]?.label || "Ordered");
-
-/** Logging */
-const logs = ref([]);
-
-function nowTime() {
-  const d = new Date();
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  const ss = String(d.getSeconds()).padStart(2, "0");
-  return `${hh}:${mm}:${ss}`;
-}
-
-function log(msg) {
-  logs.value.unshift({ time: nowTime(), msg });
-  logs.value = logs.value.slice(0, 10);
-}
-
-/** Actions */
-function setStatus(i) {
-  const next = clamp(i, 0, steps.length - 1);
-
-  if (next === orderStatus.value) {
-    log(`Re-sent: ${steps[next].label}`);
-    pushPulse();
-    return;
-  }
-
-  orderStatus.value = next;
-  log(`Set status → ${steps[next].label}`);
-  pushPulse();
-}
-
-function nextStep() {
-  setStatus(orderStatus.value + 1);
-}
-function prevStep() {
-  setStatus(orderStatus.value - 1);
-}
-function resetStatus() {
-  orderStatus.value = 0;
-  log("Reset status → Ordered");
-  pushPulse();
-}
-
-function pushPulse() {
-  orderPulse.value += 1;
-}
-
-/** Badge helper */
-function badgeText(i) {
-  if (i < statusIndex.value) return "Done";
-  if (i === statusIndex.value) return "Active";
-  return "Pending";
-}
-
-/** Auto demo loop */
-const autoDemo = ref(false);
-let timer = null;
-
-watch(
-  autoDemo,
-  (on) => {
-    if (!on) {
-      if (timer) clearInterval(timer);
-      timer = null;
-      return;
-    }
-
-    log("Auto demo started");
-    timer = setInterval(() => {
-      if (orderStatus.value >= steps.length - 1) {
-        orderStatus.value = 0;
-        log("Loop → Ordered");
-        pushPulse();
-      } else {
-        orderStatus.value += 1;
-        log(`Auto → ${steps[orderStatus.value].label}`);
-        pushPulse();
-      }
-    }, 1800);
+const orders = ref([
+  {
+    id: "1234",
+    status: "new",
+    time: "7:30am",
+    date: "1/23/24",
+    items: ["1 Bagel, toasted", "2 Cold brews, small"],
   },
-  { immediate: false }
-);
+  {
+    id: "1235",
+    status: "progress",
+    time: "7:34am",
+    date: "1/23/24",
+    items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"],
+  },
+]);
 
-onBeforeUnmount(() => {
-  if (timer) clearInterval(timer);
+function ordersByStatus(statusKey) {
+  return orders.value.filter((o) => o.status === statusKey);
+}
+
+const flow = ["new", "progress", "ready", "completed"];
+
+function moveOrder(fromKey, orderId) {
+  const idx = orders.value.findIndex((o) => o.id === orderId && o.status === fromKey);
+  if (idx === -1) return;
+
+  const nextKey = flow[flow.indexOf(fromKey) + 1];
+  if (!nextKey) return;
+
+  orders.value[idx].status = nextKey;
+}
+
+/** Details modal (layout-only) */
+const detailsOpen = ref(false);
+const detailsOrder = ref(null);
+
+function openDetails(order) {
+  detailsOrder.value = order;
+  detailsOpen.value = true;
+}
+function closeDetails() {
+  detailsOpen.value = false;
+  detailsOrder.value = null;
+}
+
+/** ✅ Availability (real) */
+const availability = useAvailability();
+
+// group menu items by their category string
+const availabilityGroups = computed(() => {
+  const groups = {};
+  for (const item of MENU_ITEMS) {
+    const cat = item.category || "Other";
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(item);
+  }
+  return groups;
 });
+
+// optional ordering of categories in the UI
+const GROUP_ORDER = ["Breakfast", "Lunch", "Bagels", "Shmears", "Misc.", "Ingredients", "Drinks"];
+
+const orderedGroupKeys = computed(() => {
+  const keys = Object.keys(availabilityGroups.value);
+  return keys.sort((a, b) => {
+    const ia = GROUP_ORDER.indexOf(a);
+    const ib = GROUP_ORDER.indexOf(b);
+    const ra = ia === -1 ? 999 : ia;
+    const rb = ib === -1 ? 999 : ib;
+    if (ra !== rb) return ra - rb;
+    return a.localeCompare(b);
+  });
+});
+
+function statusLabel(s) {
+  if (s === "green") return "Available";
+  if (s === "red") return "Unavailable";
+  return "Not set";
+}
 </script>
+
 
 <style scoped>
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
   --brown: #4b3429;
-  --brown2: #6a4a3a;
-  --yellow: #f4b316;
-  --orange: #f4a51c;
-  --green: rgba(0, 140, 70, 0.75);
-  --blue: rgba(26, 115, 232, 0.75);
-
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
@@ -270,7 +317,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 .logoImg {
   width: 100%;
@@ -278,101 +325,89 @@ onBeforeUnmount(() => {
   height: auto;
   object-fit: contain;
 }
+
+.staffTag {
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #fff;
+  margin-bottom: 10px;
+}
+.staffUser {
+  font-weight: 900;
+  opacity: 0.8;
+}
+.staffMode {
+  font-weight: 1000;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.staffNav {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.staffNavBtn {
+  text-align: left;
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  padding: 10px 12px;
+  font-weight: 1000;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
+}
+.staffNavBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--cardShadow);
+}
+.staffNavBtn.active {
+  border-color: rgba(244, 179, 22, 0.7);
+  box-shadow: var(--cardShadow);
+}
+
 .nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  gap: 8px;
 }
 .navItem {
   display: block;
   text-decoration: none;
   color: var(--brown);
-  font-size: 16px;
   font-weight: 800;
   border-radius: 14px;
-  padding: 12px 12px;
+  padding: 10px 12px;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
-}
-.navItem:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--cardShadow);
-  border-color: rgba(244, 179, 22, 0.55);
-}
-.sideNote {
-  margin-top: 14px;
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 16px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.7);
-}
-.sideTitle {
-  font-weight: 1000;
-  letter-spacing: 1px;
-  opacity: 0.85;
-}
-.sideText {
-  margin-top: 6px;
-  font-weight: 850;
-  opacity: 0.75;
-  line-height: 1.35;
-}
-.sideText code {
-  background: rgba(75, 52, 41, 0.07);
-  padding: 1px 6px;
-  border-radius: 8px;
 }
 
 /* Main */
 .main {
   padding: 20px 26px 50px;
 }
-
 .topbar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 .title {
   margin: 0;
-  font-size: 42px;
-  letter-spacing: 1px;
-  font-weight: 1000;
-}
-.subtitle {
-  margin-top: 6px;
-  font-weight: 900;
-  opacity: 0.75;
-}
-
-.topActions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  font-size: 46px;
+  font-weight: 1100;
+  letter-spacing: -0.02em;
 }
 .ghostBtn {
   border: 1px solid rgba(75, 52, 41, 0.14);
-  background: rgba(255, 255, 255, 0.75);
+  background: #fff;
   border-radius: 14px;
   padding: 10px 14px;
   cursor: pointer;
   box-shadow: var(--cardShadow);
   font-weight: 900;
 }
-.dangerBtn {
-  border: 1px solid rgba(255, 80, 80, 0.35);
-  background: rgba(255, 80, 80, 0.12);
-  border-radius: 14px;
-  padding: 10px 14px;
-  cursor: pointer;
-  box-shadow: var(--cardShadow);
-  font-weight: 1000;
-}
 
-/* Card */
 .card {
   background: #fff;
   border-radius: 18px;
@@ -380,275 +415,346 @@ onBeforeUnmount(() => {
   box-shadow: var(--cardShadow);
   padding: 14px;
 }
-.cardHeader {
+
+.sectionHeader {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 14px;
   border-bottom: 1px solid rgba(75, 52, 41, 0.12);
   padding-bottom: 10px;
-  margin-bottom: 14px;
-}
-.cardHeader h2 {
-  margin: 0;
-}
-.meta {
-  display: grid;
-  gap: 8px;
-  justify-items: end;
+  margin-bottom: 12px;
 }
 .muted {
   opacity: 0.7;
   font-weight: 900;
 }
-.muted code {
-  background: rgba(75, 52, 41, 0.07);
-  padding: 1px 6px;
-  border-radius: 8px;
-}
 
-/* Current pill */
-.pill {
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-  font-weight: 1000;
-}
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(75, 52, 41, 0.25);
-}
-.dot.ordered {
-  background: rgba(75, 52, 41, 0.35);
-}
-.dot.preparing {
-  background: var(--blue);
-  box-shadow: 0 0 0 6px rgba(26, 115, 232, 0.14);
-}
-.dot.oven {
-  background: rgba(244, 165, 28, 0.95);
-  box-shadow: 0 0 0 6px rgba(244, 165, 28, 0.14);
-}
-.dot.ready {
-  background: var(--green);
-  box-shadow: 0 0 0 6px rgba(0, 140, 70, 0.12);
-}
-
-/* Grid of big buttons */
-.grid {
+/* Availability (cleaner grid) */
+.availGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(240px, 1fr));
-  gap: 14px;
-}
-
-.stepBtn {
-  text-align: left;
-  border-radius: 18px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75));
-  box-shadow: 0 14px 30px rgba(0,0,0,0.06);
-  padding: 14px;
-  cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
-}
-.stepBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 44px rgba(0,0,0,0.10);
-  border-color: rgba(244, 179, 22, 0.45);
-}
-.stepBtn.active {
-  border-color: rgba(244, 179, 22, 0.55);
-  box-shadow: 0 18px 44px rgba(244, 179, 22, 0.10);
-}
-.stepBtn.done {
-  border-color: rgba(0, 140, 70, 0.28);
-}
-.stepBtn.oven.active {
-  border-color: rgba(244, 165, 28, 0.55);
-  box-shadow: 0 18px 44px rgba(244, 165, 28, 0.12);
-}
-.stepBtn.ready.active {
-  border-color: rgba(0, 140, 70, 0.35);
-  box-shadow: 0 18px 44px rgba(0, 140, 70, 0.10);
-}
-
-.stepTop {
-  display: flex;
-  align-items: center;
+  grid-template-columns: 180px repeat(3, 1fr);
   gap: 12px;
+  align-items: center;
+  margin-top: 8px;
 }
-.stepIndex {
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
+
+.availHead {
+  font-weight: 1000;
+  opacity: 0.75;
+}
+
+.availLabel {
+  font-weight: 1100;
+}
+
+.availBtn {
+  border-radius: 14px;
   border: 1px solid rgba(75, 52, 41, 0.14);
-  background: rgba(75, 52, 41, 0.04);
+  padding: 14px 12px;
+  font-weight: 1100;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+}
+
+.availBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.06);
+  filter: brightness(0.99);
+}
+
+.availBtn.green {
+  background: rgba(0, 140, 70, 0.14);
+  border-color: rgba(0, 140, 70, 0.25);
+}
+.availBtn.red {
+  background: rgba(255, 80, 80, 0.14);
+  border-color: rgba(255, 80, 80, 0.25);
+}
+.availBtn.gray {
+  background: rgba(75, 52, 41, 0.06);
+  border-color: rgba(75, 52, 41, 0.12);
+  opacity: 0.92;
+}
+
+/* Availability - grouped list of items */
+.availGroups {
+  display: grid;
+  gap: 16px;
+}
+
+.availGroup {
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(75, 52, 41, 0.02);
+}
+
+.availGroupTitle {
+  padding: 10px 12px;
+  font-weight: 1000;
+  background: #fff;
+  border-bottom: 1px solid rgba(75, 52, 41, 0.10);
+}
+
+.availItems {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.availItemBtn {
+  text-align: left;
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 1000;
+  display: grid;
+  gap: 6px;
+  transition: transform 0.06s ease, box-shadow 0.06s ease, border 0.06s ease;
+}
+
+.availItemBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.availItemName {
   font-weight: 1000;
 }
-.stepName {
-  font-weight: 1000;
-  font-size: 18px;
-}
-.stepDesc {
-  margin-top: 10px;
+
+.availItemStatus {
   font-weight: 900;
   opacity: 0.75;
-  line-height: 1.35;
+  font-size: 12px;
 }
 
-.stepBottom {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+/* Status colors */
+.availItemBtn.green {
+  background: rgba(0, 140, 70, 0.12);
+  border-color: rgba(0, 140, 70, 0.25);
 }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 1000;
-  border: 1px solid rgba(75,52,41,0.14);
-  background: rgba(75,52,41,0.03);
+.availItemBtn.red {
+  background: rgba(255, 80, 80, 0.12);
+  border-color: rgba(255, 80, 80, 0.25);
 }
-.badge.ordered { background: rgba(75,52,41,0.06); }
-.badge.preparing { background: rgba(26,115,232,0.10); border-color: rgba(26,115,232,0.22); }
-.badge.oven { background: rgba(244,165,28,0.16); border-color: rgba(244,165,28,0.30); }
-.badge.ready { background: rgba(0,140,70,0.12); border-color: rgba(0,140,70,0.22); }
-
-.hint {
-  font-weight: 1000;
-  opacity: 0.7;
-}
-
-/* Controls row */
-.controls {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(75, 52, 41, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.controlsLeft,
-.controlsRight {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.smallBtn {
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: #fff;
-  border-radius: 14px;
-  padding: 10px 12px;
-  cursor: pointer;
-  font-weight: 1000;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
-}
-.smallBtn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-/* Toggle */
-.toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  user-select: none;
-  font-weight: 1000;
+.availItemBtn.gray {
+  background: rgba(75, 52, 41, 0.05);
+  border-color: rgba(75, 52, 41, 0.12);
   opacity: 0.9;
-}
-.toggle input {
-  display: none;
-}
-.toggleUi {
-  width: 44px;
-  height: 26px;
-  border-radius: 999px;
-  border: 1px solid rgba(75, 52, 41, 0.16);
-  background: rgba(75, 52, 41, 0.08);
-  position: relative;
-  transition: background 0.18s ease;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
-}
-.toggleUi::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.10);
-  box-shadow: 0 10px 18px rgba(0,0,0,0.10);
-  transition: transform 0.18s ease;
-}
-.toggle input:checked + .toggleUi {
-  background: rgba(0, 140, 70, 0.18);
-  border-color: rgba(0, 140, 70, 0.28);
-}
-.toggle input:checked + .toggleUi::after {
-  transform: translate(18px, -50%);
-}
-.toggleText {
-  opacity: 0.85;
-}
-
-/* Log */
-.log {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(75, 52, 41, 0.12);
-}
-.logTitle {
-  font-weight: 1000;
-  opacity: 0.8;
-  margin-bottom: 10px;
-}
-.logEmpty {
-  opacity: 0.65;
-  font-weight: 900;
-}
-.logList {
-  display: grid;
-  gap: 8px;
-}
-.logRow {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(75, 52, 41, 0.10);
-  background: rgba(255,255,255,0.75);
-}
-.time {
-  font-weight: 1000;
-  opacity: 0.8;
-}
-.msg {
-  font-weight: 900;
-  opacity: 0.85;
 }
 
 /* Responsive */
-@media (max-width: 980px) {
+@media (max-width: 1100px) {
+  .availItems {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .availItems {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* show which state is selected */
+.availBtn.green[disabled],
+.availBtn.red[disabled],
+.availBtn.gray[disabled] {
+  opacity: 1;
+}
+
+.legend {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  font-weight: 1000;
+  background: #fff;
+}
+.pill.green {
+  background: rgba(0, 140, 70, 0.14);
+}
+.pill.red {
+  background: rgba(255, 80, 80, 0.14);
+}
+.pill.gray {
+  background: rgba(75, 52, 41, 0.06);
+}
+
+/* Orders kanban */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.col {
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 18px;
+  background: rgba(75, 52, 41, 0.03);
+  overflow: hidden;
+  min-height: 540px;
+}
+
+.colHeader {
+  padding: 12px 12px;
+  font-weight: 1100;
+  font-size: 18px;
+  background: #fff;
+  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+}
+
+.emptyCol {
+  padding: 14px 12px;
+  opacity: 0.65;
+  font-weight: 900;
+}
+
+.orderCard {
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 16px;
+  padding: 12px;
+  margin: 12px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
+}
+
+.orderTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.orderMeta {
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.orderItems {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-weight: 900;
+  opacity: 0.9;
+}
+
+.orderBtns {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.miniBtn {
+  border-radius: 12px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  padding: 8px 10px;
+  font-weight: 1000;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+}
+.miniBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.miniBtn.ghost {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.placeholder {
+  padding: 16px 2px;
+  font-weight: 900;
+  opacity: 0.8;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(6px);
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+.modal {
+  width: min(620px, 96vw);
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, #ffffff, #fafafa);
+}
+.modalHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1100;
+}
+.xBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  opacity: 0.85;
+}
+.xBtn:hover {
+  opacity: 1;
+}
+.modalBody {
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+.modalSectionTitle {
+  font-weight: 1100;
+  margin-top: 6px;
+}
+.modalList {
+  margin: 0;
+  padding-left: 18px;
+  font-weight: 900;
+  opacity: 0.9;
+}
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .kanban {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
   }
@@ -656,11 +762,14 @@ onBeforeUnmount(() => {
     border-right: none;
     border-bottom: 1px solid rgba(75, 52, 41, 0.12);
   }
-  .grid {
+  .kanban {
     grid-template-columns: 1fr;
   }
-  .meta {
-    justify-items: start;
+  .availGrid {
+    grid-template-columns: 1fr;
+  }
+  .availHead {
+    display: none;
   }
 }
 </style>
