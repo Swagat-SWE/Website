@@ -1,8 +1,16 @@
 <!-- app/pages/index.vue -->
 <template>
   <div class="page">
+
+<!-- Mobile sidebar overlay -->
+     <div
+       v-if="mobileNavOpen"
+       class="mobileNavOverlay"
+       @click="mobileNavOpen = false"
+     />
+
     <!-- Left Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink" aria-label="Main Page">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
@@ -10,10 +18,10 @@
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
-        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+        <NuxtLink class="navItem" to="/" @click="mobileNavOpen = false">Main Page</NuxtLink>
+        <NuxtLink class="navItem" to="/food" @click="mobileNavOpen = false">Food Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/drinks" @click="mobileNavOpen = false">Drinks Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/contact" @click="mobileNavOpen = false">Contact</NuxtLink>
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -84,7 +92,10 @@
     <main class="main">
       <!-- Top bar -->
       <header class="topbar">
-        <div></div>
+      <button class="hamburger" type="button" @click="mobileNavOpen = true" aria-label="Open menu">
+        ☰
+      </button>
+
 
         <!-- Topbar Right -->
         <div class="topbarRight">
@@ -425,6 +436,7 @@ const rating = ref(0);
 const hoverRating = ref(0);
 const comment = ref("");
 const submitted = ref(false);
+const mobileNavOpen = ref(false);
 
 function toggleReview() {
   showReview.value = !showReview.value;
@@ -658,6 +670,8 @@ const classics = ref([
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .signInBtn {
@@ -1359,6 +1373,98 @@ const classics = ref([
   animation: tickDraw 260ms 220ms ease-out forwards;
 }
 
+/* ===== Mobile Drawer Sidebar ===== */
+.hamburger {
+  display: none;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 1000;
+  box-shadow: var(--cardShadow);
+}
+
+.mobileNavOverlay {
+  display: none;
+}
+
+@media (max-width: 720px) {
+
+  .tileImg {
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 34px;
+    letter-spacing: 1px;
+  }
+
+  .topbar {
+    gap: 10px;
+  }
+
+  .topbarRight {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .locationPill {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .signInBtn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .cartBtn {
+    padding: 8px 10px;
+  }
+
+  /* show hamburger */
+  .hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* turn sidebar into a drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 300px;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 60;
+    border-right: 1px solid rgba(75, 52, 41, 0.12);
+    border-bottom: none;
+    transition: left 0.2s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* overlay behind drawer */
+  .mobileNavOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 55;
+  }
+
+  /* main content should not be pushed down by sidebar anymore */
+  .page {
+    grid-template-columns: 1fr;
+  }
+}
+
 @keyframes circleDraw{ to { stroke-dashoffset: 0; } }
 @keyframes tickDraw{ to { stroke-dashoffset: 0; } }
 
@@ -1366,25 +1472,6 @@ const classics = ref([
 @media (max-width: 980px) {
   .page {
     grid-template-columns: 220px 1fr;
-  }
-}
-
-@media (max-width: 720px) {
-  .page {
-    grid-template-columns: 1fr;
-  }
-  .sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-right: none;
-    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-  }
-  .tileGrid {
-    grid-template-columns: 1fr;
-  }
-  .locationDropdown {
-    min-width: 260px;
   }
 }
 </style>
