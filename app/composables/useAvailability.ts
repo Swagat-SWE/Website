@@ -1,75 +1,64 @@
 // app/composables/useAvailability.ts
 import { watch } from "vue";
 
-export type AvailabilityStatus = "gray" | "green" | "red";
-// gray = not set, green = available, red = unavailable
+type Status = "green" | "red"; // green=available (default), red=unavailable
 
 const KEY = "einstein_availability_v1";
 
 export function useAvailability() {
-  // map: { [menuItemId]: "gray" | "green" | "red" }
-  const state = useState<Record<string, AvailabilityStatus>>(
-    "availability",
-    () => ({})
-  );
+  // Store ONLY overrides (red items). If an item is missing, it's green by default.
+  const redMap = useState<Record<string, true>>("availabilityRedMap", () => ({}));
 
-  // load + sync to localStorage (client only)
   if (import.meta.client) {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       try {
         const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") state.value = parsed;
+        if (parsed && typeof parsed === "object") {
+          redMap.value = parsed;
+        }
       } catch {
         // ignore bad JSON
       }
     } else {
-      localStorage.setItem(KEY, JSON.stringify(state.value));
+      localStorage.setItem(KEY, JSON.stringify(redMap.value));
     }
 
     watch(
-      state,
+      redMap,
       (val) => {
         localStorage.setItem(KEY, JSON.stringify(val));
       },
       { deep: true, flush: "sync" }
     );
 
-    // sync between tabs
     window.addEventListener("storage", (e) => {
       if (e.key !== KEY) return;
       try {
         const parsed = JSON.parse(e.newValue || "{}");
-        if (parsed && typeof parsed === "object") state.value = parsed;
+        if (parsed && typeof parsed === "object") redMap.value = parsed;
       } catch {
         // ignore
       }
     });
   }
 
-  function getStatus(id: string): AvailabilityStatus {
-    return state.value[id] || "gray";
+  function getStatus(id: string): Status {
+    return redMap.value[id] ? "red" : "green";
   }
 
-  function setStatus(id: string, status: AvailabilityStatus) {
-    state.value[id] = status;
-  }
-
-  // Click cycle: gray -> green -> red -> gray
+  // Toggle between available/unavailable
   function toggle(id: string) {
-    const cur = getStatus(id);
-    const next = cur === "gray" ? "green" : cur === "green" ? "red" : "gray";
-    setStatus(id, next);
-    return next;
-  }
-
-  function isUnavailable(id: string) {
-    return getStatus(id) === "red";
+    if (redMap.value[id]) {
+      delete redMap.value[id]; // back to default green
+    } else {
+      redMap.value[id] = true; // mark unavailable
+    }
   }
 
   function resetAll() {
-    state.value = {};
+    redMap.value = {};
   }
 
-  return { state, getStatus, setStatus, toggle, isUnavailable, resetAll };
+  return { getStatus, toggle, resetAll };
 }

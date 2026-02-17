@@ -32,15 +32,6 @@
         >
           Orders
         </button>
-
-        <button
-          class="staffNavBtn"
-          :class="{ active: activeTab === 'menu' }"
-          type="button"
-          @click="activeTab = 'menu'"
-        >
-          Menu (later)
-        </button>
       </nav>
 
       <nav class="nav">
@@ -56,26 +47,18 @@
     <main class="main">
       <header class="topbar">
         <h1 class="title">Einstein Bros</h1>
-        <button class="ghostBtn" type="button" @click="navigateTo('/')">
-          Back
-        </button>
+        <button class="ghostBtn" type="button" @click="navigateTo('/')">Back</button>
       </header>
 
       <!-- ===== AVAILABILITY TAB ===== -->
-      <!-- ============ AVAILABILITY TAB ============ -->
       <section v-if="activeTab === 'availability'" class="card">
         <div class="sectionHeader">
           <h2>AVAILABILITY</h2>
-          <div class="muted">Click an item to cycle: Gray → Green → Red</div>
+          <div class="muted">Click an item to toggle Available ↔ Unavailable</div>
         </div>
 
-        <!-- Groups -->
         <div class="availGroups">
-          <div
-            v-for="groupKey in orderedGroupKeys"
-            :key="groupKey"
-            class="availGroup"
-          >
+          <div v-for="groupKey in orderedGroupKeys" :key="groupKey" class="availGroup">
             <div class="availGroupTitle">{{ groupKey }}</div>
 
             <div class="availItems">
@@ -89,7 +72,7 @@
               >
                 <div class="availItemName">{{ it.name }}</div>
                 <div class="availItemStatus">
-                  {{ statusLabel(availability.getStatus(it.id)) }}
+                  {{ availability.getStatus(it.id) === "red" ? "Unavailable" : "Available" }}
                 </div>
               </button>
             </div>
@@ -97,19 +80,17 @@
         </div>
 
         <div class="legend">
-          <span class="pill green">Green = Available</span>
+          <span class="pill green">Green = Available (default)</span>
           <span class="pill red">Red = Unavailable</span>
-          <span class="pill gray">Gray = Not set</span>
 
           <button class="miniBtn" type="button" @click="availability.resetAll()">
-            Reset all
+            Reset all (back to green)
           </button>
         </div>
       </section>
 
-
       <!-- ===== ORDERS TAB ===== -->
-      <section v-else-if="activeTab === 'orders'" class="card">
+      <section v-else class="card">
         <div class="sectionHeader">
           <h2>ORDERS</h2>
           <div class="muted">Layout only (fake orders)</div>
@@ -123,20 +104,14 @@
               No orders
             </div>
 
-            <div
-              v-for="o in ordersByStatus(col.key)"
-              :key="o.id"
-              class="orderCard"
-            >
+            <div v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
               <div class="orderTop">
                 <b>Order {{ o.id }}</b>
                 <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
               </div>
 
               <ul class="orderItems">
-                <li v-for="(it, idx) in o.items" :key="idx">
-                  {{ it }}
-                </li>
+                <li v-for="(it, idx) in o.items" :key="idx">{{ it }}</li>
               </ul>
 
               <div class="orderBtns">
@@ -155,50 +130,68 @@
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- ===== MENU TAB (placeholder) ===== -->
-      <section v-else class="card">
-        <div class="sectionHeader">
-          <h2>MENU</h2>
-          <div class="muted">We’ll build the “mark unavailable” controls here next.</div>
-        </div>
+        <!-- DETAILS MODAL (layout only) -->
+        <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
+          <div class="modal" @click.stop>
+            <div class="modalHeader">
+              <h3>Order {{ detailsOrder?.id }}</h3>
+              <button class="xBtn" type="button" @click="closeDetails">✕</button>
+            </div>
 
-        <div class="placeholder">Coming soon…</div>
-      </section>
+            <div class="modalBody" v-if="detailsOrder">
+              <div class="muted">Placed: {{ detailsOrder.time }} • {{ detailsOrder.date }}</div>
 
-      <!-- ===== DETAILS MODAL (layout only) ===== -->
-      <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
-        <div class="modal" @click.stop>
-          <div class="modalHeader">
-            <h3>Order {{ detailsOrder?.id }}</h3>
-            <button class="xBtn" type="button" @click="closeDetails">✕</button>
-          </div>
+              <div class="modalSectionTitle">Items</div>
+              <ul class="modalList">
+                <li v-for="(it, idx) in detailsOrder.items" :key="idx">{{ it }}</li>
+              </ul>
 
-          <div class="modalBody" v-if="detailsOrder">
-            <div class="muted">Placed: {{ detailsOrder.time }} • {{ detailsOrder.date }}</div>
-
-            <div class="modalSectionTitle">Items</div>
-            <ul class="modalList">
-              <li v-for="(it, idx) in detailsOrder.items" :key="idx">{{ it }}</li>
-            </ul>
-
-            <div class="modalFooter">
-              <button class="ghostBtn" type="button" @click="closeDetails">Close</button>
+              <div class="modalFooter">
+                <button class="ghostBtn" type="button" @click="closeDetails">Close</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </main>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
-import { MENU_ITEMS } from "@/data/menu";
+import { MENU_ITEMS } from "../data/menu";
 
 const staffUser = "1234";
 const activeTab = ref("availability");
+
+const availability = useAvailability();
+
+// Group menu items by category
+const availabilityGroups = computed(() => {
+  const groups = {};
+  for (const item of MENU_ITEMS) {
+    const cat = item.category || "Other";
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(item);
+  }
+  return groups;
+});
+
+// Optional ordering of categories
+const GROUP_ORDER = ["Menu Items", "Breakfast", "Lunch", "Bagels", "Shmears", "Misc.", "Ingredients", "Drinks"];
+
+const orderedGroupKeys = computed(() => {
+  const keys = Object.keys(availabilityGroups.value);
+  return keys.sort((a, b) => {
+    const ia = GROUP_ORDER.indexOf(a);
+    const ib = GROUP_ORDER.indexOf(b);
+    const ra = ia === -1 ? 999 : ia;
+    const rb = ib === -1 ? 999 : ib;
+    if (ra !== rb) return ra - rb;
+    return a.localeCompare(b);
+  });
+});
 
 /** Orders board (fake, but Move works) */
 const orderColumns = [
@@ -230,7 +223,6 @@ function ordersByStatus(statusKey) {
 }
 
 const flow = ["new", "progress", "ready", "completed"];
-
 function moveOrder(fromKey, orderId) {
   const idx = orders.value.findIndex((o) => o.id === orderId && o.status === fromKey);
   if (idx === -1) return;
@@ -253,43 +245,7 @@ function closeDetails() {
   detailsOpen.value = false;
   detailsOrder.value = null;
 }
-
-/** ✅ Availability (real) */
-const availability = useAvailability();
-
-// group menu items by their category string
-const availabilityGroups = computed(() => {
-  const groups = {};
-  for (const item of MENU_ITEMS) {
-    const cat = item.category || "Other";
-    if (!groups[cat]) groups[cat] = [];
-    groups[cat].push(item);
-  }
-  return groups;
-});
-
-// optional ordering of categories in the UI
-const GROUP_ORDER = ["Breakfast", "Lunch", "Bagels", "Shmears", "Misc.", "Ingredients", "Drinks"];
-
-const orderedGroupKeys = computed(() => {
-  const keys = Object.keys(availabilityGroups.value);
-  return keys.sort((a, b) => {
-    const ia = GROUP_ORDER.indexOf(a);
-    const ib = GROUP_ORDER.indexOf(b);
-    const ra = ia === -1 ? 999 : ia;
-    const rb = ib === -1 ? 999 : ib;
-    if (ra !== rb) return ra - rb;
-    return a.localeCompare(b);
-  });
-});
-
-function statusLabel(s) {
-  if (s === "green") return "Available";
-  if (s === "red") return "Unavailable";
-  return "Not set";
-}
 </script>
-
 
 <style scoped>
 :root {
@@ -429,53 +385,6 @@ function statusLabel(s) {
   font-weight: 900;
 }
 
-/* Availability (cleaner grid) */
-.availGrid {
-  display: grid;
-  grid-template-columns: 180px repeat(3, 1fr);
-  gap: 12px;
-  align-items: center;
-  margin-top: 8px;
-}
-
-.availHead {
-  font-weight: 1000;
-  opacity: 0.75;
-}
-
-.availLabel {
-  font-weight: 1100;
-}
-
-.availBtn {
-  border-radius: 14px;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  padding: 14px 12px;
-  font-weight: 1100;
-  cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
-}
-
-.availBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.06);
-  filter: brightness(0.99);
-}
-
-.availBtn.green {
-  background: rgba(0, 140, 70, 0.14);
-  border-color: rgba(0, 140, 70, 0.25);
-}
-.availBtn.red {
-  background: rgba(255, 80, 80, 0.14);
-  border-color: rgba(255, 80, 80, 0.25);
-}
-.availBtn.gray {
-  background: rgba(75, 52, 41, 0.06);
-  border-color: rgba(75, 52, 41, 0.12);
-  opacity: 0.92;
-}
-
 /* Availability - grouped list of items */
 .availGroups {
   display: grid;
@@ -493,7 +402,7 @@ function statusLabel(s) {
   padding: 10px 12px;
   font-weight: 1000;
   background: #fff;
-  border-bottom: 1px solid rgba(75, 52, 41, 0.10);
+  border-bottom: 1px solid rgba(75, 52, 41, 0.1);
 }
 
 .availItems {
@@ -515,14 +424,9 @@ function statusLabel(s) {
   gap: 6px;
   transition: transform 0.06s ease, box-shadow 0.06s ease, border 0.06s ease;
 }
-
 .availItemBtn:hover {
   transform: translateY(-1px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-}
-
-.availItemName {
-  font-weight: 1000;
 }
 
 .availItemStatus {
@@ -539,31 +443,6 @@ function statusLabel(s) {
 .availItemBtn.red {
   background: rgba(255, 80, 80, 0.12);
   border-color: rgba(255, 80, 80, 0.25);
-}
-.availItemBtn.gray {
-  background: rgba(75, 52, 41, 0.05);
-  border-color: rgba(75, 52, 41, 0.12);
-  opacity: 0.9;
-}
-
-/* Responsive */
-@media (max-width: 1100px) {
-  .availItems {
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-  }
-}
-@media (max-width: 720px) {
-  .availItems {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* show which state is selected */
-.availBtn.green[disabled],
-.availBtn.red[disabled],
-.availBtn.gray[disabled] {
-  opacity: 1;
 }
 
 .legend {
@@ -585,75 +464,6 @@ function statusLabel(s) {
 .pill.red {
   background: rgba(255, 80, 80, 0.14);
 }
-.pill.gray {
-  background: rgba(75, 52, 41, 0.06);
-}
-
-/* Orders kanban */
-.kanban {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 8px;
-}
-
-.col {
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 18px;
-  background: rgba(75, 52, 41, 0.03);
-  overflow: hidden;
-  min-height: 540px;
-}
-
-.colHeader {
-  padding: 12px 12px;
-  font-weight: 1100;
-  font-size: 18px;
-  background: #fff;
-  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-}
-
-.emptyCol {
-  padding: 14px 12px;
-  opacity: 0.65;
-  font-weight: 900;
-}
-
-.orderCard {
-  background: #fff;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  border-radius: 16px;
-  padding: 12px;
-  margin: 12px;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
-}
-
-.orderTop {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.orderMeta {
-  font-weight: 900;
-  opacity: 0.7;
-  font-size: 12px;
-}
-
-.orderItems {
-  margin: 10px 0 0;
-  padding-left: 18px;
-  font-weight: 900;
-  opacity: 0.9;
-}
-
-.orderBtns {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-}
-
 .miniBtn {
   border-radius: 12px;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -663,19 +473,70 @@ function statusLabel(s) {
   cursor: pointer;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
 }
-.miniBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
+
+/* Orders kanban */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.col {
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 18px;
+  background: rgba(75, 52, 41, 0.03);
+  overflow: hidden;
+  min-height: 540px;
+}
+.colHeader {
+  padding: 12px 12px;
+  font-weight: 1100;
+  font-size: 18px;
+  background: #fff;
+  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+}
+.emptyCol {
+  padding: 14px 12px;
+  opacity: 0.65;
+  font-weight: 900;
+}
+.orderCard {
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 16px;
+  padding: 12px;
+  margin: 12px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
+}
+.orderTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.orderMeta {
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+.orderItems {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-weight: 900;
+  opacity: 0.9;
+}
+.orderBtns {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
 }
 .miniBtn.ghost {
   background: rgba(255, 255, 255, 0.65);
 }
-
-.placeholder {
-  padding: 16px 2px;
-  font-weight: 900;
-  opacity: 0.8;
+.miniBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Modal */
@@ -722,9 +583,6 @@ function statusLabel(s) {
   font-size: 18px;
   opacity: 0.85;
 }
-.xBtn:hover {
-  opacity: 1;
-}
 .modalBody {
   padding: 18px;
   display: grid;
@@ -752,8 +610,10 @@ function statusLabel(s) {
   .kanban {
     grid-template-columns: repeat(2, 1fr);
   }
+  .availItems {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
 }
-
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
@@ -765,11 +625,8 @@ function statusLabel(s) {
   .kanban {
     grid-template-columns: 1fr;
   }
-  .availGrid {
+  .availItems {
     grid-template-columns: 1fr;
-  }
-  .availHead {
-    display: none;
   }
 }
 </style>
