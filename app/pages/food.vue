@@ -788,14 +788,15 @@ const Other = ref([
   width: 22px;
   height: 22px;
   border-radius: 999px;
-  background: var(--yellow);
-  color: #2c1b12;
+  background: #f4a51c; /* 🔥 hard-coded orange */
+  color: #111;
   font-weight: 900;
   display: grid;
   place-items: center;
   border: 2px solid #fff;
   font-size: 12px;
 }
+
 
 /* Title */
 .hero {

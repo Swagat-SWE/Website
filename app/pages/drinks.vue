@@ -892,14 +892,15 @@ const bottledDrinks = ref([
   width: 22px;
   height: 22px;
   border-radius: 999px;
-  background: var(--yellow);
-  color: #2c1b12;
+  background: #f4a51c; /* 🔥 hard-coded orange */
+  color: #111;
   font-weight: 900;
   display: grid;
   place-items: center;
   border: 2px solid #fff;
   font-size: 12px;
 }
+
 
 /* Title */
 .hero {
@@ -1440,6 +1441,114 @@ const bottledDrinks = ref([
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
 }
+  .modalOverlay {
+    align-items: flex-end;        /* push sheet to bottom */
+    padding: 12px;               /* smaller outer padding */
+  }
 
+  .modal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 75vh;            /* ✅ IMPORTANT: prevents huge box */
+    overflow: hidden;            /* hide overflow; body will scroll */
+    border-radius: 18px 18px 22px 22px;
+  }
+
+  .modalHeader {
+    padding: 12px 14px;          /* smaller header */
+  }
+
+  .modalBody {
+    padding: 12px 14px;
+    max-height: calc(75vh - 120px); /* leaves room for header+footer */
+    overflow-y: auto;              /* ✅ scroll inside */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modalTitle {
+    font-size: 18px;             /* smaller title */
+  }
+
+  .fieldLabel {
+    margin: 8px 0 6px;           /* less vertical space */
+  }
+
+  .select, .textarea {
+    padding: 10px 12px;          /* tighter inputs */
+    border-radius: 12px;
+  }
+
+  .extras {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .checkLine {
+    padding: 10px 10px;          /* tighter add-on rows */
+  }
+
+  /* Sticky footer like a real mobile sheet */
+  .modalFooter {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 12px 14px;
+    margin-top: 0;
+    border-top: 1px solid rgba(15,23,42,0.10);
+  }
+  .sizeOverlay {
+    place-items: end center;      /* push modal down like a sheet */
+    padding: 10px;
+  }
+
+  .sizeModal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 60vh;            /* ✅ key: cap height */
+    overflow: hidden;            /* body will scroll */
+    border-radius: 18px 18px 22px 22px;
+    padding: 12px 12px 12px;     /* smaller padding */
+  }
+
+  .sizeHead {
+    margin-bottom: 6px;
+  }
+
+  .sizeTitle {
+    font-size: 18px;             /* smaller title */
+  }
+
+  .sizeDrinkName {
+    font-size: 13px;
+    margin: 0 0 10px;
+  }
+
+  .sizeOptions {
+    max-height: calc(60vh - 140px); /* ✅ scroll area */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-right: 2px;
+  }
+
+  .sizeBtn {
+    padding: 12px;               /* smaller buttons */
+    border-radius: 16px;
+  }
+
+  .sizeLabel {
+    font-size: 15px;
+  }
+
+  .sizePrice {
+    font-size: 14px;
+    padding: 7px 10px;
+  }
+
+  .cancelBtn {
+    padding: 12px;
+    border-radius: 16px;
+    margin-top: 8px;
+  }
 }
 </style>

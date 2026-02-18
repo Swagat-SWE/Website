@@ -116,7 +116,7 @@
               @click.stop="showLocationDropdown = !showLocationDropdown"
               aria-label="Choose location"
             >
-              <span class="pin">📍</span>
+              <span class="pin">📍 Dubuque, IA</span>
               <span class="locationSelected">{{ location }}</span>
             </button>
 
@@ -368,24 +368,6 @@ async function checkAuth() {
 onMounted(() => checkAuth());
 
 /** Location */
-const location = ref("Dubuque, Iowa");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-
-const locations = ref([
-  "Dubuque, Iowa",
-  "Cedar Rapids, Iowa",
-  "Iowa City, Iowa",
-  "Madison, Wisconsin",
-  "Chicago, Illinois",
-]);
-
-const filteredLocations = computed(() => {
-  const q = locationQuery.value.trim().toLowerCase();
-  if (!q) return locations.value.slice(0, 50);
-  return locations.value.filter((x) => x.toLowerCase().includes(q)).slice(0, 8);
-});
-
 function selectLocation(opt) {
   location.value = opt;
   locationQuery.value = "";

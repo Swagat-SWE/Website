@@ -1165,6 +1165,184 @@ function setStatus(i) {
   opacity: 0;
   transform: translateY(-10px);
 }
+/* =========================
+   MOBILE UPGRADE (tracking)
+   ========================= */
+
+@media (max-width: 760px) {
+  /* 1) Hide sidebar on phones */
+  .sidebar {
+    display: none;
+  }
+
+  /* 2) One-column layout */
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  /* 3) Tighten main padding */
+  .main {
+    padding: 14px 14px 40px;
+    min-height: auto;
+  }
+
+  /* 4) Topbar stacks + button full width */
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .title {
+    font-size: 30px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .cartBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  /* 5) Card becomes tighter and not forced fullscreen */
+  .card {
+    min-height: auto;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  /* 6) Layout becomes single column (belt then status) */
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  /* 7) Belt: shorter + fits screen */
+  .belt {
+    min-height: 520px;
+    border-radius: 18px;
+  }
+
+  /* 8) Stations: narrower + smaller pills */
+  .station {
+    width: 260px;
+  }
+
+  .pill {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  /* 9) Cart smaller */
+  .cart {
+    width: 92px;
+    height: 66px;
+    border-radius: 16px;
+  }
+
+  .cartTop {
+    width: 74px;
+  }
+
+  /* 10) Right panel: remove the big push-down */
+  .sidePanel {
+    padding: 0;
+    padding-top: 0;
+    justify-content: flex-start;
+  }
+
+  .current {
+    margin-top: 0;
+  }
+
+  .statusWrap {
+    width: 100%;
+    padding: 6px 0 0;
+  }
+
+  .bigBadge {
+    font-size: 16px;
+    padding: 14px 18px;
+  }
+
+  .bigDesc {
+    margin-top: 10px;
+    font-size: 18px;
+    line-height: 1.35;
+    max-width: 100%;
+  }
+
+  /* 11) Oven visuals scale down slightly */
+  .ovenBackdrop {
+    width: 190px;
+    height: 140px;
+  }
+
+  .ovenFx {
+    width: 190px;
+    height: 140px;
+  }
+
+  .ovenArt {
+    width: 160px;
+    height: 140px;
+  }
+
+  .ovenSvg {
+    width: 160px;
+    height: 140px;
+  }
+
+  .ovenRings {
+    width: 100px;
+    height: 100px;
+  }
+
+  .heatWaves {
+    width: 120px;
+    height: 80px;
+  }
+
+  .heat {
+    width: 112px;
+    height: 74px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 420px) {
+  .title {
+    font-size: 26px;
+  }
+
+  .station {
+    width: 240px;
+  }
+
+  .belt {
+    min-height: 480px;
+  }
+}
 
 
 </style>

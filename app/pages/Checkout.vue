@@ -1212,10 +1212,350 @@ function saveEdit() {
 @media (max-width: 980px) {
   .layout { grid-template-columns: 1fr; }
 }
+/* ✅ Mobile: premium layout WITHOUT touching desktop */
 @media (max-width: 720px) {
-  .page { grid-template-columns: 1fr; }
-  .sidebar { border-right: none; border-bottom: 1px solid rgba(75,52,41,0.12); }
-  .cartRow { grid-template-columns: 1fr; text-align: left; }
-  .totalCol { text-align: left; }
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  /* main spacing feels "app-like" */
+  .main {
+    padding: 14px 14px 44px;
+  }
+
+  /* ✅ Brand strip (clean + premium, not chunky) */
+  .brandStrip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+
+    background: linear-gradient(180deg, #f6e28a, #f2d468);
+    border: 1px solid rgba(75, 52, 41, 0.12);
+    border-radius: 16px;
+
+    margin: 0 0 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
+  }
+
+  .brandStripLogo {
+    height: 34px;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
+  }
+
+  /* ✅ Topbar becomes clean + balanced */
+  .topbar {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .hamburgerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 14px;
+  }
+
+  .title {
+    font-size: 26px;
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 1.05;
+  }
+
+  .cartBtn {
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* ✅ Overlay */
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(5px);
+    z-index: 90;
+  }
+
+  /* ✅ Drawer sidebar (smooth + premium) */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(320px, 88vw);
+    z-index: 100;
+
+    transform: translateX(-110%);
+    transition: transform 0.22s ease;
+
+    border-right: 1px solid rgba(75, 52, 41, 0.12);
+    box-shadow: 18px 0 60px rgba(0, 0, 0, 0.22);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .drawerCloseBtn {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  /* ✅ Stack layout */
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    border-radius: 18px;
+    padding: 14px;
+  }
+
+  .cardHeader h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  /* ✅ Cart rows become "mini cards" */
+  .cartRow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(75, 52, 41, 0.035);
+  }
+
+  /* ✅ Top line inside cartRow: qty + image + totals */
+  .qtyCol {
+    order: 1;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .qtyBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    font-size: 18px;
+  }
+  .qtyNum {
+    width: 22px;
+    font-size: 16px;
+  }
+
+  .imgCol {
+    order: 2;
+  }
+  .thumb {
+    width: 86px;
+    height: 86px;
+    border-radius: 18px;
+  }
+
+  .totalCol {
+    order: 3;
+    text-align: right;
+    display: grid;
+    gap: 2px;
+  }
+  .priceEach {
+    font-size: 13px;
+  }
+  .lineTotal {
+    font-size: 18px;
+  }
+
+  /* ✅ Put qty + image + totals into one “top row” */
+  .cartRow {
+    position: relative;
+  }
+  .qtyCol,
+  .imgCol,
+  .totalCol {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* We simulate a 3-column top row using a wrapper-like layout */
+  .qtyCol {
+    width: 110px;
+  }
+  .imgCol {
+    width: 96px;
+  }
+  .totalCol {
+    margin-left: auto;
+  }
+
+  /* ✅ Info becomes full width below */
+  .infoCol {
+    order: 4;
+  }
+
+  .rowTop {
+    align-items: start;
+    gap: 10px;
+  }
+  .name {
+    font-size: 18px;
+    line-height: 1.1;
+  }
+
+  .subText {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.35;
+    opacity: 0.86;
+  }
+
+  .linkBtn {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .removeBtn {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(75, 52, 41, 0.14);
+    background: rgba(75, 52, 41, 0.04);
+    text-decoration: none;
+  }
+
+  /* ✅ Summary card feels “sticky-ish” and premium */
+  .summary {
+    position: sticky;
+    bottom: 12px;
+    z-index: 5;
+
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(6px);
+  }
+
+  .sumRow {
+    padding: 9px 0;
+    font-size: 14px;
+  }
+
+  .primaryBtn,
+  .addPaymentBtn {
+    border-radius: 16px;
+    padding: 14px 14px;
+  }
+
+  /* ✅ Modal mobile spacing */
+  .modal {
+    width: min(560px, 96vw);
+    border-radius: 20px;
+  }
+  .modalBody {
+    padding: 16px;
+  }
+ .priceEach { display: none; }
 }
+/* Modal container */
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 92vh;               /* prevent giant modal */
+    border-radius: 18px;
+  }
+
+  /* Scrollable content */
+  .modalBody {
+    padding: 14px;
+    max-height: calc(92vh - 140px); /* header + footer space */
+    overflow-y: auto;
+  }
+
+  /* Reduce vertical spacing */
+  .fieldLabel {
+    margin-top: 8px;
+    font-size: 13px;
+  }
+
+  .select,
+  .textarea {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .extras {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .checkLine {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  /* Sticky footer (price + save) */
+  .modalFooter {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 12px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modalTotal {
+    font-size: 14px;
+  }
+
+  .modalTotal b {
+    font-size: 16px;
+  }
+
+  .modalFooter .primaryBtn {
+    margin-top: 0;
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .card.summary {
+    padding: 12px;              /* was 14px+ */
+    border-radius: 16px;
+  }
+
+  .card.summary h2 {
+    font-size: 22px;            /* smaller title */
+    margin: 0 0 8px;
+  }
+
+  .sumRow {
+    padding: 8px 0;             /* less vertical spacing */
+    font-size: 14px;
+  }
+
+  .sumRow.total {
+    padding-top: 10px;
+    font-size: 16px;
+  }
+
+  .confirmRow {
+    margin: 10px 0;             /* was 14px 0 */
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  .addPaymentBtn,
+  .primaryBtn {
+    padding: 12px;              /* shorter buttons */
+    border-radius: 12px;
+    margin-top: 10px;
+    font-size: 14px;
+  }
 </style>

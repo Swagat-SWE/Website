@@ -1,12 +1,5 @@
 <!-- app/pages/contact.vue -->
-
-<!--
-[FR-100] The Contact page SHALL display the business’s physical address in a clearly visible section at the top of the page.
-[FR-101] The Contact page SHALL provide fields for the user’s name and phone number when submitting an inquiry or message.
-[FR-102] The Contact page SHALL include a section containing all applicable legal disclaimers related to communication and data use.
-[FR-103] The Contact page SHALL include a link or embedded section describing the website’s privacy policy, including how user information is handled and stored.
-[FR-104] The Contact page SHALL display the business’s phone number in a dedicated section, allowing users to call directly from mobile devices.
--->
+<!-- Full working version: Sidebar logo hidden on desktop/laptop, visible on mobile (like other pages) -->
 
 <template>
   <div class="page">
@@ -21,7 +14,12 @@
     <!-- ✅ Sidebar (desktop column, mobile drawer) -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
+        <NuxtLink
+          to="/"
+          class="logoLink"
+          aria-label="Main Page"
+          @click="closeMobileNav"
+        >
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
@@ -38,9 +36,15 @@
 
       <nav class="nav">
         <NuxtLink class="navItem" to="/" @click="closeMobileNav">Home</NuxtLink>
-        <NuxtLink class="navItem" to="/food" @click="closeMobileNav">Food Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav">Drinks Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav">Contact</NuxtLink>
+        <NuxtLink class="navItem" to="/food" @click="closeMobileNav"
+          >Food Menu</NuxtLink
+        >
+        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav"
+          >Drinks Menu</NuxtLink
+        >
+        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav"
+          >Contact</NuxtLink
+        >
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -79,7 +83,9 @@
             rows="4"
           />
 
-          <button class="primaryBtn" type="button" @click="submitReview">Submit</button>
+          <button class="primaryBtn" type="button" @click="submitReview">
+            Submit
+          </button>
           <p v-if="submitted" class="submitted">Thanks! Review saved locally.</p>
         </div>
       </nav>
@@ -87,14 +93,20 @@
 
     <!-- Main content area -->
     <main class="main">
-    <!-- ✅ Mobile-only mini brand strip -->
-    <div class="brandStrip" aria-hidden="true">
-      <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
-    </div>
-      <!-- ✅ Top bar: (mobile hamburger) + Location + Cart -->
+      <!-- ✅ Mobile-only mini brand strip (shows on phone only) -->
+      <div class="brandStrip" aria-hidden="true">
+        <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+      </div>
+
+      <!-- ✅ Top bar -->
       <header class="topbar">
         <!-- ✅ Mobile hamburger (hidden on desktop) -->
-        <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
+        <button
+          class="hamburgerBtn"
+          type="button"
+          @click="openMobileNav"
+          aria-label="Open menu"
+        >
           <span class="hamburgerIcon" aria-hidden="true">☰</span>
         </button>
 
@@ -189,7 +201,8 @@
               <span class="faqChev" :class="{ open: openFaq === 0 }">▾</span>
             </button>
             <div v-if="openFaq === 0" class="faqBody">
-              Call the store as soon as you notice—share your receipt/order details and we’ll help make it right.
+              Call the store as soon as you notice—share your receipt/order details and we’ll help
+              make it right.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(1)">
@@ -205,7 +218,8 @@
               <span class="faqChev" :class="{ open: openFaq === 2 }">▾</span>
             </button>
             <div v-if="openFaq === 2" class="faqBody">
-              Pick up at the counter inside the Loras College location. If you don’t see it, ask a team member.
+              Pick up at the counter inside the Loras College location. If you don’t see it, ask a
+              team member.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(3)">
@@ -213,7 +227,8 @@
               <span class="faqChev" :class="{ open: openFaq === 3 }">▾</span>
             </button>
             <div v-if="openFaq === 3" class="faqBody">
-              Holiday hours can change—check announcements or call the store for the most accurate info.
+              Holiday hours can change—check announcements or call the store for the most accurate
+              info.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(4)">
@@ -221,10 +236,11 @@
               <span class="faqChev" :class="{ open: openFaq === 4 }">▾</span>
             </button>
             <div v-if="openFaq === 4" class="faqBody">
-              Contact support and we’ll guide you through deleting or updating your account information.
+              Contact support and we’ll guide you through deleting or updating your account
+              information.
             </div>
 
-            <!-- Privacy + Message form -->
+            <!-- Privacy -->
             <button class="privacyBar" type="button" @click="showPrivacy = !showPrivacy">
               <span>Privacy & Disclaimers</span>
               <span class="privacyChev" :class="{ open: showPrivacy }">▾</span>
@@ -234,12 +250,12 @@
               <div class="privacyCols">
                 <div class="privacyText">
                   <p class="privacyP">
-                    <b>Message us:</b> Use the form to send a question or request. Please avoid sharing sensitive info
-                    (passwords, payment details, or private IDs).
+                    <b>Message us:</b> Use the form to send a question or request. Please avoid
+                    sharing sensitive info (passwords, payment details, or private IDs).
                   </p>
                   <p class="privacyP">
-                    <b>Data use:</b> Your name/phone are used only to respond to your inquiry. This demo stores submissions
-                    locally in your browser for now (no server save).
+                    <b>Data use:</b> Your name/phone are used only to respond to your inquiry. This
+                    demo stores submissions locally in your browser for now (no server save).
                   </p>
                   <p class="privacyP">
                     <b>Privacy policy:</b>
@@ -314,7 +330,9 @@
               />
             </div>
 
-            <button class="secondaryBtn" type="button" @click="openMaps">Open in Maps</button>
+            <button class="secondaryBtn" type="button" @click="openMaps">
+              Open in Maps
+            </button>
           </div>
         </div>
       </section>
@@ -334,7 +352,9 @@
         <ul v-else class="cartList">
           <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
             <span class="cartItemName">{{ item.name }} (x{{ item.qty }})</span>
-            <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
+            <button class="removeBtn" type="button" @click="removeFromCart(idx)">
+              Remove
+            </button>
           </li>
         </ul>
 
@@ -544,7 +564,12 @@ function removeFromCart(index) {
   justify-content: center;
   margin-bottom: 14px;
   overflow: hidden;
-  position: relative; /* for X button */
+  position: relative;
+}
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .logoImg {
   width: 100%;
@@ -552,6 +577,13 @@ function removeFromCart(index) {
   height: auto;
   display: block;
   object-fit: contain;
+}
+
+/* ✅ IMPORTANT: Hide sidebar logo on desktop/laptop ONLY */
+@media (min-width: 721px) {
+  .sidebarTop {
+    display: none;
+  }
 }
 
 /* ✅ drawer close (only mobile) */
@@ -683,7 +715,15 @@ function removeFromCart(index) {
   padding: 20px 26px 50px;
 }
 
-/* ✅ Topbar now supports hamburger on mobile */
+/* ✅ Mini Brand Strip: default hidden everywhere */
+.brandStrip {
+  display: none;
+}
+.brandStripLogo {
+  display: block;
+}
+
+/* Topbar */
 .topbar {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -704,7 +744,7 @@ function removeFromCart(index) {
   justify-content: flex-end;
 }
 
-/* ✅ Hamburger (hidden on desktop) */
+/* Hamburger hidden on desktop */
 .hamburgerBtn {
   display: none;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -889,7 +929,11 @@ function removeFromCart(index) {
   margin-top: 14px;
   border-radius: 16px;
   border: 1px solid rgba(244, 179, 22, 0.4);
-  background: linear-gradient(180deg, rgba(244, 179, 22, 0.16), rgba(244, 179, 22, 0.08));
+  background: linear-gradient(
+    180deg,
+    rgba(244, 179, 22, 0.16),
+    rgba(244, 179, 22, 0.08)
+  );
   padding: 12px;
 }
 .aboutHighlightTitle {
@@ -1165,6 +1209,24 @@ function removeFromCart(index) {
     grid-template-columns: 1fr;
   }
 
+  /* ✅ Show mini strip only on mobile */
+  .brandStrip {
+    display: flex;
+    height: 58px;
+    background: #f6e28a;
+    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+    margin: -14px -14px 12px; /* match mobile main padding */
+  }
+  .brandStripLogo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
+  }
+
   .hamburgerBtn {
     display: inline-flex;
     align-items: center;
@@ -1209,65 +1271,12 @@ function removeFromCart(index) {
     letter-spacing: 1px;
   }
 
-  /* ✅ Make location pill not overflow */
   .locationPill {
     max-width: 100%;
   }
 
-  /* ✅ Mobile spacing tweaks */
   .mapFrame {
     height: 240px;
   }
-  /* ===== Mini Brand Strip ===== */
-.brandStrip{
-  height: 64px;                    /* the strip height */
-  background: #f6e28a;             /* yellow-ish (change if you want) */
-  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
-  margin: -20px -26px 14px;        /* pulls to the edges inside main padding */
-}
-
-.brandStripLogo{
-  height: 42px;                    /* mini logo size */
-  width: auto;
-  object-fit: contain;
-  display: block;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
-}
-/* ===== Mini Brand Strip (desktop hidden) ===== */
-.brandStrip {
-  display: none; /* ✅ hidden on desktop */
-}
-.brandStripLogo {
-  display: block;
-}
-
-/* Mobile: match your smaller main padding */
-@media (max-width: 720px){
-/* ===== Mini Brand Strip (mobile only) ===== */
-.brandStrip{
-  display: flex;
-  height: 58px;
-  background: #f6e28a;
-  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
-
-  /* match your .main padding on mobile */
-  margin: -14px -14px 12px;
-}
-
-.brandStripLogo{
-  height: 38px;
-  width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
-}
-
-}
 }
 </style>
