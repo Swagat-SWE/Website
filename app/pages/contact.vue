@@ -120,10 +120,6 @@
         </div>
 
         <div class="topbarRight">
-          <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
-            <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartCount }}</span>
-          </button>
         </div>
       </header>
 
