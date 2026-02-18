@@ -1,4 +1,4 @@
-<!-- app/pages/staff.vue -->
+<!-- app/pages/Staff.vue -->
 <template>
   <div class="page">
     <!-- Sidebar -->
@@ -131,7 +131,7 @@
           </div>
         </div>
 
-        <!-- DETAILS MODAL (layout only) -->
+        <!-- DETAILS MODAL -->
         <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
           <div class="modal" @click.stop>
             <div class="modalHeader">
@@ -158,18 +158,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from "vue";
 import { MENU_ITEMS } from "../data/menu";
 
 const staffUser = "1234";
-const activeTab = ref("availability");
+const activeTab = ref<"availability" | "orders">("availability");
 
 const availability = useAvailability();
 
-// Group menu items by category
+/**
+ * IMPORTANT:
+ * Your menu.ts items should have a `category` string that matches your sections,
+ * e.g. "Breakfast", "Lunch", "Bagels", "Shmears", "Other", "Hot Drinks", "Cold Drinks", etc.
+ */
 const availabilityGroups = computed(() => {
-  const groups = {};
+  const groups: Record<string, typeof MENU_ITEMS> = {};
   for (const item of MENU_ITEMS) {
     const cat = item.category || "Other";
     if (!groups[cat]) groups[cat] = [];
@@ -178,8 +182,18 @@ const availabilityGroups = computed(() => {
   return groups;
 });
 
-// Optional ordering of categories
-const GROUP_ORDER = ["Menu Items", "Breakfast", "Lunch", "Bagels", "Shmears", "Misc.", "Ingredients", "Drinks"];
+// Put categories in the order YOU want them to show
+const GROUP_ORDER = [
+  "Breakfast",
+  "Lunch",
+  "Bagels",
+  "Shmears",
+  "Other",
+  "Hot Drinks",
+  "Cold Drinks",
+  "Tea and Smoothies",
+  "Bottled Drinks",
+];
 
 const orderedGroupKeys = computed(() => {
   const keys = Object.keys(availabilityGroups.value);
@@ -193,51 +207,51 @@ const orderedGroupKeys = computed(() => {
   });
 });
 
-/** Orders board (fake, but Move works) */
+/** Orders (fake) */
 const orderColumns = [
   { key: "new", label: "New" },
   { key: "progress", label: "In Progress" },
   { key: "ready", label: "Ready" },
   { key: "completed", label: "Completed" },
-];
+] as const;
+
+type OrderStatus = (typeof orderColumns)[number]["key"];
 
 const orders = ref([
   {
     id: "1234",
-    status: "new",
+    status: "new" as OrderStatus,
     time: "7:30am",
     date: "1/23/24",
     items: ["1 Bagel, toasted", "2 Cold brews, small"],
   },
   {
     id: "1235",
-    status: "progress",
+    status: "progress" as OrderStatus,
     time: "7:34am",
     date: "1/23/24",
     items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"],
   },
 ]);
 
-function ordersByStatus(statusKey) {
+function ordersByStatus(statusKey: OrderStatus) {
   return orders.value.filter((o) => o.status === statusKey);
 }
 
-const flow = ["new", "progress", "ready", "completed"];
-function moveOrder(fromKey, orderId) {
+const flow: OrderStatus[] = ["new", "progress", "ready", "completed"];
+function moveOrder(fromKey: OrderStatus, orderId: string) {
   const idx = orders.value.findIndex((o) => o.id === orderId && o.status === fromKey);
   if (idx === -1) return;
-
   const nextKey = flow[flow.indexOf(fromKey) + 1];
   if (!nextKey) return;
-
   orders.value[idx].status = nextKey;
 }
 
-/** Details modal (layout-only) */
+/** Details modal */
 const detailsOpen = ref(false);
-const detailsOrder = ref(null);
+const detailsOrder = ref<any>(null);
 
-function openDetails(order) {
+function openDetails(order: any) {
   detailsOrder.value = order;
   detailsOpen.value = true;
 }
@@ -263,7 +277,6 @@ function closeDetails() {
   color: var(--brown);
 }
 
-/* Sidebar */
 .sidebar {
   border-right: 1px solid rgba(75, 52, 41, 0.12);
   padding: 18px 14px;
@@ -312,11 +325,6 @@ function closeDetails() {
   padding: 10px 12px;
   font-weight: 1000;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
-}
-.staffNavBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--cardShadow);
 }
 .staffNavBtn.active {
   border-color: rgba(244, 179, 22, 0.7);
@@ -338,7 +346,6 @@ function closeDetails() {
   background: #fff;
 }
 
-/* Main */
 .main {
   padding: 20px 26px 50px;
 }
@@ -352,7 +359,6 @@ function closeDetails() {
   margin: 0;
   font-size: 46px;
   font-weight: 1100;
-  letter-spacing: -0.02em;
 }
 .ghostBtn {
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -385,7 +391,7 @@ function closeDetails() {
   font-weight: 900;
 }
 
-/* Availability - grouped list of items */
+/* Availability groups */
 .availGroups {
   display: grid;
   gap: 16px;
@@ -422,11 +428,6 @@ function closeDetails() {
   font-weight: 1000;
   display: grid;
   gap: 6px;
-  transition: transform 0.06s ease, box-shadow 0.06s ease, border 0.06s ease;
-}
-.availItemBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
 .availItemStatus {
@@ -435,7 +436,7 @@ function closeDetails() {
   font-size: 12px;
 }
 
-/* Status colors */
+/* Only two states now */
 .availItemBtn.green {
   background: rgba(0, 140, 70, 0.12);
   border-color: rgba(0, 140, 70, 0.25);
@@ -474,7 +475,7 @@ function closeDetails() {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* Orders kanban */
+/* Orders */
 .kanban {
   display: grid;
   grid-template-columns: repeat(4, minmax(220px, 1fr));
@@ -564,12 +565,6 @@ function closeDetails() {
   justify-content: space-between;
   padding: 16px 18px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  background: linear-gradient(180deg, #ffffff, #fafafa);
-}
-.modalHeader h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 1100;
 }
 .xBtn {
   width: 34px;
@@ -578,10 +573,6 @@ function closeDetails() {
   border: 1px solid rgba(15, 23, 42, 0.1);
   background: #fff;
   cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-  opacity: 0.85;
 }
 .modalBody {
   padding: 18px;
@@ -605,7 +596,6 @@ function closeDetails() {
   border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-/* Responsive */
 @media (max-width: 1100px) {
   .kanban {
     grid-template-columns: repeat(2, 1fr);

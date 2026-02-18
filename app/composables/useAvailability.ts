@@ -1,64 +1,45 @@
 // app/composables/useAvailability.ts
-import { watch } from "vue";
+export type AvailabilityStatus = "green" | "red";
 
-type Status = "green" | "red"; // green=available (default), red=unavailable
-
-const KEY = "einstein_availability_v1";
+const STORAGE_KEY = "einsteins_unavailable_items";
 
 export function useAvailability() {
-  // Store ONLY overrides (red items). If an item is missing, it's green by default.
-  const redMap = useState<Record<string, true>>("availabilityRedMap", () => ({}));
-
-  if (import.meta.client) {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
+  // store ONLY the unavailable ids
+  const unavailable = useState<Record<string, boolean>>("unavailable-items", () => {
+    if (process.client) {
       try {
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          redMap.value = parsed;
-        }
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
       } catch {
-        // ignore bad JSON
+        return {};
       }
-    } else {
-      localStorage.setItem(KEY, JSON.stringify(redMap.value));
     }
+    return {};
+  });
 
-    watch(
-      redMap,
-      (val) => {
-        localStorage.setItem(KEY, JSON.stringify(val));
-      },
-      { deep: true, flush: "sync" }
-    );
-
-    window.addEventListener("storage", (e) => {
-      if (e.key !== KEY) return;
-      try {
-        const parsed = JSON.parse(e.newValue || "{}");
-        if (parsed && typeof parsed === "object") redMap.value = parsed;
-      } catch {
-        // ignore
-      }
-    });
+  function isUnavailable(id: string) {
+    return !!unavailable.value[id];
   }
 
-  function getStatus(id: string): Status {
-    return redMap.value[id] ? "red" : "green";
+  // ✅ default is green (available) unless marked otherwise
+  function getStatus(id: string): AvailabilityStatus {
+    return isUnavailable(id) ? "red" : "green";
   }
 
-  // Toggle between available/unavailable
   function toggle(id: string) {
-    if (redMap.value[id]) {
-      delete redMap.value[id]; // back to default green
-    } else {
-      redMap.value[id] = true; // mark unavailable
+    if (unavailable.value[id]) delete unavailable.value[id];
+    else unavailable.value[id] = true;
+
+    if (process.client) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(unavailable.value));
     }
   }
 
   function resetAll() {
-    redMap.value = {};
+    unavailable.value = {};
+    if (process.client) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({}));
+    }
   }
 
-  return { getStatus, toggle, resetAll };
+  return { getStatus, toggle, resetAll, isUnavailable };
 }
