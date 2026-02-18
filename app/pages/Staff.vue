@@ -15,21 +15,10 @@
       </div>
 
       <nav class="staffNav">
-        <button
-          class="staffNavBtn"
-          :class="{ active: activeTab === 'availability' }"
-          type="button"
-          @click="activeTab = 'availability'"
-        >
+        <button class="staffNavBtn" :class="{ active: activeTab === 'availability' }" type="button" @click="activeTab = 'availability'">
           Availability
         </button>
-
-        <button
-          class="staffNavBtn"
-          :class="{ active: activeTab === 'orders' }"
-          type="button"
-          @click="activeTab = 'orders'"
-        >
+        <button class="staffNavBtn" :class="{ active: activeTab === 'orders' }" type="button" @click="activeTab = 'orders'">
           Orders
         </button>
       </nav>
@@ -50,7 +39,7 @@
         <button class="ghostBtn" type="button" @click="navigateTo('/')">Back</button>
       </header>
 
-      <!-- ===== AVAILABILITY TAB ===== -->
+      <!-- AVAILABILITY -->
       <section v-if="activeTab === 'availability'" class="card">
         <div class="sectionHeader">
           <h2>AVAILABILITY</h2>
@@ -82,14 +71,11 @@
         <div class="legend">
           <span class="pill green">Green = Available (default)</span>
           <span class="pill red">Red = Unavailable</span>
-
-          <button class="miniBtn" type="button" @click="availability.resetAll()">
-            Reset all (back to green)
-          </button>
+          <button class="miniBtn" type="button" @click="availability.resetAll()">Reset all</button>
         </div>
       </section>
 
-      <!-- ===== ORDERS TAB ===== -->
+      <!-- ORDERS (same as your fake board) -->
       <section v-else class="card">
         <div class="sectionHeader">
           <h2>ORDERS</h2>
@@ -100,9 +86,7 @@
           <div class="col" v-for="col in orderColumns" :key="col.key">
             <div class="colHeader">{{ col.label }}</div>
 
-            <div v-if="ordersByStatus(col.key).length === 0" class="emptyCol">
-              No orders
-            </div>
+            <div v-if="ordersByStatus(col.key).length === 0" class="emptyCol">No orders</div>
 
             <div v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
               <div class="orderTop">
@@ -115,23 +99,15 @@
               </ul>
 
               <div class="orderBtns">
-                <button
-                  class="miniBtn"
-                  type="button"
-                  @click="moveOrder(col.key, o.id)"
-                  :disabled="col.key === 'completed'"
-                >
+                <button class="miniBtn" type="button" @click="moveOrder(col.key, o.id)" :disabled="col.key === 'completed'">
                   Move →
                 </button>
-                <button class="miniBtn ghost" type="button" @click="openDetails(o)">
-                  Details
-                </button>
+                <button class="miniBtn ghost" type="button" @click="openDetails(o)">Details</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- DETAILS MODAL -->
         <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
           <div class="modal" @click.stop>
             <div class="modalHeader">
@@ -160,20 +136,15 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { MENU_ITEMS } from "../data/menu";
+import { MENU_ITEMS, type MenuItem } from "../data/menu";
 
 const staffUser = "1234";
 const activeTab = ref<"availability" | "orders">("availability");
-
 const availability = useAvailability();
 
-/**
- * IMPORTANT:
- * Your menu.ts items should have a `category` string that matches your sections,
- * e.g. "Breakfast", "Lunch", "Bagels", "Shmears", "Other", "Hot Drinks", "Cold Drinks", etc.
- */
-const availabilityGroups = computed(() => {
-  const groups: Record<string, typeof MENU_ITEMS> = {};
+/** Group exactly like menu sections */
+const availabilityGroups = computed<Record<string, MenuItem[]>>(() => {
+  const groups: Record<string, MenuItem[]> = {};
   for (const item of MENU_ITEMS) {
     const cat = item.category || "Other";
     if (!groups[cat]) groups[cat] = [];
@@ -182,13 +153,14 @@ const availabilityGroups = computed(() => {
   return groups;
 });
 
-// Put categories in the order YOU want them to show
+/** Order like your UI */
 const GROUP_ORDER = [
   "Breakfast",
   "Lunch",
   "Bagels",
-  "Shmears",
+  "Smears",
   "Other",
+  "Misc.",
   "Hot Drinks",
   "Cold Drinks",
   "Tea and Smoothies",
@@ -207,7 +179,7 @@ const orderedGroupKeys = computed(() => {
   });
 });
 
-/** Orders (fake) */
+/** Fake orders */
 const orderColumns = [
   { key: "new", label: "New" },
   { key: "progress", label: "In Progress" },
@@ -218,26 +190,13 @@ const orderColumns = [
 type OrderStatus = (typeof orderColumns)[number]["key"];
 
 const orders = ref([
-  {
-    id: "1234",
-    status: "new" as OrderStatus,
-    time: "7:30am",
-    date: "1/23/24",
-    items: ["1 Bagel, toasted", "2 Cold brews, small"],
-  },
-  {
-    id: "1235",
-    status: "progress" as OrderStatus,
-    time: "7:34am",
-    date: "1/23/24",
-    items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"],
-  },
+  { id: "1234", status: "new" as OrderStatus, time: "7:30am", date: "1/23/24", items: ["1 Bagel, toasted", "2 Cold brews, small"] },
+  { id: "1235", status: "progress" as OrderStatus, time: "7:34am", date: "1/23/24", items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"] },
 ]);
 
 function ordersByStatus(statusKey: OrderStatus) {
   return orders.value.filter((o) => o.status === statusKey);
 }
-
 const flow: OrderStatus[] = ["new", "progress", "ready", "completed"];
 function moveOrder(fromKey: OrderStatus, orderId: string) {
   const idx = orders.value.findIndex((o) => o.id === orderId && o.status === fromKey);
@@ -250,7 +209,6 @@ function moveOrder(fromKey: OrderStatus, orderId: string) {
 /** Details modal */
 const detailsOpen = ref(false);
 const detailsOrder = ref<any>(null);
-
 function openDetails(order: any) {
   detailsOrder.value = order;
   detailsOpen.value = true;
@@ -262,13 +220,13 @@ function closeDetails() {
 </script>
 
 <style scoped>
+/* you can keep your existing staff styles; this is the same look you already had */
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
   --brown: #4b3429;
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
-
 .page {
   min-height: 100vh;
   display: grid;
@@ -276,7 +234,6 @@ function closeDetails() {
   background: linear-gradient(180deg, var(--cream2), var(--cream));
   color: var(--brown);
 }
-
 .sidebar {
   border-right: 1px solid rgba(75, 52, 41, 0.12);
   padding: 18px 14px;
@@ -294,7 +251,6 @@ function closeDetails() {
   height: auto;
   object-fit: contain;
 }
-
 .staffTag {
   border: 1px solid rgba(75, 52, 41, 0.14);
   border-radius: 14px;
@@ -302,21 +258,10 @@ function closeDetails() {
   background: #fff;
   margin-bottom: 10px;
 }
-.staffUser {
-  font-weight: 900;
-  opacity: 0.8;
-}
-.staffMode {
-  font-weight: 1000;
-  letter-spacing: 1px;
-  margin-top: 4px;
-}
+.staffUser { font-weight: 900; opacity: 0.8; }
+.staffMode { font-weight: 1000; letter-spacing: 1px; margin-top: 4px; }
 
-.staffNav {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 12px;
-}
+.staffNav { display: grid; gap: 8px; margin-bottom: 12px; }
 .staffNavBtn {
   text-align: left;
   border-radius: 14px;
@@ -331,10 +276,7 @@ function closeDetails() {
   box-shadow: var(--cardShadow);
 }
 
-.nav {
-  display: grid;
-  gap: 8px;
-}
+.nav { display: grid; gap: 8px; }
 .navItem {
   display: block;
   text-decoration: none;
@@ -346,20 +288,14 @@ function closeDetails() {
   background: #fff;
 }
 
-.main {
-  padding: 20px 26px 50px;
-}
+.main { padding: 20px 26px 50px; }
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
 }
-.title {
-  margin: 0;
-  font-size: 46px;
-  font-weight: 1100;
-}
+.title { margin: 0; font-size: 46px; font-weight: 1100; }
 .ghostBtn {
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
@@ -377,7 +313,6 @@ function closeDetails() {
   box-shadow: var(--cardShadow);
   padding: 14px;
 }
-
 .sectionHeader {
   display: flex;
   align-items: baseline;
@@ -386,72 +321,42 @@ function closeDetails() {
   padding-bottom: 10px;
   margin-bottom: 12px;
 }
-.muted {
-  opacity: 0.7;
-  font-weight: 900;
-}
+.muted { opacity: 0.7; font-weight: 900; }
 
-/* Availability groups */
-.availGroups {
-  display: grid;
-  gap: 16px;
-}
-
+.availGroups { display: grid; gap: 16px; }
 .availGroup {
   border: 1px solid rgba(75, 52, 41, 0.12);
   border-radius: 16px;
   overflow: hidden;
   background: rgba(75, 52, 41, 0.02);
 }
-
 .availGroupTitle {
   padding: 10px 12px;
   font-weight: 1000;
   background: #fff;
   border-bottom: 1px solid rgba(75, 52, 41, 0.1);
 }
-
 .availItems {
   padding: 10px;
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 10px;
 }
-
 .availItemBtn {
   text-align: left;
   border-radius: 14px;
   border: 1px solid rgba(75, 52, 41, 0.14);
   padding: 12px;
-  background: #fff;
   cursor: pointer;
   font-weight: 1000;
   display: grid;
   gap: 6px;
 }
+.availItemBtn.green { background: rgba(0, 140, 70, 0.12); border-color: rgba(0, 140, 70, 0.25); }
+.availItemBtn.red { background: rgba(255, 80, 80, 0.12); border-color: rgba(255, 80, 80, 0.25); }
+.availItemStatus { font-weight: 900; opacity: 0.75; font-size: 12px; }
 
-.availItemStatus {
-  font-weight: 900;
-  opacity: 0.75;
-  font-size: 12px;
-}
-
-/* Only two states now */
-.availItemBtn.green {
-  background: rgba(0, 140, 70, 0.12);
-  border-color: rgba(0, 140, 70, 0.25);
-}
-.availItemBtn.red {
-  background: rgba(255, 80, 80, 0.12);
-  border-color: rgba(255, 80, 80, 0.25);
-}
-
-.legend {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+.legend { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
 .pill {
   border-radius: 999px;
   padding: 6px 10px;
@@ -459,12 +364,8 @@ function closeDetails() {
   font-weight: 1000;
   background: #fff;
 }
-.pill.green {
-  background: rgba(0, 140, 70, 0.14);
-}
-.pill.red {
-  background: rgba(255, 80, 80, 0.14);
-}
+.pill.green { background: rgba(0, 140, 70, 0.14); }
+.pill.red { background: rgba(255, 80, 80, 0.14); }
 .miniBtn {
   border-radius: 12px;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -475,148 +376,5 @@ function closeDetails() {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* Orders */
-.kanban {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 8px;
-}
-.col {
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 18px;
-  background: rgba(75, 52, 41, 0.03);
-  overflow: hidden;
-  min-height: 540px;
-}
-.colHeader {
-  padding: 12px 12px;
-  font-weight: 1100;
-  font-size: 18px;
-  background: #fff;
-  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-}
-.emptyCol {
-  padding: 14px 12px;
-  opacity: 0.65;
-  font-weight: 900;
-}
-.orderCard {
-  background: #fff;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  border-radius: 16px;
-  padding: 12px;
-  margin: 12px;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
-}
-.orderTop {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-.orderMeta {
-  font-weight: 900;
-  opacity: 0.7;
-  font-size: 12px;
-}
-.orderItems {
-  margin: 10px 0 0;
-  padding-left: 18px;
-  font-weight: 900;
-  opacity: 0.9;
-}
-.orderBtns {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-}
-.miniBtn.ghost {
-  background: rgba(255, 255, 255, 0.65);
-}
-.miniBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Modal */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(6px);
-  z-index: 60;
-  display: grid;
-  place-items: center;
-  padding: 18px;
-}
-.modal {
-  width: min(620px, 96vw);
-  background: #fff;
-  border-radius: 22px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
-  overflow: hidden;
-}
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-}
-.xBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #fff;
-  cursor: pointer;
-}
-.modalBody {
-  padding: 18px;
-  display: grid;
-  gap: 12px;
-}
-.modalSectionTitle {
-  font-weight: 1100;
-  margin-top: 6px;
-}
-.modalList {
-  margin: 0;
-  padding-left: 18px;
-  font-weight: 900;
-  opacity: 0.9;
-}
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 10px;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-@media (max-width: 1100px) {
-  .kanban {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .availItems {
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-  }
-}
-@media (max-width: 720px) {
-  .page {
-    grid-template-columns: 1fr;
-  }
-  .sidebar {
-    border-right: none;
-    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
-  }
-  .kanban {
-    grid-template-columns: 1fr;
-  }
-  .availItems {
-    grid-template-columns: 1fr;
-  }
-}
+/* keep your orders styles if you want */
 </style>

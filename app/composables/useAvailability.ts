@@ -1,45 +1,50 @@
 // app/composables/useAvailability.ts
-export type AvailabilityStatus = "green" | "red";
+type Status = "green" | "red";
 
-const STORAGE_KEY = "einsteins_unavailable_items";
+type AvailabilityState = Record<string, Status>;
 
 export function useAvailability() {
-  // store ONLY the unavailable ids
-  const unavailable = useState<Record<string, boolean>>("unavailable-items", () => {
-    if (process.client) {
+  const state = useState<AvailabilityState>("availability", () => ({}));
+
+  // Load once (client only)
+  if (process.client) {
+    const raw = localStorage.getItem("availability");
+    if (raw) {
       try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        state.value = JSON.parse(raw);
       } catch {
-        return {};
+        // ignore bad storage
       }
     }
-    return {};
-  });
-
-  function isUnavailable(id: string) {
-    return !!unavailable.value[id];
   }
 
-  // ✅ default is green (available) unless marked otherwise
-  function getStatus(id: string): AvailabilityStatus {
-    return isUnavailable(id) ? "red" : "green";
+  function save() {
+    if (!process.client) return;
+    localStorage.setItem("availability", JSON.stringify(state.value));
+  }
+
+  function getStatus(id: string): Status {
+    // default: available
+    return state.value[id] ?? "green";
+  }
+
+  function isAvailable(id: string) {
+    return getStatus(id) !== "red";
+  }
+
+  function setStatus(id: string, status: Status) {
+    state.value[id] = status;
+    save();
   }
 
   function toggle(id: string) {
-    if (unavailable.value[id]) delete unavailable.value[id];
-    else unavailable.value[id] = true;
-
-    if (process.client) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(unavailable.value));
-    }
+    setStatus(id, getStatus(id) === "red" ? "green" : "red");
   }
 
   function resetAll() {
-    unavailable.value = {};
-    if (process.client) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({}));
-    }
+    state.value = {};
+    save();
   }
 
-  return { getStatus, toggle, resetAll, isUnavailable };
+  return { getStatus, isAvailable, setStatus, toggle, resetAll };
 }
