@@ -10,19 +10,37 @@
 
 <template>
   <div class="page">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
+    <!-- ✅ Mobile overlay (tap to close drawer) -->
+    <div
+      v-if="mobileNavOpen"
+      class="mobileOverlay"
+      @click="closeMobileNav"
+      aria-hidden="true"
+    />
+
+    <!-- ✅ Sidebar (desktop column, mobile drawer) -->
+    <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
+
+        <!-- ✅ Mobile close button inside drawer -->
+        <button
+          class="drawerCloseBtn"
+          type="button"
+          @click="closeMobileNav"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Home</NuxtLink>
-        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+        <NuxtLink class="navItem" to="/" @click="closeMobileNav">Home</NuxtLink>
+        <NuxtLink class="navItem" to="/food" @click="closeMobileNav">Food Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav">Drinks Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav">Contact</NuxtLink>
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -61,9 +79,7 @@
             rows="4"
           />
 
-          <button class="primaryBtn" type="button" @click="submitReview">
-            Submit
-          </button>
+          <button class="primaryBtn" type="button" @click="submitReview">Submit</button>
           <p v-if="submitted" class="submitted">Thanks! Review saved locally.</p>
         </div>
       </nav>
@@ -71,8 +87,17 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- Top bar: Location + Cart -->
+    <!-- ✅ Mobile-only mini brand strip -->
+    <div class="brandStrip" aria-hidden="true">
+      <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+    </div>
+      <!-- ✅ Top bar: (mobile hamburger) + Location + Cart -->
       <header class="topbar">
+        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
+          <span class="hamburgerIcon" aria-hidden="true">☰</span>
+        </button>
+
         <div class="topbarLeft">
           <div class="locationWrap">
             <div class="locationPill" aria-label="Current location">
@@ -83,7 +108,6 @@
         </div>
 
         <div class="topbarRight">
-
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
             <span class="cartIcon">🛒</span>
             <span class="cartCount">{{ cartCount }}</span>
@@ -136,13 +160,12 @@
             <h2 class="cardTitle">About Einstein Bros. Bagels at Loras</h2>
             <p class="aboutText">
               Right on Loras College’s campus in Dubuque, Einstein Bros. Bagels serves fresh-baked
-              bagels, breakfast sandwiches, and coffee</p>
+              bagels, breakfast sandwiches, and coffee
+            </p>
 
-               <p class="aboutText">
-              Made for students, faculty, and visitors on the go.</p>
-              
-              <p class="aboutText">
-              We’re open weekdays from <b>7:30 AM to 1:30 PM</b>. </p>
+            <p class="aboutText">Made for students, faculty, and visitors on the go.</p>
+
+            <p class="aboutText">We’re open weekdays from <b>7:30 AM to 1:30 PM</b>.</p>
 
             <p class="aboutText">
               Whether you’re picking up bagel before class or meeting friends between lectures,
@@ -201,7 +224,7 @@
               Contact support and we’ll guide you through deleting or updating your account information.
             </div>
 
-            <!-- Premium stand-out section (Privacy + Message form) -->
+            <!-- Privacy + Message form -->
             <button class="privacyBar" type="button" @click="showPrivacy = !showPrivacy">
               <span>Privacy & Disclaimers</span>
               <span class="privacyChev" :class="{ open: showPrivacy }">▾</span>
@@ -291,9 +314,7 @@
               />
             </div>
 
-            <button class="secondaryBtn" type="button" @click="openMaps">
-              Open in Maps
-            </button>
+            <button class="secondaryBtn" type="button" @click="openMaps">Open in Maps</button>
           </div>
         </div>
       </section>
@@ -317,9 +338,7 @@
           </li>
         </ul>
 
-        <button class="checkoutBtn" type="button" @click="goToCheckout">
-          Checkout
-        </button>
+        <button class="checkoutBtn" type="button" @click="goToCheckout">Checkout</button>
       </aside>
     </main>
   </div>
@@ -328,14 +347,24 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** =========================
- *  Simple location label (no dropdown code)
- *  ========================= */
+/** ✅ Mobile nav drawer */
+const mobileNavOpen = ref(false);
+function openMobileNav() {
+  mobileNavOpen.value = true;
+}
+function closeMobileNav() {
+  mobileNavOpen.value = false;
+}
+function handleKeydown(e) {
+  if (e.key === "Escape") closeMobileNav();
+}
+onMounted(() => document.addEventListener("keydown", handleKeydown));
+onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
+
+/** Simple location label */
 const location = ref("Loras College • Dubuque, IA");
 
-/** =========================
- *  Sidebar Review
- *  ========================= */
+/** Sidebar Review */
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
@@ -345,7 +374,6 @@ const submitted = ref(false);
 function toggleReview() {
   showReview.value = !showReview.value;
 }
-
 function submitReview() {
   submitted.value = true;
   rating.value = 0;
@@ -354,17 +382,13 @@ function submitReview() {
   setTimeout(() => (submitted.value = false), 2000);
 }
 
-/** =========================
- *  FAQ
- *  ========================= */
+/** FAQ */
 const openFaq = ref(null);
 function toggleFaq(i) {
   openFaq.value = openFaq.value === i ? null : i;
 }
 
-/** =========================
- *  Privacy + Message form (meets FR-101/102/103)
- *  ========================= */
+/** Privacy + Message form */
 const showPrivacy = ref(false);
 const msgName = ref("");
 const msgPhone = ref("");
@@ -372,7 +396,6 @@ const msgBody = ref("");
 const msgSent = ref(false);
 
 function submitMessage() {
-  // For now, keep it lightweight: store locally (no backend)
   const payload = {
     name: msgName.value.trim(),
     phone: msgPhone.value.trim(),
@@ -396,9 +419,7 @@ function submitMessage() {
   setTimeout(() => (msgSent.value = false), 2200);
 }
 
-/** =========================
- *  Hours + Open/Closed
- *  ========================= */
+/** Hours + Open/Closed */
 const schedule = [
   { day: "Monday", open: "07:30", close: "13:30" },
   { day: "Tuesday", open: "07:30", close: "13:30" },
@@ -406,7 +427,7 @@ const schedule = [
   { day: "Thursday", open: "07:30", close: "13:30" },
   { day: "Friday", open: "07:30", close: "13:30" },
   { day: "Saturday", open: "07:30", close: "13:30" },
-  { day: "Sunday", open: null, close: null }, // closed
+  { day: "Sunday", open: null, close: null },
 ];
 
 function fmtTime(t) {
@@ -452,7 +473,6 @@ const todayOpenText = computed(() => {
   const s = schedule.find((x) => x.day === todayName.value);
   if (s?.open) return fmtTime(s.open);
 
-  // if today is closed, find next open day
   for (let i = 1; i <= 7; i++) {
     const d = new Date(now.value);
     d.setDate(d.getDate() + i);
@@ -470,9 +490,7 @@ function openMaps() {
   );
 }
 
-/** =========================
- *  Cart (shared)
- *  ========================= */
+/** Cart */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
 const cartCount = computed(() => cart.value.reduce((sum, item) => sum + (item.qty || 1), 0));
@@ -480,19 +498,16 @@ const cartCount = computed(() => cart.value.reduce((sum, item) => sum + (item.qt
 function toggleCart() {
   showCart.value = !showCart.value;
 }
-
 function goToCheckout() {
   showCart.value = false;
   navigateTo("/checkout");
 }
-
 function removeFromCart(index) {
   cart.value.splice(index, 1);
 }
 </script>
 
 <style scoped>
-/* Einstein-ish warm palette */
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
@@ -512,6 +527,11 @@ function removeFromCart(index) {
   color: var(--brown);
 }
 
+/* ✅ Mobile overlay */
+.mobileOverlay {
+  display: none;
+}
+
 /* Sidebar */
 .sidebar {
   border-right: 1px solid rgba(75, 52, 41, 0.12);
@@ -524,6 +544,7 @@ function removeFromCart(index) {
   justify-content: center;
   margin-bottom: 14px;
   overflow: hidden;
+  position: relative; /* for X button */
 }
 .logoImg {
   width: 100%;
@@ -532,6 +553,25 @@ function removeFromCart(index) {
   display: block;
   object-fit: contain;
 }
+
+/* ✅ drawer close (only mobile) */
+.drawerCloseBtn {
+  display: none;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  border: none;
+  background: rgba(75, 52, 41, 0.06);
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brown);
+}
+
 .nav {
   display: flex;
   flex-direction: column;
@@ -642,38 +682,48 @@ function removeFromCart(index) {
   position: relative;
   padding: 20px 26px 50px;
 }
+
+/* ✅ Topbar now supports hamburger on mobile */
 .topbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.topbarLeft {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
+  gap: 14px;
+  min-width: 0;
 }
 .topbarRight {
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: flex-end;
 }
 
-.signInBtn {
+/* ✅ Hamburger (hidden on desktop) */
+.hamburgerBtn {
+  display: none;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
   border-radius: 14px;
-  padding: 10px 16px;
+  padding: 10px 12px;
   cursor: pointer;
-  font-weight: 900;
-  color: var(--brown);
   box-shadow: var(--cardShadow);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
-.signInBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
-  border-color: rgba(244, 179, 22, 0.5);
+.hamburgerIcon {
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1;
 }
 
 /* Location */
 .locationWrap {
   position: relative;
+  min-width: 0;
 }
 .locationPill {
   display: inline-flex;
@@ -684,6 +734,7 @@ function removeFromCart(index) {
   padding: 10px 14px;
   border-radius: 999px;
   font-weight: 900;
+  min-width: 0;
 }
 .locDot {
   width: 10px;
@@ -695,6 +746,9 @@ function removeFromCart(index) {
 .locationSelected {
   opacity: 0.85;
   font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Cart */
@@ -770,6 +824,7 @@ function removeFromCart(index) {
   justify-content: space-between;
   gap: 14px;
   align-items: baseline;
+  flex-wrap: wrap;
 }
 .cardTitle {
   margin: 0;
@@ -789,7 +844,7 @@ function removeFromCart(index) {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #b34a3a; /* closed */
+  background: #b34a3a;
   box-shadow: 0 0 0 4px rgba(179, 74, 58, 0.15);
 }
 .statusDot.open {
@@ -827,7 +882,6 @@ function removeFromCart(index) {
   opacity: 0.92;
 }
 
-/* Small “stand-out” callout inside About */
 .aboutCard {
   position: relative;
 }
@@ -937,7 +991,7 @@ function removeFromCart(index) {
   opacity: 0.9;
 }
 
-/* Privacy + Message (premium, clean) */
+/* Privacy + Message */
 .privacyBar {
   margin-top: 14px;
   width: 100%;
@@ -1092,7 +1146,7 @@ function removeFromCart(index) {
   background: #ffbe21;
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 980px) {
   .page {
     grid-template-columns: 220px 1fr;
@@ -1104,16 +1158,116 @@ function removeFromCart(index) {
     grid-template-columns: 1fr;
   }
 }
+
+/* ✅ Mobile: drawer sidebar like your other pages */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
   }
-  .sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-right: none;
-    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+
+  .hamburgerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
+
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(320px, 88vw);
+    z-index: 100;
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.18);
+    border-right: 1px solid rgba(75, 52, 41, 0.12);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .drawerCloseBtn {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .main {
+    padding: 14px 14px 44px;
+  }
+
+  .title {
+    font-size: 34px;
+    letter-spacing: 1px;
+  }
+
+  /* ✅ Make location pill not overflow */
+  .locationPill {
+    max-width: 100%;
+  }
+
+  /* ✅ Mobile spacing tweaks */
+  .mapFrame {
+    height: 240px;
+  }
+  /* ===== Mini Brand Strip ===== */
+.brandStrip{
+  height: 64px;                    /* the strip height */
+  background: #f6e28a;             /* yellow-ish (change if you want) */
+  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+  margin: -20px -26px 14px;        /* pulls to the edges inside main padding */
+}
+
+.brandStripLogo{
+  height: 42px;                    /* mini logo size */
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
+}
+/* ===== Mini Brand Strip (desktop hidden) ===== */
+.brandStrip {
+  display: none; /* ✅ hidden on desktop */
+}
+.brandStripLogo {
+  display: block;
+}
+
+/* Mobile: match your smaller main padding */
+@media (max-width: 720px){
+/* ===== Mini Brand Strip (mobile only) ===== */
+.brandStrip{
+  display: flex;
+  height: 58px;
+  background: #f6e28a;
+  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+
+  /* match your .main padding on mobile */
+  margin: -14px -14px 12px;
+}
+
+.brandStripLogo{
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
+}
+
+}
 }
 </style>
