@@ -12,8 +12,7 @@
     <!-- Sidebar (desktop fixed column, mobile slide-in drawer) -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }" aria-label="Sidebar navigation">
       <div class="sidebarTop">
-
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
@@ -81,10 +80,11 @@
 
     <!-- Main content area -->
     <main class="main">
-     <!-- ✅ Mobile-only mini brand strip -->
+      <!-- ✅ Mobile-only mini brand strip -->
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>
+
       <!-- Top bar -->
       <header class="topbar">
         <!-- ✅ Mobile hamburger (hidden on desktop) -->
@@ -118,31 +118,30 @@
           <article v-for="item in Breakfast" :key="item.id" class="tileCard">
             <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.id) }">
               <img :src="item.img" :alt="item.name" />
-
-              <!-- Unavailable overlay -->
               <div v-if="!isAvailable(item.id)" class="unavailableOverlay">
                 Currently unavailable
               </div>
             </div>
 
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span v-if="item.price != null" class="pricePill">
-                   ${{ Number(item.price).toFixed(2) }}
-                  </span>
-                </div>
+              <div class="tileFooterGrid">
+                <div class="tileName">{{ item.name }}</div>
 
-                <button
-                  class="plusBtn"
-                  type="button"
-                  aria-label="Add to cart"
-                  :disabled="!isAvailable(item.id)"
-                  @click="addToCart(item)"
-                >
-                  +
-                </button>
+                <div class="tileBottomRow">
+                  <span v-if="resolvePrice(item) != null" class="pricePill">
+                    ${{ Number(resolvePrice(item)).toFixed(2) }}
+                  </span>
+
+                  <button
+                    class="plusBtn"
+                    type="button"
+                    aria-label="Add to cart"
+                    :disabled="!isAvailable(item.id)"
+                    @click="addToCart(item)"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -166,15 +165,24 @@
             </div>
 
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span class="pricePill">${{ resolvePrice(item).toFixed(2) }}</span>
-                </div>
+              <div class="tileFooterGrid">
+                <div class="tileName">{{ item.name }}</div>
 
-                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
-                  +
-                </button>
+                <div class="tileBottomRow">
+                  <span v-if="resolvePrice(item) != null" class="pricePill">
+                    ${{ Number(resolvePrice(item)).toFixed(2) }}
+                  </span>
+
+                  <button
+                    class="plusBtn"
+                    type="button"
+                    aria-label="Add to cart"
+                    :disabled="!isAvailable(item.id)"
+                    @click="addToCart(item)"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -198,21 +206,24 @@
             </div>
 
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span class="pricePill">${{ resolvePrice(item).toFixed(2) }}</span>
-                </div>
+              <div class="tileFooterGrid">
+                <div class="tileName">{{ item.name }}</div>
 
-                <button
-                  class="plusBtn"
-                  type="button"
-                  aria-label="Add to cart"
-                  :disabled="!isAvailable(item.id)"
-                  @click="addToCart(item)"
-                >
-                  +
-                </button>
+                <div class="tileBottomRow">
+                  <span v-if="resolvePrice(item) != null" class="pricePill">
+                    ${{ Number(resolvePrice(item)).toFixed(2) }}
+                  </span>
+
+                  <button
+                    class="plusBtn"
+                    type="button"
+                    aria-label="Add to cart"
+                    :disabled="!isAvailable(item.id)"
+                    @click="addToCart(item)"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -236,21 +247,24 @@
             </div>
 
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span class="pricePill">${{ resolvePrice(item).toFixed(2) }}</span>
-                </div>
+              <div class="tileFooterGrid">
+                <div class="tileName">{{ item.name }}</div>
 
-                <button
-                  class="plusBtn"
-                  type="button"
-                  aria-label="Add to cart"
-                  :disabled="!isAvailable(item.id)"
-                  @click="addToCart(item)"
-                >
-                  +
-                </button>
+                <div class="tileBottomRow">
+                  <span v-if="resolvePrice(item) != null" class="pricePill">
+                    ${{ Number(resolvePrice(item)).toFixed(2) }}
+                  </span>
+
+                  <button
+                    class="plusBtn"
+                    type="button"
+                    aria-label="Add to cart"
+                    :disabled="!isAvailable(item.id)"
+                    @click="addToCart(item)"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -274,21 +288,24 @@
             </div>
 
             <div class="tileFooter">
-              <div class="tileNameRow">
-                <div class="namePrice">
-                  <span class="tileName">{{ item.name }}</span>
-                  <span class="pricePill">${{ resolvePrice(item).toFixed(2) }}</span>
-                </div>
+              <div class="tileFooterGrid">
+                <div class="tileName">{{ item.name }}</div>
 
-                <button
-                  class="plusBtn"
-                  type="button"
-                  aria-label="Add to cart"
-                  :disabled="!isAvailable(item.id)"
-                  @click="addToCart(item)"
-                >
-                  +
-                </button>
+                <div class="tileBottomRow">
+                  <span v-if="resolvePrice(item) != null" class="pricePill">
+                    ${{ Number(resolvePrice(item)).toFixed(2) }}
+                  </span>
+
+                  <button
+                    class="plusBtn"
+                    type="button"
+                    aria-label="Add to cart"
+                    :disabled="!isAvailable(item.id)"
+                    @click="addToCart(item)"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -340,16 +357,45 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-const showLocationDropdown = ref(false);
-const locationQuery = ref("");
-const location = ref("");
-const locations = ref([]);
+/** ✅ Mobile nav */
+const mobileNavOpen = ref(false);
+function openMobileNav() {
+  mobileNavOpen.value = true;
+}
+function closeMobileNav() {
+  mobileNavOpen.value = false;
+}
 
+/** close drawer with ESC */
+function handleKeydown(e) {
+  if (e.key === "Escape") closeMobileNav();
+}
+onMounted(() => document.addEventListener("keydown", handleKeydown));
+onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 
+/** ✅ Availability
+ * If you already have useAvailability() composable, this uses it.
+ * If you don't have it, it will default to "everything available".
+ */
+let availability = null;
+try {
+  availability = useAvailability?.();
+} catch (_) {
+  availability = null;
+}
+function isAvailable(id) {
+  if (!availability || typeof availability.getStatus !== "function") return true;
+  return availability.getStatus(id) !== "red";
+}
+
+/** =========================
+ *  Prices (ALL)
+ *  ========================= */
 const PRICE_BY_NAME = {
-  // ===== Breakfast sandwiches (from your index MENU / common Einstein prices) =====
-  "Farm House Egg Sandwich": 6.99,
+  // ===== Breakfast =====
+  "Farm House Egg Sandwich": 7.19,
   "All Nighter Egg Sandwich": 6.99,
   "Garden Avocado Egg Sandwich": 6.39,
   "Bacon Cheddar Egg Sandwich": 6.59,
@@ -362,10 +408,10 @@ const PRICE_BY_NAME = {
   "Big Breakfast Burrito": 7.49,
   "Avocado Toast": 5.49,
 
-  // ===== Lunch sandwiches (from your index MENU / common items) =====
-  "Tastey Turkey Sandwich": 7.79,
-  "Avocado Veg Out Sandwich": 7.29,
-  "Nova Lox Sandwich": 8.29,
+  // ===== Lunch =====
+  "Tastey Turkey Sandwich": 7.99,
+  "Avocado Veg Out Sandwich": 7.54,
+  "Nova Lox Sandwich": 8.49,
   "Pepperoni Chicken": 7.59,
   "Ham & Swiss Sandwich": 7.99,
   "Turkey, Bacon & Avocado Sandwich": 7.49,
@@ -377,6 +423,7 @@ const PRICE_BY_NAME = {
   "Chicken Salad": 6.99,
   "Albuquerque Turkey": 7.59,
 
+  // ===== Bagels =====
   "Plain Bagel": 2.19,
   "Cinnamon Raisin Bagel": 2.49,
   "Everything Bagel": 2.49,
@@ -388,13 +435,15 @@ const PRICE_BY_NAME = {
   "Blueberry Bagel": 2.49,
   "Chocolate Chip Bagel": 2.59,
 
-  "Plain": 1.29,
-  "Strawberry": 1.49,
-  "Almond": 1.49,
+  // ===== Smears =====
+  Plain: 1.29,
+  Strawberry: 1.49,
+  Almond: 1.49,
   "Country Pepper": 1.49,
   "Garden Veggie": 1.49,
   "Onion Chive": 1.49,
 
+  // ===== Other =====
   "Cinnamon Chip Muffin": 2.99,
   "Cinnamon Bliss Rolls": 3.49,
   "Blueberry Muffin": 2.99,
@@ -403,44 +452,13 @@ const PRICE_BY_NAME = {
 };
 
 function resolvePrice(item) {
-  // prefer the item's own price if it exists
-  if (typeof item.price === "number") return item.price;
-
-  // otherwise lookup by name
-  return PRICE_BY_NAME[item.name] ?? 0;
+  if (typeof item?.price === "number") return item.price;
+  const p = PRICE_BY_NAME[item?.name];
+  return typeof p === "number" ? p : null;
 }
-
-
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-const filteredLocations = computed(() => {
-  const q = locationQuery.value.trim().toLowerCase();
-  if (!q) return locations.slice(0, 50);
-  return locations.filter((x) => x.toLowerCase().includes(q)).slice(0, 8);
-});
-
-function selectLocation(opt) {
-  location.value = opt;
-  locationQuery.value = "";
-  showLocationDropdown.value = false;
-}
-
-/** close dropdown if user clicks outside */
-function handleDocClick(e) {
-  const target = e.target;
-  if (target?.closest?.(".locationWrap")) return;
-  showLocationDropdown.value = false;
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleDocClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleDocClick);
-});
 
 /** =========================
- *  Sidebar Review
+ *  Review
  *  ========================= */
 const showReview = ref(false);
 const rating = ref(0);
@@ -451,64 +469,34 @@ const submitted = ref(false);
 function toggleReview() {
   showReview.value = !showReview.value;
 }
-
 function submitReview() {
-  // show message
   submitted.value = true;
-
-  // reset the form
   rating.value = 0;
   hoverRating.value = 0;
   comment.value = "";
-
-  // optional: close the review panel after submit
-  // showReview.value = false;
-
   setTimeout(() => (submitted.value = false), 2000);
 }
-
 
 /** =========================
  *  Cart
  *  ========================= */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
+
 const cartCount = computed(() =>
   cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
 );
 
-
 function toggleCart() {
   showCart.value = !showCart.value;
 }
-
 function goToCheckout() {
-  showCart.value = false;        // optional: close the cart
-  navigateTo("/checkout");       // or "/Checkout" depending on your filename
+  showCart.value = false;
+  navigateTo("/checkout");
 }
-
-function inferCategory(name) {
-  const n = (name || "").toLowerCase();
-
-  if (n.includes("sandwich") || n.includes("burrito") || n.includes("toast")) return "sandwich";
-  if (n.includes("bagel")) return "bagel";
-
-  // shmears list (these are your smear names)
-  if (["plain", "strawberry", "almond", "country pepper", "garden veggie", "onion chive"].includes(n)) {
-    return "shmear";
-  }
-
-  // muffins / rolls / hashbrown / cookie etc
-  return "other";
-}
-
-
 
 function getCategory(item) {
-  // use the list the item came from to decide category
-  // easiest: detect by id prefix since your ids already hint:
-  // bs/l = sandwiches, c = bagels, s = shmears, o = other
-  const id = item.id || "";
+  const id = item?.id || "";
   if (id.startsWith("bs") || id.startsWith("l")) return "sandwich";
   if (id.startsWith("c")) return "bagel";
   if (id.startsWith("s")) return "shmear";
@@ -516,13 +504,12 @@ function getCategory(item) {
   return "other";
 }
 
-/** =========================
- *  Add to cart (blocked if unavailable)
- *  ========================= */
 function addToCart(item) {
-  const existing = cart.value.find((x) => x.name === item.name);
+  // ✅ block if staff marked it unavailable
+  if (!isAvailable(item.id)) return;
 
-  const base = Number(item.price ?? priceByName(item.name) ?? 0); // keep your pricing working
+  const existing = cart.value.find((x) => x.id === item.id);
+  const base = Number(resolvePrice(item) ?? 0);
 
   if (existing) existing.qty += 1;
   else {
@@ -541,78 +528,26 @@ function addToCart(item) {
   showCart.value = true;
 }
 
-
-
 function removeFromCart(index) {
   cart.value.splice(index, 1);
 }
 
-
 /** =========================
- *  Page Content (images)
- *  Replace URLs later with your own images in /public
+ *  Menu items
  *  ========================= */
-const Breakfest = ref([
-  {
-    id: "bs1",
-    name: "Farm House Egg Sandwich",
-    img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg",
-  },
-  {
-    id: "bs2",
-    name: "All Nighter Egg Sandwich",
-    img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg",
-  },
-  {
-    id: "bs3",
-    name: "Garden Avocado Egg Sandwich",
-    img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg",
-  },
-  {
-    id: "bs4",
-    name: "Bacon Cheddar Egg Sandwich",
-    img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg",
-  },
-  {
-    id: "bs5",
-    name: "Cheddar Egg Sandwich",
-    img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg",
-  },
-  {
-    id: "bs6",
-    name: "Ham Swiss Egg Sandwich",
-    img: "EBB-Ham-Swiss-Classic-Egg-Sandwich.jpg",
-  },
-  {
-    id: "bs7",
-    name: "Turkey Sausage Egg Sandwich",
-    img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg",
-  },
-  {
-    id: "bs8",
-    name: "Bacon Avocado Tomato Sandwich",
-    img: "EBB-SignatureEgg-BaconAvocadoTomatoEggWhite-650x6501-1.jpg",
-  },
-  {
-    id: "bs9",
-    name: "Santa Fe Egg White Sandwich",
-    img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg",
-  },
-  {
-    id: "bs10",
-    name: "Texas Brisket Egg Sandwich",
-    img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg",
-  },
-  {
-    id: "bs11",
-    name: "Big Breakfast Burrito",
-    img: "Burriro.png",
-  },
-  {
-    id: "bs12",
-    name: "Avocado Toast",
-    img: "ToastAvo.png",
-  },
+const Breakfast = ref([
+  { id: "bs1", name: "Farm House Egg Sandwich", img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg" },
+  { id: "bs2", name: "All Nighter Egg Sandwich", img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg" },
+  { id: "bs3", name: "Garden Avocado Egg Sandwich", img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg" },
+  { id: "bs4", name: "Bacon Cheddar Egg Sandwich", img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg" },
+  { id: "bs5", name: "Cheddar Egg Sandwich", img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg" },
+  { id: "bs6", name: "Ham Swiss Egg Sandwich", img: "EBB-Ham-Swiss-Classic-Egg-Sandwich.jpg" },
+  { id: "bs7", name: "Turkey Sausage Egg Sandwich", img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg" },
+  { id: "bs8", name: "Bacon Avocado Tomato Sandwich", img: "EBB-SignatureEgg-BaconAvocadoTomatoEggWhite-650x6501-1.jpg" },
+  { id: "bs9", name: "Santa Fe Egg White Sandwich", img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg" },
+  { id: "bs10", name: "Texas Brisket Egg Sandwich", img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg" },
+  { id: "bs11", name: "Big Breakfast Burrito", img: "Burriro.png" },
+  { id: "bs12", name: "Avocado Toast", img: "ToastAvo.png" },
 ]);
 
 const Lunch = ref([
@@ -693,64 +628,46 @@ const Other = ref([
   padding: 18px 14px;
   background: #fff8ee;
 }
+
 .sidebarTop {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 14px;
-  overflow: hidden;         /* prevents it from spilling */
-}
-.pricePill{
-  flex: 0 0 auto;
-  background: #111;
-  color: #fff;
-  font-weight: 1000;
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  letter-spacing: 0.3px;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
-  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+  position: relative;
 }
 
-.cartList{
-  list-style: none;
-  padding: 0;
-  margin: 12px 0 0;
-  display: grid;
-  gap: 12px;
-  align-items: stretch; /* ✅ important: prevents centering shrink */
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.dotsBtn {
-  width: 40px;
-  height: 40px;
+.logoImg {
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Drawer close button (mobile only) */
+.drawerCloseBtn {
+  display: none;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  border: none;
+  background: rgba(75, 52, 41, 0.06);
+  border: 1px solid rgba(75, 52, 41, 0.12);
   border-radius: 12px;
-  border: 1px solid rgba(75, 52, 41, 0.18);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  gap: 3px;
-  padding: 8px;
+  width: 38px;
+  height: 38px;
   cursor: pointer;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 99px;
-  background: var(--brown);
-  opacity: 0.9;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 18px;
+  font-weight: 900;
   color: var(--brown);
-  background: rgba(244, 179, 22, 0.22);
-  border: 1px solid rgba(244, 179, 22, 0.35);
-  padding: 8px 10px;
-  border-radius: 12px;
 }
 
 .nav {
@@ -758,6 +675,7 @@ const Other = ref([
   flex-direction: column;
   gap: 10px;
 }
+
 .navItem {
   display: block;
   text-decoration: none;
@@ -770,15 +688,18 @@ const Other = ref([
   background: #fff;
   transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
 }
+
 .navItem:hover {
   transform: translateY(-1px);
   box-shadow: var(--cardShadow);
   border-color: rgba(244, 179, 22, 0.55);
 }
+
 .reviewBtn {
   text-align: left;
   cursor: pointer;
 }
+
 .chev {
   float: right;
   opacity: 0.7;
@@ -790,94 +711,7 @@ const Other = ref([
   transform: rotate(180deg);
 }
 
-.cartMini{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex:1;
-  min-width:0;
-}
-
-.cartMiniImg{
-  width:54px;
-  height:54px;
-  border-radius:14px;
-  overflow:hidden;
-  border: 1px solid rgba(75,52,41,0.12);
-  background:#fff;
-  flex:0 0 auto;
-}
-
-.cartMiniImg img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.cartMiniInfo{
-  flex:1;
-  min-width:0;
-}
-
-.cartMiniName{
-  font-weight:1000;
-  font-size:15px;
-  line-height:1.15;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.cartMiniQty{
-  margin-top:4px;
-  font-weight:900;
-  opacity:0.75;
-  font-size:13px;
-}
-
-/* make each cart row fill the panel width */
-.cartItem{
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* RIGHT side column (price + remove) */
-.cartRight{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  flex: 0 0 auto;
-  min-width: 90px;
-  text-align: right;
-}
-
-.cartPrice{
-  font-weight: 1000;
-  font-size: 16px;
-}
-
-.cartMiniPrice{
-  font-weight:1000;
-  font-size:16px;
-}
-
-.cartList{
-  justify-items: stretch;
-  align-items: stretch;
-}
-
-.cartMiniMeta{
-  margin-top:4px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  opacity:0.85;
-  font-weight:900;
-  font-size:13px;
-}
-
+/* Review panel */
 .reviewPanel {
   margin-top: -4px;
   padding: 12px;
@@ -886,11 +720,13 @@ const Other = ref([
   background: #fff;
   box-shadow: var(--cardShadow);
 }
+
 .starsRow {
   display: flex;
   gap: 6px;
   margin-bottom: 8px;
 }
+
 .starBtn {
   font-size: 22px;
   line-height: 1;
@@ -901,25 +737,30 @@ const Other = ref([
   transform: translateY(0);
   transition: opacity 0.08s ease, transform 0.08s ease;
 }
+
 .starBtn.on {
   opacity: 1;
   color: var(--yellow);
   text-shadow: 0 2px 8px rgba(244, 179, 22, 0.25);
 }
+
 .starBtn:hover {
   transform: translateY(-1px);
 }
+
 .ratingText {
   font-size: 0.9rem;
   opacity: 0.85;
   margin-bottom: 10px;
 }
+
 .commentLabel {
   font-size: 0.85rem;
   font-weight: 800;
   display: block;
   margin-bottom: 6px;
 }
+
 .commentBox {
   width: 100%;
   border-radius: 12px;
@@ -930,6 +771,7 @@ const Other = ref([
   font-family: inherit;
   margin-bottom: 10px;
 }
+
 .primaryBtn {
   width: 100%;
   background: var(--yellow);
@@ -940,9 +782,11 @@ const Other = ref([
   padding: 10px 12px;
   cursor: pointer;
 }
+
 .primaryBtn:hover {
   background: #ffbe21;
 }
+
 .submitted {
   margin-top: 8px;
   font-size: 0.85rem;
@@ -954,6 +798,7 @@ const Other = ref([
   position: relative;
   padding: 20px 26px 50px;
 }
+
 .topbar {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -962,93 +807,31 @@ const Other = ref([
   margin-bottom: 18px;
 }
 
-.topbarLeft {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Location (simple prototype) */
-.locationWrap {
-  position: relative;
-}
-
-.locationPill {
-  display: inline-flex;
-  gap: 12px;
-  align-items: center;
-  background: rgba(75, 52, 41, 0.06);
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-weight: 900;
-}
-
-.locationInput {
-  width: 200px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  font-weight: 900;
-  color: var(--brown);
-}
-
-.locationSelected {
-  opacity: 0.75;
-  font-weight: 900;
-  border-left: 1px solid rgba(75, 52, 41, 0.18);
-  padding-left: 12px;
-}
-
-/* dropdown container */
-.locationDropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-
-  width: 320px;
-  max-height: 312px;       /* fixed box height */
-  overflow-y: auto;       /* scroll */
-  overflow-x: hidden;
-
-  background: #fff;
+/* hamburger (mobile only) */
+.hamburgerBtn {
+  display: none;
   border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 8px;
-
-  z-index: 50;
+  padding: 10px 12px;
+  cursor: pointer;
+  box-shadow: var(--cardShadow);
+}
+.hamburgerIcon {
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1;
 }
 
-/* each row */
-.locationOption {
-  width: 100%;
-  height: 44px;           /* fixed row height */
+.topbarSpacer {
+  min-height: 1px;
+}
+
+.topbarRight {
   display: flex;
   align-items: center;
-
-  text-align: left;
-  border: none;
-  background: transparent;
-
-  padding: 0 12px;
-  border-radius: 12px;
-  cursor: pointer;
-
-  font-weight: 900;
-  color: #4b3429;
-}
-
-.locationOption:hover {
-  background: rgba(244, 179, 22, 0.18);
-}
-
-
-.locationEmpty {
-  padding: 10px;
-  opacity: 0.75;
-  font-weight: 800;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .cartBtn {
@@ -1060,9 +843,11 @@ const Other = ref([
   cursor: pointer;
   box-shadow: var(--cardShadow);
 }
+
 .cartIcon {
   font-size: 18px;
 }
+
 .cartCount {
   position: absolute;
   top: -8px;
@@ -1070,7 +855,7 @@ const Other = ref([
   width: 22px;
   height: 22px;
   border-radius: 999px;
-  background: #f4a51c; /* 🔥 hard-coded orange */
+  background: #f4a51c;
   color: #111;
   font-weight: 900;
   display: grid;
@@ -1079,12 +864,12 @@ const Other = ref([
   font-size: 12px;
 }
 
-
 /* Title */
 .hero {
   text-align: center;
   padding: 8px 0 12px;
 }
+
 .title {
   margin: 0;
   font-size: 44px;
@@ -1093,34 +878,32 @@ const Other = ref([
   color: var(--brown);
 }
 
-.subtitle {
-  margin: 8px 0 0;
-  opacity: 0.75;
-  font-weight: 800;
-}
-
+/* Sections */
 .section {
   margin-top: 26px;
 }
+
 .sectionHeader {
   display: flex;
   align-items: center;
   gap: 14px;
   margin-bottom: 14px;
 }
+
 .sectionTitle {
   margin: 0;
   font-size: 22px;
   font-weight: 900;
   color: var(--brown);
 }
+
 .sectionLine {
   height: 2px;
   flex: 1;
   background: linear-gradient(90deg, rgba(75, 52, 41, 0.25), rgba(75, 52, 41, 0));
 }
 
-/* === Einstein-style big tiles === */
+/* Tiles (desktop/tablet) */
 .tileGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1128,29 +911,33 @@ const Other = ref([
   align-items: start;
 }
 
-
 .tileCard {
   background: transparent;
 }
+
 .tileImg {
-  width: 80%;
-  aspect-ratio: 1 / 1;      /* ✅ makes the box the same shape (square like Einstein tiles) */
+  position: relative;
+  width: 82%;
+  aspect-ratio: 1 / 1;
   border-radius: 22px;
   overflow: hidden;
   box-shadow: var(--cardShadow);
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
 }
+
 .tileImg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
 .tileDisabled {
   filter: grayscale(0.15);
   opacity: 0.7;
 }
+
 .unavailableOverlay {
   position: absolute;
   inset: 0;
@@ -1166,30 +953,44 @@ const Other = ref([
 
 .tileFooter {
   padding-top: 10px;
+  width: 82%;
 }
 
-.tileNameRow{
-  display: flex;                 /* ✅ not inline-flex */
-  align-items: center;
-  justify-content: space-between; /* ✅ pushes + to the right */
-  gap: 12px;
-  width: 80%;                    /* ✅ match tileImg width */
+/* ✅ Clean name + bottom row (price | +) */
+.tileFooterGrid {
+  width: 100%;
+  display: grid;
+  gap: 10px;
 }
 
-
-.tileName{
-  font-size: 18px;
+.tileName {
+  font-size: 16px;
   font-weight: 1000;
   color: var(--brown);
-
-  flex: 1;               /* ✅ take remaining space */
-  min-width: 0;          /* ✅ important */
-  white-space: normal;   /* ✅ allow 2 lines */
-  line-height: 1.15;
+  line-height: 1.2;
+  white-space: normal;
 }
 
+.tileBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-/* Orange + button */
+.pricePill {
+  background: #111;
+  color: #fff;
+  font-weight: 1000;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
 .plusBtn {
   width: 32px;
   height: 32px;
@@ -1205,9 +1006,11 @@ const Other = ref([
   place-items: center;
   box-shadow: 0 8px 18px rgba(244, 165, 28, 0.25);
 }
+
 .plusBtn:hover {
   background: var(--orangeHover);
 }
+
 .plusBtn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -1221,6 +1024,7 @@ const Other = ref([
   background: rgba(0, 0, 0, 0.25);
   z-index: 20;
 }
+
 .cartPanel {
   position: fixed;
   top: 0;
@@ -1237,62 +1041,6 @@ const Other = ref([
   flex-direction: column;
 }
 
-.cartThumb{
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  background: #fff;
-  display: grid;
-  place-items: center;
-}
-
-.cartThumb img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.cartThumbFallback{
-  font-weight: 1000;
-  opacity: 0.6;
-  font-size: 12px;
-}
-
-.cartMeta{
-  min-width: 0; /* ✅ SUPER IMPORTANT */
-}
-
-.cartName{
-  font-weight: 1000;
-  font-size: 14px;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cartSub{
-  margin-top: 4px;
-  font-weight: 900;
-  opacity: 0.7;
-  font-size: 12px;
-}
-
-.cartRight{
-  display: grid;
-  justify-items: end;
-  gap: 6px;
-}
-
-.cartPrice{
-  font-weight: 1000;
-  font-size: 14px;
-  white-space: nowrap;
-}
-
 .cartPanel.open {
   right: 0;
 }
@@ -1306,6 +1054,94 @@ const Other = ref([
 }
 
 .xBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+.emptyCart {
+  padding: 14px 0;
+  opacity: 0.8;
+}
+
+.cartList {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 12px;
+}
+
+.cartItem {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 16px;
+  padding: 10px;
+  background: rgba(75, 52, 41, 0.03);
+}
+
+.cartThumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.cartThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cartThumbFallback {
+  font-weight: 1000;
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.cartMeta {
+  min-width: 0;
+}
+
+.cartName {
+  font-weight: 1000;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cartSub {
+  margin-top: 4px;
+  font-weight: 900;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.cartRight {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.cartPrice {
+  font-weight: 1000;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.removeBtn {
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1327,41 +1163,18 @@ const Other = ref([
   bottom: 14px;
 }
 
-.cartItem{
-  display: grid;
-  grid-template-columns: 64px 1fr auto;
-  gap: 12px;
-  align-items: center;
-
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  border-radius: 16px;
-  padding: 10px;
-  background: rgba(75, 52, 41, 0.03);
-}
-
-.cartItemName {
-  font-weight: 900;
-}
-
-.removeBtn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-weight: 900;
-  color: var(--brown2);
-  opacity: 0.9;
-}
-
 .checkoutBtn:hover {
   background: #ffbe21;
 }
+
 /* ===== Mini Brand Strip (desktop hidden) ===== */
 .brandStrip {
-  display: none; /* ✅ hidden on desktop */
+  display: none;
 }
 .brandStripLogo {
   display: block;
 }
+
 /* ===== Responsive ===== */
 @media (max-width: 980px) {
   .page {
@@ -1374,6 +1187,7 @@ const Other = ref([
   }
 }
 
+/* ✅ MOBILE: 3 items per row + drawer */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
@@ -1426,17 +1240,59 @@ const Other = ref([
     place-items: center;
   }
 
-  /* ✅ THE FIX: 3 tiles per row on mobile (like main page) */
+  /* ✅ 3 tiles per row on mobile */
   .tileGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     align-items: start;
   }
-  .locationInput {
-    width: 150px;
+
+  .tileImg {
+    width: 100%;
+    border-radius: 18px;
   }
-  .locationDropdown {
-    min-width: 260px;
+
+  .tileFooter {
+    width: 100%;
+    padding-top: 8px;
+  }
+
+  .tileName {
+    font-size: 13px;
+    line-height: 1.15;
+  }
+
+  .pricePill {
+    font-size: 12px;
+    padding: 5px 9px;
+  }
+
+  .plusBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    border-radius: 9px;
+  }
+
+  /* ===== Mini Brand Strip (mobile only) ===== */
+  .brandStrip {
+    display: flex;
+    height: 58px;
+    background: #f6e28a;
+    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+
+    /* match your .main padding on mobile */
+    margin: -14px -14px 12px;
+  }
+
+  .brandStripLogo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
   }
 }
 </style>
