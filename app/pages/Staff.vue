@@ -1,4 +1,4 @@
-<!-- app/pages/staff.vue -->
+<!-- app/pages/Staff.vue -->
 <template>
   <div class="page">
     <!-- Sidebar -->
@@ -50,7 +50,7 @@
         <button class="ghostBtn" type="button" @click="navigateTo('/')">Back</button>
       </header>
 
-      <!-- ===== AVAILABILITY TAB ===== -->
+      <!-- ===================== AVAILABILITY TAB ===================== -->
       <section v-if="activeTab === 'availability'" class="card">
         <div class="sectionHeader">
           <h2>AVAILABILITY</h2>
@@ -89,13 +89,14 @@
         </div>
       </section>
 
-      <!-- ===== ORDERS TAB ===== -->
+      <!-- ===================== ORDERS TAB ===================== -->
       <section v-else class="card">
         <div class="sectionHeader">
           <h2>ORDERS</h2>
           <div class="muted">Layout only (fake orders)</div>
         </div>
 
+        <!-- Kanban like your sketch -->
         <div class="kanban">
           <div class="col" v-for="col in orderColumns" :key="col.key">
             <div class="colHeader">{{ col.label }}</div>
@@ -104,10 +105,12 @@
               No orders
             </div>
 
-            <div v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
+            <article v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
               <div class="orderTop">
-                <b>Order {{ o.id }}</b>
-                <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
+                <div class="orderTitle">
+                  <b>Order {{ o.id }}</b>
+                  <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
+                </div>
               </div>
 
               <ul class="orderItems">
@@ -118,20 +121,21 @@
                 <button
                   class="miniBtn"
                   type="button"
-                  @click="moveOrder(col.key, o.id)"
-                  :disabled="col.key === 'completed'"
+                  @click="moveOrder(o.id)"
+                  :disabled="o.status === 'completed'"
                 >
                   Move →
                 </button>
+
                 <button class="miniBtn ghost" type="button" @click="openDetails(o)">
                   Details
                 </button>
               </div>
-            </div>
+            </article>
           </div>
         </div>
 
-        <!-- DETAILS MODAL (layout only) -->
+        <!-- DETAILS MODAL -->
         <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
           <div class="modal" @click.stop>
             <div class="modalHeader">
@@ -158,18 +162,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from "vue";
-import { MENU_ITEMS } from "../data/menu";
+// ✅ IMPORTANT: your menu.ts is in /data (root), Staff.vue is /app/pages
+import { MENU_ITEMS, type MenuItem } from "../../data/menu";
 
 const staffUser = "1234";
-const activeTab = ref("availability");
+const activeTab = ref<"availability" | "orders">("availability");
 
 const availability = useAvailability();
 
-// Group menu items by category
-const availabilityGroups = computed(() => {
-  const groups = {};
+/** Group items by category (must match your menu.ts category strings) */
+const availabilityGroups = computed<Record<string, MenuItem[]>>(() => {
+  const groups: Record<string, MenuItem[]> = {};
   for (const item of MENU_ITEMS) {
     const cat = item.category || "Other";
     if (!groups[cat]) groups[cat] = [];
@@ -178,8 +183,19 @@ const availabilityGroups = computed(() => {
   return groups;
 });
 
-// Optional ordering of categories
-const GROUP_ORDER = ["Menu Items", "Breakfast", "Lunch", "Bagels", "Shmears", "Misc.", "Ingredients", "Drinks"];
+/** Category order (edit this list to match your Food + Drinks pages exactly) */
+const GROUP_ORDER = [
+  "Breakfast",
+  "Lunch",
+  "Bagels",
+  "Smears",
+  "Other",
+  "Misc.",
+  "Hot Drinks",
+  "Cold Drinks",
+  "Tea and Smoothies",
+  "Bottled Drinks",
+];
 
 const orderedGroupKeys = computed(() => {
   const keys = Object.keys(availabilityGroups.value);
@@ -193,15 +209,25 @@ const orderedGroupKeys = computed(() => {
   });
 });
 
-/** Orders board (fake, but Move works) */
+/** ----------------- Fake Orders (Move works) ----------------- */
 const orderColumns = [
   { key: "new", label: "New" },
   { key: "progress", label: "In Progress" },
   { key: "ready", label: "Ready" },
   { key: "completed", label: "Completed" },
-];
+] as const;
 
-const orders = ref([
+type OrderStatus = (typeof orderColumns)[number]["key"];
+
+type Order = {
+  id: string;
+  status: OrderStatus;
+  time: string;
+  date: string;
+  items: string[];
+};
+
+const orders = ref<Order[]>([
   {
     id: "1234",
     status: "new",
@@ -218,26 +244,31 @@ const orders = ref([
   },
 ]);
 
-function ordersByStatus(statusKey) {
+function ordersByStatus(statusKey: OrderStatus) {
   return orders.value.filter((o) => o.status === statusKey);
 }
 
-const flow = ["new", "progress", "ready", "completed"];
-function moveOrder(fromKey, orderId) {
-  const idx = orders.value.findIndex((o) => o.id === orderId && o.status === fromKey);
-  if (idx === -1) return;
+const flow: OrderStatus[] = ["new", "progress", "ready", "completed"];
 
-  const nextKey = flow[flow.indexOf(fromKey) + 1];
-  if (!nextKey) return;
+/** ✅ Move by order id (simpler + can’t break if you click from any column) */
+function moveOrder(orderId: string) {
+  const order = orders.value.find((o) => o.id === orderId);
+  if (!order) return;
 
-  orders.value[idx].status = nextKey;
+  const i = flow.indexOf(order.status);
+  if (i === -1) return;
+
+  const nextKey = flow[i + 1]; // OrderStatus | undefined
+  if (!nextKey) return; // already completed
+
+  order.status = nextKey;
 }
 
-/** Details modal (layout-only) */
+/** Details modal */
 const detailsOpen = ref(false);
-const detailsOrder = ref(null);
+const detailsOrder = ref<Order | null>(null);
 
-function openDetails(order) {
+function openDetails(order: Order) {
   detailsOrder.value = order;
   detailsOpen.value = true;
 }
@@ -312,7 +343,7 @@ function closeDetails() {
   padding: 10px 12px;
   font-weight: 1000;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, border 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 .staffNavBtn:hover {
   transform: translateY(-1px);
@@ -352,7 +383,6 @@ function closeDetails() {
   margin: 0;
   font-size: 46px;
   font-weight: 1100;
-  letter-spacing: -0.02em;
 }
 .ghostBtn {
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -385,33 +415,29 @@ function closeDetails() {
   font-weight: 900;
 }
 
-/* Availability - grouped list of items */
+/* Availability */
 .availGroups {
   display: grid;
   gap: 16px;
 }
-
 .availGroup {
   border: 1px solid rgba(75, 52, 41, 0.12);
   border-radius: 16px;
   overflow: hidden;
   background: rgba(75, 52, 41, 0.02);
 }
-
 .availGroupTitle {
   padding: 10px 12px;
   font-weight: 1000;
   background: #fff;
   border-bottom: 1px solid rgba(75, 52, 41, 0.1);
 }
-
 .availItems {
   padding: 10px;
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 10px;
 }
-
 .availItemBtn {
   text-align: left;
   border-radius: 14px;
@@ -422,20 +448,7 @@ function closeDetails() {
   font-weight: 1000;
   display: grid;
   gap: 6px;
-  transition: transform 0.06s ease, box-shadow 0.06s ease, border 0.06s ease;
 }
-.availItemBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-}
-
-.availItemStatus {
-  font-weight: 900;
-  opacity: 0.75;
-  font-size: 12px;
-}
-
-/* Status colors */
 .availItemBtn.green {
   background: rgba(0, 140, 70, 0.12);
   border-color: rgba(0, 140, 70, 0.25);
@@ -443,6 +456,11 @@ function closeDetails() {
 .availItemBtn.red {
   background: rgba(255, 80, 80, 0.12);
   border-color: rgba(255, 80, 80, 0.25);
+}
+.availItemStatus {
+  font-weight: 900;
+  opacity: 0.75;
+  font-size: 12px;
 }
 
 .legend {
@@ -474,32 +492,38 @@ function closeDetails() {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* Orders kanban */
+/* ✅ Orders Kanban (like your sketch) */
 .kanban {
   display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
   gap: 14px;
   margin-top: 8px;
 }
+
 .col {
   border: 1px solid rgba(75, 52, 41, 0.12);
   border-radius: 18px;
   background: rgba(75, 52, 41, 0.03);
   overflow: hidden;
   min-height: 540px;
+  display: flex;
+  flex-direction: column;
 }
+
 .colHeader {
-  padding: 12px 12px;
+  padding: 12px;
   font-weight: 1100;
   font-size: 18px;
   background: #fff;
   border-bottom: 1px solid rgba(75, 52, 41, 0.12);
 }
+
 .emptyCol {
   padding: 14px 12px;
   opacity: 0.65;
   font-weight: 900;
 }
+
 .orderCard {
   background: #fff;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -508,31 +532,35 @@ function closeDetails() {
   margin: 12px;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
 }
-.orderTop {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+
+.orderTitle {
+  display: grid;
+  gap: 4px;
 }
+
 .orderMeta {
   font-weight: 900;
   opacity: 0.7;
   font-size: 12px;
 }
+
 .orderItems {
   margin: 10px 0 0;
   padding-left: 18px;
   font-weight: 900;
   opacity: 0.9;
 }
+
 .orderBtns {
   margin-top: 10px;
   display: flex;
   gap: 8px;
 }
+
 .miniBtn.ghost {
   background: rgba(255, 255, 255, 0.65);
 }
+
 .miniBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -564,12 +592,6 @@ function closeDetails() {
   justify-content: space-between;
   padding: 16px 18px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  background: linear-gradient(180deg, #ffffff, #fafafa);
-}
-.modalHeader h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 1100;
 }
 .xBtn {
   width: 34px;
@@ -580,8 +602,6 @@ function closeDetails() {
   cursor: pointer;
   display: grid;
   place-items: center;
-  font-size: 18px;
-  opacity: 0.85;
 }
 .modalBody {
   padding: 18px;
