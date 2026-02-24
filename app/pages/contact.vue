@@ -1,28 +1,50 @@
 <!-- app/pages/contact.vue -->
-
-<!--
-[FR-100] The Contact page SHALL display the business’s physical address in a clearly visible section at the top of the page.
-[FR-101] The Contact page SHALL provide fields for the user’s name and phone number when submitting an inquiry or message.
-[FR-102] The Contact page SHALL include a section containing all applicable legal disclaimers related to communication and data use.
-[FR-103] The Contact page SHALL include a link or embedded section describing the website’s privacy policy, including how user information is handled and stored.
-[FR-104] The Contact page SHALL display the business’s phone number in a dedicated section, allowing users to call directly from mobile devices.
--->
+<!-- Full working version: Sidebar logo hidden on desktop/laptop, visible on mobile (like other pages) -->
 
 <template>
   <div class="page">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
+    <!-- ✅ Mobile overlay (tap to close drawer) -->
+    <div
+      v-if="mobileNavOpen"
+      class="mobileOverlay"
+      @click="closeMobileNav"
+      aria-hidden="true"
+    />
+
+    <!-- ✅ Sidebar (desktop column, mobile drawer) -->
+    <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+        <NuxtLink
+          to="/"
+          class="logoLink"
+          aria-label="Main Page"
+          @click="closeMobileNav"
+        >
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
+
+        <!-- ✅ Mobile close button inside drawer -->
+        <button
+          class="drawerCloseBtn"
+          type="button"
+          @click="closeMobileNav"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Home</NuxtLink>
-        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+        <NuxtLink class="navItem" to="/" @click="closeMobileNav">Home</NuxtLink>
+        <NuxtLink class="navItem" to="/food" @click="closeMobileNav"
+          >Food Menu</NuxtLink
+        >
+        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav"
+          >Drinks Menu</NuxtLink
+        >
+        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav"
+          >Contact</NuxtLink
+        >
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -71,8 +93,23 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- Top bar: Location + Cart -->
+      <!-- ✅ Mobile-only mini brand strip (shows on phone only) -->
+      <div class="brandStrip" aria-hidden="true">
+        <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+      </div>
+
+      <!-- ✅ Top bar -->
       <header class="topbar">
+        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <button
+          class="hamburgerBtn"
+          type="button"
+          @click="openMobileNav"
+          aria-label="Open menu"
+        >
+          <span class="hamburgerIcon" aria-hidden="true">☰</span>
+        </button>
+
         <div class="topbarLeft">
           <div class="locationWrap">
             <div class="locationPill" aria-label="Current location">
@@ -83,11 +120,6 @@
         </div>
 
         <div class="topbarRight">
-
-          <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
-            <span class="cartIcon">🛒</span>
-            <span class="cartCount">{{ cartCount }}</span>
-          </button>
         </div>
       </header>
 
@@ -136,13 +168,12 @@
             <h2 class="cardTitle">About Einstein Bros. Bagels at Loras</h2>
             <p class="aboutText">
               Right on Loras College’s campus in Dubuque, Einstein Bros. Bagels serves fresh-baked
-              bagels, breakfast sandwiches, and coffee</p>
+              bagels, breakfast sandwiches, and coffee
+            </p>
 
-               <p class="aboutText">
-              Made for students, faculty, and visitors on the go.</p>
-              
-              <p class="aboutText">
-              We’re open weekdays from <b>7:30 AM to 1:30 PM</b>. </p>
+            <p class="aboutText">Made for students, faculty, and visitors on the go.</p>
+
+            <p class="aboutText">We’re open weekdays from <b>7:30 AM to 1:30 PM</b>.</p>
 
             <p class="aboutText">
               Whether you’re picking up bagel before class or meeting friends between lectures,
@@ -166,7 +197,8 @@
               <span class="faqChev" :class="{ open: openFaq === 0 }">▾</span>
             </button>
             <div v-if="openFaq === 0" class="faqBody">
-              Call the store as soon as you notice—share your receipt/order details and we’ll help make it right.
+              Call the store as soon as you notice—share your receipt/order details and we’ll help
+              make it right.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(1)">
@@ -182,7 +214,8 @@
               <span class="faqChev" :class="{ open: openFaq === 2 }">▾</span>
             </button>
             <div v-if="openFaq === 2" class="faqBody">
-              Pick up at the counter inside the Loras College location. If you don’t see it, ask a team member.
+              Pick up at the counter inside the Loras College location. If you don’t see it, ask a
+              team member.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(3)">
@@ -190,7 +223,8 @@
               <span class="faqChev" :class="{ open: openFaq === 3 }">▾</span>
             </button>
             <div v-if="openFaq === 3" class="faqBody">
-              Holiday hours can change—check announcements or call the store for the most accurate info.
+              Holiday hours can change—check announcements or call the store for the most accurate
+              info.
             </div>
 
             <button class="faqItem" type="button" @click="toggleFaq(4)">
@@ -198,10 +232,11 @@
               <span class="faqChev" :class="{ open: openFaq === 4 }">▾</span>
             </button>
             <div v-if="openFaq === 4" class="faqBody">
-              Contact support and we’ll guide you through deleting or updating your account information.
+              Contact support and we’ll guide you through deleting or updating your account
+              information.
             </div>
 
-            <!-- Premium stand-out section (Privacy + Message form) -->
+            <!-- Privacy -->
             <button class="privacyBar" type="button" @click="showPrivacy = !showPrivacy">
               <span>Privacy & Disclaimers</span>
               <span class="privacyChev" :class="{ open: showPrivacy }">▾</span>
@@ -211,12 +246,12 @@
               <div class="privacyCols">
                 <div class="privacyText">
                   <p class="privacyP">
-                    <b>Message us:</b> Use the form to send a question or request. Please avoid sharing sensitive info
-                    (passwords, payment details, or private IDs).
+                    <b>Message us:</b> Use the form to send a question or request. Please avoid
+                    sharing sensitive info (passwords, payment details, or private IDs).
                   </p>
                   <p class="privacyP">
-                    <b>Data use:</b> Your name/phone are used only to respond to your inquiry. This demo stores submissions
-                    locally in your browser for now (no server save).
+                    <b>Data use:</b> Your name/phone are used only to respond to your inquiry. This
+                    demo stores submissions locally in your browser for now (no server save).
                   </p>
                   <p class="privacyP">
                     <b>Privacy policy:</b>
@@ -313,13 +348,13 @@
         <ul v-else class="cartList">
           <li v-for="(item, idx) in cart" :key="idx" class="cartItem">
             <span class="cartItemName">{{ item.name }} (x{{ item.qty }})</span>
-            <button class="removeBtn" type="button" @click="removeFromCart(idx)">Remove</button>
+            <button class="removeBtn" type="button" @click="removeFromCart(idx)">
+              Remove
+            </button>
           </li>
         </ul>
 
-        <button class="checkoutBtn" type="button" @click="goToCheckout">
-          Checkout
-        </button>
+        <button class="checkoutBtn" type="button" @click="goToCheckout">Checkout</button>
       </aside>
     </main>
   </div>
@@ -328,14 +363,24 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** =========================
- *  Simple location label (no dropdown code)
- *  ========================= */
+/** ✅ Mobile nav drawer */
+const mobileNavOpen = ref(false);
+function openMobileNav() {
+  mobileNavOpen.value = true;
+}
+function closeMobileNav() {
+  mobileNavOpen.value = false;
+}
+function handleKeydown(e) {
+  if (e.key === "Escape") closeMobileNav();
+}
+onMounted(() => document.addEventListener("keydown", handleKeydown));
+onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
+
+/** Simple location label */
 const location = ref("Loras College • Dubuque, IA");
 
-/** =========================
- *  Sidebar Review
- *  ========================= */
+/** Sidebar Review */
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
@@ -345,7 +390,6 @@ const submitted = ref(false);
 function toggleReview() {
   showReview.value = !showReview.value;
 }
-
 function submitReview() {
   submitted.value = true;
   rating.value = 0;
@@ -354,17 +398,13 @@ function submitReview() {
   setTimeout(() => (submitted.value = false), 2000);
 }
 
-/** =========================
- *  FAQ
- *  ========================= */
+/** FAQ */
 const openFaq = ref(null);
 function toggleFaq(i) {
   openFaq.value = openFaq.value === i ? null : i;
 }
 
-/** =========================
- *  Privacy + Message form (meets FR-101/102/103)
- *  ========================= */
+/** Privacy + Message form */
 const showPrivacy = ref(false);
 const msgName = ref("");
 const msgPhone = ref("");
@@ -372,7 +412,6 @@ const msgBody = ref("");
 const msgSent = ref(false);
 
 function submitMessage() {
-  // For now, keep it lightweight: store locally (no backend)
   const payload = {
     name: msgName.value.trim(),
     phone: msgPhone.value.trim(),
@@ -396,9 +435,7 @@ function submitMessage() {
   setTimeout(() => (msgSent.value = false), 2200);
 }
 
-/** =========================
- *  Hours + Open/Closed
- *  ========================= */
+/** Hours + Open/Closed */
 const schedule = [
   { day: "Monday", open: "07:30", close: "13:30" },
   { day: "Tuesday", open: "07:30", close: "13:30" },
@@ -406,7 +443,7 @@ const schedule = [
   { day: "Thursday", open: "07:30", close: "13:30" },
   { day: "Friday", open: "07:30", close: "13:30" },
   { day: "Saturday", open: "07:30", close: "13:30" },
-  { day: "Sunday", open: null, close: null }, // closed
+  { day: "Sunday", open: null, close: null },
 ];
 
 function fmtTime(t) {
@@ -452,7 +489,6 @@ const todayOpenText = computed(() => {
   const s = schedule.find((x) => x.day === todayName.value);
   if (s?.open) return fmtTime(s.open);
 
-  // if today is closed, find next open day
   for (let i = 1; i <= 7; i++) {
     const d = new Date(now.value);
     d.setDate(d.getDate() + i);
@@ -470,9 +506,7 @@ function openMaps() {
   );
 }
 
-/** =========================
- *  Cart (shared)
- *  ========================= */
+/** Cart */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
 const cartCount = computed(() => cart.value.reduce((sum, item) => sum + (item.qty || 1), 0));
@@ -480,19 +514,16 @@ const cartCount = computed(() => cart.value.reduce((sum, item) => sum + (item.qt
 function toggleCart() {
   showCart.value = !showCart.value;
 }
-
 function goToCheckout() {
   showCart.value = false;
   navigateTo("/checkout");
 }
-
 function removeFromCart(index) {
   cart.value.splice(index, 1);
 }
 </script>
 
 <style scoped>
-/* Einstein-ish warm palette */
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
@@ -512,6 +543,11 @@ function removeFromCart(index) {
   color: var(--brown);
 }
 
+/* ✅ Mobile overlay */
+.mobileOverlay {
+  display: none;
+}
+
 /* Sidebar */
 .sidebar {
   border-right: 1px solid rgba(75, 52, 41, 0.12);
@@ -524,6 +560,12 @@ function removeFromCart(index) {
   justify-content: center;
   margin-bottom: 14px;
   overflow: hidden;
+  position: relative;
+}
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .logoImg {
   width: 100%;
@@ -532,6 +574,32 @@ function removeFromCart(index) {
   display: block;
   object-fit: contain;
 }
+
+/* ✅ IMPORTANT: Hide sidebar logo on desktop/laptop ONLY */
+@media (min-width: 721px) {
+  .sidebarTop {
+    display: none;
+  }
+}
+
+/* ✅ drawer close (only mobile) */
+.drawerCloseBtn {
+  display: none;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  border: none;
+  background: rgba(75, 52, 41, 0.06);
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brown);
+}
+
 .nav {
   display: flex;
   flex-direction: column;
@@ -642,38 +710,56 @@ function removeFromCart(index) {
   position: relative;
   padding: 20px 26px 50px;
 }
+
+/* ✅ Mini Brand Strip: default hidden everywhere */
+.brandStrip {
+  display: none;
+}
+.brandStripLogo {
+  display: block;
+}
+
+/* Topbar */
 .topbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.topbarLeft {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
+  gap: 14px;
+  min-width: 0;
 }
 .topbarRight {
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: flex-end;
 }
 
-.signInBtn {
+/* Hamburger hidden on desktop */
+.hamburgerBtn {
+  display: none;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #fff;
   border-radius: 14px;
-  padding: 10px 16px;
+  padding: 10px 12px;
   cursor: pointer;
-  font-weight: 900;
-  color: var(--brown);
   box-shadow: var(--cardShadow);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
-.signInBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
-  border-color: rgba(244, 179, 22, 0.5);
+.hamburgerIcon {
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1;
 }
 
 /* Location */
 .locationWrap {
   position: relative;
+  min-width: 0;
 }
 .locationPill {
   display: inline-flex;
@@ -684,6 +770,7 @@ function removeFromCart(index) {
   padding: 10px 14px;
   border-radius: 999px;
   font-weight: 900;
+  min-width: 0;
 }
 .locDot {
   width: 10px;
@@ -695,6 +782,9 @@ function removeFromCart(index) {
 .locationSelected {
   opacity: 0.85;
   font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Cart */
@@ -770,6 +860,7 @@ function removeFromCart(index) {
   justify-content: space-between;
   gap: 14px;
   align-items: baseline;
+  flex-wrap: wrap;
 }
 .cardTitle {
   margin: 0;
@@ -789,7 +880,7 @@ function removeFromCart(index) {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #b34a3a; /* closed */
+  background: #b34a3a;
   box-shadow: 0 0 0 4px rgba(179, 74, 58, 0.15);
 }
 .statusDot.open {
@@ -827,7 +918,6 @@ function removeFromCart(index) {
   opacity: 0.92;
 }
 
-/* Small “stand-out” callout inside About */
 .aboutCard {
   position: relative;
 }
@@ -835,7 +925,11 @@ function removeFromCart(index) {
   margin-top: 14px;
   border-radius: 16px;
   border: 1px solid rgba(244, 179, 22, 0.4);
-  background: linear-gradient(180deg, rgba(244, 179, 22, 0.16), rgba(244, 179, 22, 0.08));
+  background: linear-gradient(
+    180deg,
+    rgba(244, 179, 22, 0.16),
+    rgba(244, 179, 22, 0.08)
+  );
   padding: 12px;
 }
 .aboutHighlightTitle {
@@ -937,7 +1031,7 @@ function removeFromCart(index) {
   opacity: 0.9;
 }
 
-/* Privacy + Message (premium, clean) */
+/* Privacy + Message */
 .privacyBar {
   margin-top: 14px;
   width: 100%;
@@ -1092,7 +1186,7 @@ function removeFromCart(index) {
   background: #ffbe21;
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 980px) {
   .page {
     grid-template-columns: 220px 1fr;
@@ -1104,16 +1198,81 @@ function removeFromCart(index) {
     grid-template-columns: 1fr;
   }
 }
+
+/* ✅ Mobile: drawer sidebar like your other pages */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
   }
-  .sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-right: none;
+
+  /* ✅ Show mini strip only on mobile */
+  .brandStrip {
+    display: flex;
+    height: 58px;
+    background: #f6e28a;
     border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+    margin: -14px -14px 12px; /* match mobile main padding */
+  }
+  .brandStripLogo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
+  }
+
+  .hamburgerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(320px, 88vw);
+    z-index: 100;
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.18);
+    border-right: 1px solid rgba(75, 52, 41, 0.12);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .drawerCloseBtn {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .main {
+    padding: 14px 14px 44px;
+  }
+
+  .title {
+    font-size: 34px;
+    letter-spacing: 1px;
+  }
+
+  .locationPill {
+    max-width: 100%;
+  }
+
+  .mapFrame {
+    height: 240px;
   }
 }
 </style>

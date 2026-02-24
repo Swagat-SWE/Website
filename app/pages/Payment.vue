@@ -1678,8 +1678,158 @@ function validate() {
   transform: scale(0.92);
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
+/* =========================
+   MOBILE: make it feel native
+   ========================= */
+
+@media (max-width: 760px) {
+  /* 1) Hide sidebar on mobile (clean checkout focus) */
+  .sidebar {
+    display: none;
+  }
+
+  /* 2) Page becomes 1-column */
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  /* 3) Reduce main padding */
+  .main {
+    padding: 14px 14px 40px;
+  }
+
+  /* 4) Topbar stacks nicely */
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .backBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* 5) Shell becomes single column (already happens at 1020)
+        but we also tighten spacing */
+  .shell {
+    gap: 12px;
+  }
+
+  /* 6) Panel becomes tighter */
+  .panelTop {
+    padding: 14px 14px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .badgeRow {
+    justify-content: flex-start;
+  }
+
+  /* 7) Form spacing smaller */
+  .form {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  /* 8) Inputs are shorter */
+  .input {
+    padding: 12px 12px;
+    border-radius: 12px;
+  }
+
+  /* 9) Two-column grid becomes 1 column */
+  .grid2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* 10) Buttons smaller + premium */
+  .primaryBtn,
+  .secondaryBtn {
+    padding: 12px 12px;
+    border-radius: 14px;
+    font-size: 14px;
+  }
+
+  .btnArrow {
+    right: 14px;
+  }
+
+  /* 11) Summary should NOT be sticky on mobile */
+  .summary {
+    position: static;
+    top: auto;
+  }
+
+  .summaryCard {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .sumRow {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  /* 12) Wallet list items become clean stacked cards */
+  .walletItem {
+    grid-template-columns: 20px 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    align-items: start;
+  }
+
+  /* move "Remove" button under */
+  .walletRemove {
+    grid-column: 2;
+    justify-self: end;
+    margin-top: -4px;
+  }
+
+  .walletRow1 {
+    flex-wrap: wrap;
+  }
+
+  .brandLogoBox {
+    width: 32px;
+    height: 20px;
+    border-radius: 7px;
+  }
+
+  /* 13) Card preview fits mobile */
+  .cardPreview {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .cardPreviewNum {
+    letter-spacing: 0.10em;
+    font-size: 13px;
+  }
+
+  /* 14) Verify overlay card smaller */
+  .verifyCard {
+    width: min(360px, 92vw);
+    padding: 16px 14px;
+  }
 }
+
+/* Extra small phones */
+@media (max-width: 420px) {
+  .title {
+    font-size: 28px;
+  }
+
+  .chip {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .panelTitle {
+    font-size: 16px;
+  }
+}
+
 </style>
