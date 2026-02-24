@@ -311,7 +311,50 @@ export const MENU_ITEMS: MenuItem[] = [
   { id: "o4", name: "Chocolate Chip Cookie", category: "Other", page: "food", img: "EBB-Sweets-ChocolateChipCookie-650x6501-1.jpg", price: 2.49 },
   { id: "o5", name: "Twice Baked Hashbrown", category: "Other", page: "food", img: "EBB-Twice-Baked-Hashbrown.jpg", price: 2.79 },
 
-  // ===== FUTURE =====
+
   // Add Drink items here later, e.g.
   // { id: "hd1", name: "Latte", category: "Hot Drinks", page: "drinks", img: "/latte.png", price: 4.99 },
+
+
+// === Drinks ===
+  // Hot Drinks
+  { id: "hd1", name: "Mocha", category: "Hot Drinks", page: "drinks", img: "Mocha.png", price: 4.69},
+  { id: "hd2", name: "Latte", category: "Hot Drinks", page: "drinks", img: "Latte.png", price: 4.19},
+  { id: "hd3", name: "Caramel Macchiato", category: "Hot Drinks", page: "drinks", img: "CaramelMacchiato.png", price: 5.29 },
+  { id: "hd4", name: "Chai Tea Latte", category: "Hot Drinks", page: "drinks", img: "ChaiTeaLatte.png", price: 4.19},
+  { id: "hd5", name: "Hot Chocolate", category: "Hot Drinks", page: "drinks", img: "HotChocolate.png", price: 3.99},
+  { id: "hd6", name: "Coffee", category: "Hot Drinks", page: "drinks", img: "HotCoffee.png", price: 4.99},
+  // Cold Drinks
+  { id: "cd1", name: "Classic Cold Brew", category: "Cold Drinks", page: "drinks", img: "ClassicColdBrew.png", price: 3.49},
+  { id: "cd2", name: "Chocolate Cream Cold Brew", category: "Cold Drinks", page: "drinks", img: "ChocolateCreamColdBrew.png", price: 4.99},
+  { id: "cd3", name: "Vanilla Cream Cold Brew", category: "Cold Drinks", page: "drinks", img: "VanillaCreamColdBrew.png", price: 4.99},
+  { id: "cd4", name: "Caramel Cream Cold Brew", category: "Cold Drinks", page: "drinks", img: "CaramelCreamColdBrew.png", price: 4.99},
+  { id: "cd5", name: "Chocolate Cold Brew Shake", category: "Cold Drinks", page: "drinks", img: "ChocolateColdBrewShake.png", price: 4.99},
+  { id: "cd6", name: "Vanilla Cold Brew Shake", category: "Cold Drinks", page: "drinks", img: "VanillaColdBrewShake.png", price: 4.99},
+  { id: "cd7", name: "Caramel Cold Brew Shake", category: "Cold Drinks", page: "drinks", img: "CaramelColdBrewShake.png", price: 4.99},
+  { id: "cd8", name: "Mocha", category: "Cold Drinks", page: "drinks", img: "IcedMocha.png", price: 4.69},
+  { id: "cd9", name: "Caramel Macchiato", category: "Cold Drinks", page: "drinks", img: "IcedCaramelMacchiato.png", price: 5.39},
+  { id: "cd10", name: "Latte", category: "Cold Drinks", page: "drinks", img: "ColdLatte", price: 4.29},
+  { id: "cd11", name: "Chai Tea Latte", category: "Cold Drinks", page: "drinks", img: "ColdChaiTeaLatte.png", price: 4.19},
+  // Teas and Smoothies
+  { id: "ts1", name: "Hot Tea", category: "Teas and Smoothies", page: "drinks", img: "HotTea.png", price: 3.99},
+  { id: "ts2", name: "Iced Tea", category: "Teas and Smoothies", page: "drinks", img: "IcedTea.png", price: 3.99},
+  { id: "ts3", name: "Strawberry Banana Smoothie", category: "Teas and Smoothies", page: "drinks", img: "Strawberry Banana Smoothie.png", price: 4.99},
+
+  // Bottled Drinks
+  { id: "bd1", name: "Pepsi", category: "Bottled Drinks", page: "drinks", img: "Pepsi.png", price: 2.50},
+  { id: "bd2", name: "Diet Pepsi", category: "Bottled Drinks", page: "drinks", img: "DietPepsi.png", price: 2.50},
+  { id: "bd3", name: "Mountain Dew", category: "Bottled Drinks", page: "drinks", img: "MountainDew.png", price: 2.50},
+  { id: "bd4", name: "Diet Mountain Dew", category: "Bottled Drinks", page: "drinks", img: "DietMountainDew.png", price: 2.50},
+  { id: "bd5", name: "Orange Juice", category: "Bottled Drinks", page: "drinks", img: "OrangeJuice.png", price: 2.50},
+  { id: "bd6", name: "Grape Juice", category: "Bottled Drinks", page: "drinks", img: "GrapeJuice.png", price: 2.50},
+  { id: "bd7", name: "Apple Juice", category: "Bottled Drinks", page: "drinks", img: "AppleJuice.png", price: 2.50},
+  { id: "bd8", name: "Raspberry Iced Tea", category: "Bottled Drinks", page: "drinks", img: "RaspberryIcedTea.png", price: 2.50},
+  { id: "bd9", name: "Unsweetened Iced Tea", category: "Bottled Drinks", page: "drinks", img: "UnsweetenedIcedTea.png", price: 2.50},
+  { id: "bd10", name: "Chocolate Milk", category: "Bottled Drinks", page: "drinks", img: "ChocolateMilk.png", price: 2.50},
+  { id: "bd11", name: "White Milk", category: "Bottled Drinks", page: "drinks", img: "WhiteMilk.png", price: 2.50},
+  { id: "bd12", name: "Water", category: "Bottled Drinks", page: "drinks", img: "Water.png", price: 2.50},
+  { id: "bd13", name: "Lemon Lime Gatorade", category: "Bottled Drinks", page: "drinks", img: "YellowGatorade.png", price: 2.50},
+  { id: "bd14", name: "Cool Blue Gatorade", category: "Bottled Drinks", page: "drinks", img: "CoolBlueGatorade.png", price: 2.50},
 ];
+
