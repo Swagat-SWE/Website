@@ -32,15 +32,25 @@
         >
           Orders
         </button>
+
+        <!-- need to change this part below to go to performance page-->
+        <button
+          class="staffNavBtn"
+          :class="{ active: activeTab === 'performance' }"
+          type="button"
+          @click="activeTab = 'performance'"
+        >
+          Performance
+        </button>
       </nav>
 
-      <nav class="nav">
+     <!---- <nav class="nav"> 
         <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
         <NuxtLink class="navItem" to="/checkout">Checkout</NuxtLink>
         <NuxtLink class="navItem" to="/tracking">Tracking</NuxtLink>
-      </nav>
+      </nav>  -->
     </aside>
 
     <!-- Main -->
