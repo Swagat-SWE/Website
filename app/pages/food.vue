@@ -517,12 +517,12 @@ function addToCart(item) {
   else {
     cart.value.push({
       id: item.id,
-      category: getCategory(item),
+      category: getCategory(item),   // ✅ STEP 2 HERE
       name: item.name,
       qty: 1,
       img: item.img,
-      basePrice: base,
-      priceEach: base,
+      basePrice: menuItem.price,
+      priceEach: menuItem.price,
       custom: null,
     });
   }
