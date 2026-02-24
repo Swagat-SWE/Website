@@ -10,9 +10,18 @@
     />
 
     <!-- Sidebar (desktop fixed column, mobile slide-in drawer) -->
-    <aside class="sidebar" :class="{ open: mobileNavOpen }" aria-label="Sidebar navigation">
+    <aside
+      class="sidebar"
+      :class="{ open: mobileNavOpen }"
+      aria-label="Sidebar navigation"
+    >
       <div class="sidebarTop">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
+        <NuxtLink
+          to="/"
+          class="logoLink"
+          aria-label="Main Page"
+          @click="closeMobileNav"
+        >
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
@@ -88,7 +97,12 @@
       <!-- Top bar -->
       <header class="topbar">
         <!-- ✅ Mobile hamburger (hidden on desktop) -->
-        <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
+        <button
+          class="hamburgerBtn"
+          type="button"
+          @click="openMobileNav"
+          aria-label="Open menu"
+        >
           <span class="hamburgerIcon" aria-hidden="true">☰</span>
         </button>
 
@@ -107,7 +121,7 @@
         <h1 class="title">Food Selection</h1>
       </section>
 
-      <!-- Breakfast -->
+      <!-- Sections -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Breakfast</h2>
@@ -116,9 +130,9 @@
 
         <div class="tileGrid">
           <article v-for="item in Breakfast" :key="item.id" class="tileCard">
-            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.id) }">
+            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
-              <div v-if="!isAvailable(item.id)" class="unavailableOverlay">
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
                 Currently unavailable
               </div>
             </div>
@@ -136,7 +150,7 @@
                     class="plusBtn"
                     type="button"
                     aria-label="Add to cart"
-                    :disabled="!isAvailable(item.id)"
+                    :disabled="!isAvailable(item.name)"
                     @click="addToCart(item)"
                   >
                     +
@@ -148,7 +162,6 @@
         </div>
       </section>
 
-      <!-- Lunch -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Lunch</h2>
@@ -157,9 +170,9 @@
 
         <div class="tileGrid">
           <article v-for="item in Lunch" :key="item.id" class="tileCard">
-            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.id) }">
+            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
-              <div v-if="!isAvailable(item.id)" class="unavailableOverlay">
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
                 Currently unavailable
               </div>
             </div>
@@ -177,7 +190,7 @@
                     class="plusBtn"
                     type="button"
                     aria-label="Add to cart"
-                    :disabled="!isAvailable(item.id)"
+                    :disabled="!isAvailable(item.name)"
                     @click="addToCart(item)"
                   >
                     +
@@ -189,7 +202,6 @@
         </div>
       </section>
 
-      <!-- Bagels -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Bagels</h2>
@@ -198,9 +210,9 @@
 
         <div class="tileGrid">
           <article v-for="item in Bagels" :key="item.id" class="tileCard">
-            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.id) }">
+            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
-              <div v-if="!isAvailable(item.id)" class="unavailableOverlay">
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
                 Currently unavailable
               </div>
             </div>
@@ -218,7 +230,7 @@
                     class="plusBtn"
                     type="button"
                     aria-label="Add to cart"
-                    :disabled="!isAvailable(item.id)"
+                    :disabled="!isAvailable(item.name)"
                     @click="addToCart(item)"
                   >
                     +
@@ -230,7 +242,6 @@
         </div>
       </section>
 
-      <!-- Smears -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Smears</h2>
@@ -239,9 +250,9 @@
 
         <div class="tileGrid">
           <article v-for="item in Smears" :key="item.id" class="tileCard">
-            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.id) }">
+            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
-              <div v-if="!isAvailable(item.id)" class="unavailableOverlay">
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
                 Currently unavailable
               </div>
             </div>
@@ -259,7 +270,7 @@
                     class="plusBtn"
                     type="button"
                     aria-label="Add to cart"
-                    :disabled="!isAvailable(item.id)"
+                    :disabled="!isAvailable(item.name)"
                     @click="addToCart(item)"
                   >
                     +
@@ -271,7 +282,6 @@
         </div>
       </section>
 
-      <!-- Other -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Other</h2>
@@ -280,9 +290,9 @@
 
         <div class="tileGrid">
           <article v-for="item in Other" :key="item.id" class="tileCard">
-            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.id) }">
+            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
-              <div v-if="!isAvailable(item.id)" class="unavailableOverlay">
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
                 Currently unavailable
               </div>
             </div>
@@ -300,7 +310,7 @@
                     class="plusBtn"
                     type="button"
                     aria-label="Add to cart"
-                    :disabled="!isAvailable(item.id)"
+                    :disabled="!isAvailable(item.name)"
                     @click="addToCart(item)"
                   >
                     +
@@ -375,26 +385,19 @@ function handleKeydown(e) {
 onMounted(() => document.addEventListener("keydown", handleKeydown));
 onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 
-/** ✅ Availability
- * If you already have useAvailability() composable, this uses it.
- * If you don't have it, it will default to "everything available".
+/** ✅ Availability (shared with Staff page)
+ * IMPORTANT: Staff page must also use item.name as the key.
  */
-let availability = null;
-try {
-  availability = useAvailability?.();
-} catch (_) {
-  availability = null;
-}
-function isAvailable(id) {
-  if (!availability || typeof availability.getStatus !== "function") return true;
-  return availability.getStatus(id) !== "red";
+const availability = useAvailability();
+function isAvailable(key) {
+  return availability.getStatus(key) !== "red";
 }
 
 /** =========================
- *  Prices (ALL)
- *  ========================= */
+ * Prices
+ * ========================= */
 const PRICE_BY_NAME = {
-  // ===== Breakfast =====
+  // Breakfast
   "Farm House Egg Sandwich": 7.19,
   "All Nighter Egg Sandwich": 6.99,
   "Garden Avocado Egg Sandwich": 6.39,
@@ -408,7 +411,7 @@ const PRICE_BY_NAME = {
   "Big Breakfast Burrito": 7.49,
   "Avocado Toast": 5.49,
 
-  // ===== Lunch =====
+  // Lunch
   "Tastey Turkey Sandwich": 7.99,
   "Avocado Veg Out Sandwich": 7.54,
   "Nova Lox Sandwich": 8.49,
@@ -423,7 +426,7 @@ const PRICE_BY_NAME = {
   "Chicken Salad": 6.99,
   "Albuquerque Turkey": 7.59,
 
-  // ===== Bagels =====
+  // Bagels
   "Plain Bagel": 2.19,
   "Cinnamon Raisin Bagel": 2.49,
   "Everything Bagel": 2.49,
@@ -435,7 +438,7 @@ const PRICE_BY_NAME = {
   "Blueberry Bagel": 2.49,
   "Chocolate Chip Bagel": 2.59,
 
-  // ===== Smears =====
+  // Smears
   Plain: 1.29,
   Strawberry: 1.49,
   Almond: 1.49,
@@ -443,7 +446,7 @@ const PRICE_BY_NAME = {
   "Garden Veggie": 1.49,
   "Onion Chive": 1.49,
 
-  // ===== Other =====
+  // Other
   "Cinnamon Chip Muffin": 2.99,
   "Cinnamon Bliss Rolls": 3.49,
   "Blueberry Muffin": 2.99,
@@ -458,8 +461,8 @@ function resolvePrice(item) {
 }
 
 /** =========================
- *  Review
- *  ========================= */
+ * Review
+ * ========================= */
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
@@ -478,11 +481,10 @@ function submitReview() {
 }
 
 /** =========================
- *  Cart
- *  ========================= */
+ * Cart
+ * ========================= */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
-
 const cartCount = computed(() =>
   cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
 );
@@ -505,8 +507,8 @@ function getCategory(item) {
 }
 
 function addToCart(item) {
-  // ✅ block if staff marked it unavailable
-  if (!isAvailable(item.id)) return;
+  // ✅ hard block if unavailable
+  if (!isAvailable(item.name)) return;
 
   const existing = cart.value.find((x) => x.id === item.id);
   const base = Number(resolvePrice(item) ?? 0);
@@ -533,8 +535,8 @@ function removeFromCart(index) {
 }
 
 /** =========================
- *  Menu items
- *  ========================= */
+ * Menu items
+ * ========================= */
 const Breakfast = ref([
   { id: "bs1", name: "Farm House Egg Sandwich", img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg" },
   { id: "bs2", name: "All Nighter Egg Sandwich", img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg" },

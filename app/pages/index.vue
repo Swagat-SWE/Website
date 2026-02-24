@@ -86,7 +86,7 @@
         </div>
 
         <div class="verifyText">
-          {{ logoutDone ? "Success!" : "Logging you out…" }}
+          {{ logoutDone ? "Success!" : "Logging Out" }}
         </div>
       </div>
     </div>
