@@ -141,8 +141,14 @@
           </div>
 
           <div class="sumRow">
-            <span>Tax (8%)</span>
+            <span>Tax (7%)</span>
             <b>${{ tax.toFixed(2) }}</b>
+          </div>
+
+          <div class="taxBreakdown">
+            <small>Includes 6.0% Iowa state tax + 1.0% Dubuque local tax</small><br />
+            <small>IA State (6.0%): ${{ stateTax.toFixed(2) }}</small><br />
+            <small>Dubuque Local (1.0%): ${{ localTax.toFixed(2) }}</small>
           </div>
 
           <div class="sumRow total">
@@ -359,8 +365,14 @@ const subtotal = computed(() =>
   cart.value.reduce((sum, i) => sum + lineTotal(i), 0)
 );
 
-const taxRate = 0.08;
-const tax = computed(() => subtotal.value * taxRate);
+const stateTaxRate = 0.06; //Iowa state
+const localTaxRate = 0.01; // Dubuque local tax
+const taxRate = stateTaxRate + localTaxRate;
+
+const stateTax = computed(() => subtotal.value * stateTaxRate);
+const localTax = computed(() => subtotal.value * localTaxRate);
+const tax = computed(() => stateTax.value + localTax.value);
+
 const total = computed(() => subtotal.value + tax.value);
 
 /** QTY + REMOVE */
@@ -1557,5 +1569,13 @@ function saveEdit() {
     border-radius: 12px;
     margin-top: 10px;
     font-size: 14px;
+  }
+
+  .taxBreakdown {
+    margin-top: 6px;
+    line-height: 1.3;
+    opacity: 0.8;
+    font-size: 0.85rem;
+    padding-left: 2px;
   }
 </style>
