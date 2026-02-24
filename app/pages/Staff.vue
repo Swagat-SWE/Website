@@ -66,13 +66,13 @@
                 v-for="it in availabilityGroups[groupKey]"
                 :key="it.id"
                 class="availItemBtn"
-                :class="availability.getStatus(it.id)"
+                :class="availability.getStatus(it.name)"
                 type="button"
-                @click="availability.toggle(it.id)"
+                @click="availability.toggle(it.name)"
               >
                 <div class="availItemName">{{ it.name }}</div>
                 <div class="availItemStatus">
-                  {{ availability.getStatus(it.id) === "red" ? "Unavailable" : "Available" }}
+                  {{ availability.getStatus(it.name) === "red" ? "Unavailable" : "Available" }}
                 </div>
               </button>
             </div>
@@ -96,7 +96,6 @@
           <div class="muted">Layout only (fake orders)</div>
         </div>
 
-        <!-- Kanban like your sketch -->
         <div class="kanban">
           <div class="col" v-for="col in orderColumns" :key="col.key">
             <div class="colHeader">{{ col.label }}</div>
@@ -164,26 +163,30 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-// ✅ IMPORTANT: your menu.ts is in /data (root), Staff.vue is /app/pages
-import { MENU_ITEMS, type MenuItem } from "../../data/menu";
+// ✅ Staff.vue is in /app/pages and menu.ts is in /app/data
+import { MENU_ITEMS, type MenuItem } from "../data/menu";
 
 const staffUser = "1234";
 const activeTab = ref<"availability" | "orders">("availability");
 
 const availability = useAvailability();
 
-/** Group items by category (must match your menu.ts category strings) */
+/**
+ * ✅ Uses menu.ts categories.
+ * ✅ Uses it.name as the availability key (matches Food page).
+ */
 const availabilityGroups = computed<Record<string, MenuItem[]>>(() => {
   const groups: Record<string, MenuItem[]> = {};
+
   for (const item of MENU_ITEMS) {
     const cat = item.category || "Other";
     if (!groups[cat]) groups[cat] = [];
     groups[cat].push(item);
   }
+
   return groups;
 });
 
-/** Category order (edit this list to match your Food + Drinks pages exactly) */
 const GROUP_ORDER = [
   "Breakfast",
   "Lunch",
@@ -250,7 +253,6 @@ function ordersByStatus(statusKey: OrderStatus) {
 
 const flow: OrderStatus[] = ["new", "progress", "ready", "completed"];
 
-/** ✅ Move by order id (simpler + can’t break if you click from any column) */
 function moveOrder(orderId: string) {
   const order = orders.value.find((o) => o.id === orderId);
   if (!order) return;
@@ -258,8 +260,8 @@ function moveOrder(orderId: string) {
   const i = flow.indexOf(order.status);
   if (i === -1) return;
 
-  const nextKey = flow[i + 1]; // OrderStatus | undefined
-  if (!nextKey) return; // already completed
+  const nextKey = flow[i + 1];
+  if (!nextKey) return;
 
   order.status = nextKey;
 }
@@ -492,7 +494,7 @@ function closeDetails() {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* ✅ Orders Kanban (like your sketch) */
+/* Orders Kanban */
 .kanban {
   display: grid;
   grid-template-columns: repeat(4, minmax(240px, 1fr));
