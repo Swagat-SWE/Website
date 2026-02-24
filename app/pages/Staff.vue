@@ -177,7 +177,7 @@ import { computed, ref } from "vue";
 import { MENU_ITEMS, type MenuItem } from "../data/menu";
 
 const staffUser = "1234";
-const activeTab = ref<"availability" | "orders">("availability");
+const activeTab = ref<"availability" | "orders" | "performance">("availability");
 
 const availability = useAvailability();
 

@@ -10,18 +10,9 @@
     />
 
     <!-- Sidebar (desktop fixed column, mobile slide-in drawer) -->
-    <aside
-      class="sidebar"
-      :class="{ open: mobileNavOpen }"
-      aria-label="Sidebar navigation"
-    >
+    <aside class="sidebar" :class="{ open: mobileNavOpen }" aria-label="Sidebar navigation">
       <div class="sidebarTop">
-        <NuxtLink
-          to="/"
-          class="logoLink"
-          aria-label="Main Page"
-          @click="closeMobileNav"
-        >
+        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
@@ -97,12 +88,7 @@
       <!-- Top bar -->
       <header class="topbar">
         <!-- ✅ Mobile hamburger (hidden on desktop) -->
-        <button
-          class="hamburgerBtn"
-          type="button"
-          @click="openMobileNav"
-          aria-label="Open menu"
-        >
+        <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
           <span class="hamburgerIcon" aria-hidden="true">☰</span>
         </button>
 
@@ -121,7 +107,7 @@
         <h1 class="title">Food Selection</h1>
       </section>
 
-      <!-- Sections -->
+      <!-- Breakfast -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Breakfast</h2>
@@ -162,6 +148,7 @@
         </div>
       </section>
 
+      <!-- Lunch -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Lunch</h2>
@@ -202,6 +189,7 @@
         </div>
       </section>
 
+      <!-- Bagels -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Bagels</h2>
@@ -242,6 +230,7 @@
         </div>
       </section>
 
+      <!-- Smears -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Smears</h2>
@@ -282,6 +271,7 @@
         </div>
       </section>
 
+      <!-- Other -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Other</h2>
@@ -385,19 +375,17 @@ function handleKeydown(e) {
 onMounted(() => document.addEventListener("keydown", handleKeydown));
 onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 
-/** ✅ Availability (shared with Staff page)
- * IMPORTANT: Staff page must also use item.name as the key.
- */
+/** ✅ Availability (shared state with Staff) — key by NAME */
 const availability = useAvailability();
-function isAvailable(key) {
-  return availability.getStatus(key) !== "red";
+function isAvailable(name) {
+  return availability.isAvailable(name);
 }
 
 /** =========================
- * Prices
- * ========================= */
+ *  Prices (ALL)
+ *  ========================= */
 const PRICE_BY_NAME = {
-  // Breakfast
+  // ===== Breakfast =====
   "Farm House Egg Sandwich": 7.19,
   "All Nighter Egg Sandwich": 6.99,
   "Garden Avocado Egg Sandwich": 6.39,
@@ -411,7 +399,7 @@ const PRICE_BY_NAME = {
   "Big Breakfast Burrito": 7.49,
   "Avocado Toast": 5.49,
 
-  // Lunch
+  // ===== Lunch =====
   "Tastey Turkey Sandwich": 7.99,
   "Avocado Veg Out Sandwich": 7.54,
   "Nova Lox Sandwich": 8.49,
@@ -426,7 +414,7 @@ const PRICE_BY_NAME = {
   "Chicken Salad": 6.99,
   "Albuquerque Turkey": 7.59,
 
-  // Bagels
+  // ===== Bagels =====
   "Plain Bagel": 2.19,
   "Cinnamon Raisin Bagel": 2.49,
   "Everything Bagel": 2.49,
@@ -438,7 +426,7 @@ const PRICE_BY_NAME = {
   "Blueberry Bagel": 2.49,
   "Chocolate Chip Bagel": 2.59,
 
-  // Smears
+  // ===== Smears =====
   Plain: 1.29,
   Strawberry: 1.49,
   Almond: 1.49,
@@ -446,7 +434,7 @@ const PRICE_BY_NAME = {
   "Garden Veggie": 1.49,
   "Onion Chive": 1.49,
 
-  // Other
+  // ===== Other =====
   "Cinnamon Chip Muffin": 2.99,
   "Cinnamon Bliss Rolls": 3.49,
   "Blueberry Muffin": 2.99,
@@ -461,8 +449,8 @@ function resolvePrice(item) {
 }
 
 /** =========================
- * Review
- * ========================= */
+ *  Review
+ *  ========================= */
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
@@ -481,10 +469,11 @@ function submitReview() {
 }
 
 /** =========================
- * Cart
- * ========================= */
+ *  Cart
+ *  ========================= */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
+
 const cartCount = computed(() =>
   cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
 );
@@ -507,7 +496,7 @@ function getCategory(item) {
 }
 
 function addToCart(item) {
-  // ✅ hard block if unavailable
+  // ✅ block if staff marked it unavailable (by NAME)
   if (!isAvailable(item.name)) return;
 
   const existing = cart.value.find((x) => x.id === item.id);
@@ -517,12 +506,12 @@ function addToCart(item) {
   else {
     cart.value.push({
       id: item.id,
-      category: getCategory(item),   // ✅ STEP 2 HERE
+      category: getCategory(item),
       name: item.name,
       qty: 1,
       img: item.img,
-      basePrice: menuItem.price,
-      priceEach: menuItem.price,
+      basePrice: base,
+      priceEach: base,
       custom: null,
     });
   }
@@ -535,8 +524,8 @@ function removeFromCart(index) {
 }
 
 /** =========================
- * Menu items
- * ========================= */
+ *  Menu items
+ *  ========================= */
 const Breakfast = ref([
   { id: "bs1", name: "Farm House Egg Sandwich", img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg" },
   { id: "bs2", name: "All Nighter Egg Sandwich", img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg" },
