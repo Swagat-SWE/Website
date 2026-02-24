@@ -69,6 +69,10 @@
         <div> </div> <!-- empty div to balance the flex space on the left -->
 
         <div class="topbarRight">
+          <!-- Sign In button -->
+          <button class="signInBtn" type="button">
+            Sign In
+          </button>
 
           <!-- Cart button -->
           <button class="cartBtn" type="button" @click="toggleCart" aria-label="Cart">
@@ -460,12 +464,12 @@ function addToCart(item) {
   } else {
     cart.value.push({
       id: item.id,
-      category: getCategory(item),
+      category: getCategory(item),   // ✅ STEP 2 HERE
       name: item.name,
       qty: 1,
       img: item.img,
-      basePrice: base,
-      priceEach: base,
+      basePrice: menuItem.price,
+      priceEach: menuItem.price,
       custom: null,
     });
   }
@@ -581,7 +585,7 @@ const Lunch = ref([
   {
     id: "l7",
     name: "Spicy Chicken",
-    img: "/Chicken.png",
+    img: "/Tastey.png",
   },
   {
     id: "l8",
@@ -591,7 +595,6 @@ const Lunch = ref([
   {
     id: "l9",
     name: "Cheese Pizza Bagel",
-    price: 7.99,
     img: "ChessyPiz.png",
   },
   {
@@ -607,7 +610,7 @@ const Lunch = ref([
   {
     id: "l12",
     name: "Chicken Salad",
-    img: "/TT.png",
+    img: "/Chicken.png",
   },
    {
     id: "l13",
