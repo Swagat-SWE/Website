@@ -1,19 +1,32 @@
 <!-- app/pages/index.vue -->
 <template>
   <div class="page">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
+    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <div
+      v-if="mobileNavOpen"
+      class="mobileOverlay"
+      @click="closeMobileNav"
+      aria-hidden="true"
+    />
+
+    <!-- Sidebar (desktop fixed column, mobile slide-in drawer) -->
+    <aside class="sidebar" :class="{ open: mobileNavOpen }" aria-label="Sidebar navigation">
       <div class="sidebarTop">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
+
+        <!-- ✅ Mobile close button inside drawer -->
+        <button class="drawerCloseBtn" type="button" @click="closeMobileNav" aria-label="Close menu">
+          ✕
+        </button>
       </div>
 
       <nav class="nav">
-        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
-        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/contact">Contact</NuxtLink>
+        <NuxtLink class="navItem" to="/" @click="closeMobileNav">Main Page</NuxtLink>
+        <NuxtLink class="navItem" to="/food" @click="closeMobileNav">Food Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav">Drinks Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav">Contact</NuxtLink>
 
         <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
@@ -63,40 +76,50 @@
     <!-- ✅ Logging out overlay -->
     <div v-if="isLoggingOut" class="verifyOverlay" role="status" aria-live="polite">
       <div class="verifyCard">
-        <!-- while loading -->
         <div v-if="!logoutDone" class="spinner" aria-hidden="true"></div>
-    
-        <!-- after done: ✅ tick -->
+
         <div v-else class="tickWrap" aria-hidden="true">
           <svg class="tickSvg" viewBox="0 0 52 52">
             <circle class="tickCircle" cx="26" cy="26" r="24" />
             <path class="tickMark" d="M14 27 L22 35 L38 18" />
           </svg>
         </div>
-    
+
         <div class="verifyText">
-          {{ logoutDone ? "Success!" : "Logging you out…" }}
+          {{ logoutDone ? "Success!" : "Logging Out" }}
         </div>
       </div>
     </div>
 
     <!-- Main content area -->
     <main class="main">
+      <!-- ✅ Mobile-only mini brand strip -->
+      <div class="brandStrip" aria-hidden="true">
+        <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+      </div>
       <!-- Top bar -->
       <header class="topbar">
-        <div></div>
+        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
+          <span class="hamburgerIcon" aria-hidden="true">☰</span>
+        </button>
+
+        <!-- Spacer (keeps layout same on desktop) -->
+        <div class="topbarSpacer"></div>
 
         <!-- Topbar Right -->
         <div class="topbarRight">
           <div class="locationWrap">
-            <div class="locationPill">
-              <span class="pin">📍</span>
-
-              <!-- If you later want a dropdown/search, this is already wired -->
+            <button
+              class="locationPill"
+              type="button"
+              @click.stop="showLocationDropdown = !showLocationDropdown"
+              aria-label="Choose location"
+            >
+              <span class="pin">📍 Dubuque, IA</span>
               <span class="locationSelected">{{ location }}</span>
-            </div>
+            </button>
 
-            <!-- Optional dropdown UI (kept here for later use) -->
             <div v-if="showLocationDropdown" class="locationDropdown">
               <input
                 class="locationInput"
@@ -104,9 +127,8 @@
                 placeholder="Search locations…"
                 @input="showLocationDropdown = true"
               />
-              <div v-if="filteredLocations.length === 0" class="locationEmpty">
-                No matches
-              </div>
+              <div v-if="filteredLocations.length === 0" class="locationEmpty">No matches</div>
+
               <button
                 v-for="opt in filteredLocations"
                 :key="opt"
@@ -121,31 +143,22 @@
 
           <!-- Account / Sign in -->
           <div class="accountWrap">
-        <button
-          class="signInBtn"
-          type="button"
-          @click="user ? toggleAccountMenu() : signIn()"
-        >
-        <template v-if="user">
-          <span class="helloText">
-            Hello, {{ user.username }}
-          </span>
-        </template>
+            <button
+              class="signInBtn"
+              type="button"
+              @click="user ? toggleAccountMenu() : signIn()"
+            >
+              <template v-if="user">
+                <span class="helloText">Hello, {{ user.username }}</span>
+              </template>
+              <template v-else>Sign In</template>
+            </button>
 
-          <template v-else>
-            Sign In
-          </template>
-        </button>
-
-
-            <!-- Dropdown -->
             <div v-if="showAccountMenu" class="accountMenu">
-              <button class="menuItem" @click="goProfile">My Profile</button>
-              <button class="menuItem" @click="goOrders">My Orders</button>
+              <button v-if="authType !== 'guest'" class="menuItem" @click="goProfile">My Profile</button>
+              <button v-if="authType !== 'guest'" class="menuItem" @click="goOrders">My Orders</button>
               <button class="menuItem" @click="goTracking">Order Tracking</button>
-
               <div class="menuDivider"></div>
-
               <button class="menuItem danger" @click="logout">Logout</button>
             </div>
           </div>
@@ -183,12 +196,7 @@
                   </span>
                 </div>
 
-                <button
-                  class="plusBtn"
-                  type="button"
-                  aria-label="Add to cart"
-                  @click="addToCart(item)"
-                >
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -219,12 +227,7 @@
                   </span>
                 </div>
 
-                <button
-                  class="plusBtn"
-                  type="button"
-                  aria-label="Add to cart"
-                  @click="addToCart(item)"
-                >
+                <button class="plusBtn" type="button" aria-label="Add to cart" @click="addToCart(item)">
                   +
                 </button>
               </div>
@@ -271,9 +274,7 @@
           </li>
         </ul>
 
-        <button class="checkoutBtn" type="button" @click="goToCheckout">
-          Checkout
-        </button>
+        <button class="checkoutBtn" type="button" @click="goToCheckout">Checkout</button>
       </aside>
     </main>
   </div>
@@ -281,7 +282,10 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useApi } from "~/composables/useApi"; // ✅ IMPORTANT
+import { useApi } from "~/composables/useApi";
+
+const api = useApi();
+
 const isLoggingOut = ref(false);
 const logoutDone = ref(false);
 
@@ -289,34 +293,44 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/** ✅ Mobile nav */
+const mobileNavOpen = ref(false);
+function openMobileNav() {
+  mobileNavOpen.value = true;
+}
+function closeMobileNav() {
+  mobileNavOpen.value = false;
+}
 
-const api = useApi(); // ✅ IMPORTANT
+/** close mobile nav with ESC */
+function handleKeydown(e) {
+  if (e.key === "Escape") closeMobileNav();
+}
+onMounted(() => document.addEventListener("keydown", handleKeydown));
+onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 
 function signIn() {
   navigateTo("/login");
 }
 
 const user = ref(null);
+const authType = ref(null);
 const showAccountMenu = ref(false);
 
 function toggleAccountMenu() {
   showAccountMenu.value = !showAccountMenu.value;
 }
-
 function closeAccountMenu() {
   showAccountMenu.value = false;
 }
-
 function goProfile() {
   closeAccountMenu();
   navigateTo("/profile");
 }
-
 function goOrders() {
   closeAccountMenu();
   navigateTo("/ordering");
 }
-
 function goTracking() {
   closeAccountMenu();
   navigateTo("/Tracking");
@@ -324,63 +338,36 @@ function goTracking() {
 
 async function logout() {
   closeAccountMenu();
-
-  // show overlay
   logoutDone.value = false;
   isLoggingOut.value = true;
 
   try {
-    // call backend logout
     await api.post("/api/auth/logout", {});
     user.value = null;
 
-    // "buffering" feel (like your payment page)
     await sleep(1800);
     logoutDone.value = true;
     await sleep(600);
 
-    // refresh entire page (hard reload)
     window.location.reload();
   } catch (e) {
-    // hide overlay + show error if something fails
     isLoggingOut.value = false;
-    err.value = e?.message || "Logout failed";
   }
 }
 
 async function checkAuth() {
-  // ✅ MUST use api (NOT fetch("/api/me"))
   const data = await api.get("/api/me");
-  if (data?.ok && data.user) user.value = data.user;
-  else user.value = null;
+  if (data?.ok && data.user) {
+    user.value = data.user;
+    authType.value = data.type || null;
+  } else {
+    user.value = null;
+    authType.value = null;
+  }
 }
+onMounted(() => checkAuth());
 
-onMounted(() => {
-  checkAuth();
-});
-
-/** =========================
- *  Location (simple prototype)
- *  ========================= */
-const location = ref("Dubuque, Iowa");
-const locationQuery = ref("");
-const showLocationDropdown = ref(false);
-
-// Simple list (you can expand later)
-const locations = ref([
-  "Dubuque, Iowa",
-  "Cedar Rapids, Iowa",
-  "Iowa City, Iowa",
-  "Madison, Wisconsin",
-  "Chicago, Illinois",
-]);
-
-const filteredLocations = computed(() => {
-  const q = locationQuery.value.trim().toLowerCase();
-  if (!q) return locations.value.slice(0, 50);
-  return locations.value.filter((x) => x.toLowerCase().includes(q)).slice(0, 8);
-});
-
+/** Location */
 function selectLocation(opt) {
   location.value = opt;
   locationQuery.value = "";
@@ -391,27 +378,16 @@ function selectLocation(opt) {
 function handleDocClick(e) {
   const target = e.target;
 
-  // keep dropdown open if clicking inside account wrap
   if (target?.closest?.(".accountWrap")) return;
-
-  // keep dropdown open if clicking in location
   if (target?.closest?.(".locationWrap")) return;
 
   showLocationDropdown.value = false;
   showAccountMenu.value = false;
 }
+onMounted(() => document.addEventListener("click", handleDocClick));
+onBeforeUnmount(() => document.removeEventListener("click", handleDocClick));
 
-onMounted(() => {
-  document.addEventListener("click", handleDocClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleDocClick);
-});
-
-/** =========================
- *  Sidebar Review
- *  ========================= */
+/** Sidebar Review */
 const showReview = ref(false);
 const rating = ref(0);
 const hoverRating = ref(0);
@@ -432,154 +408,35 @@ function submitReview() {
   setTimeout(() => (submitted.value = false), 2000);
 }
 
-/** =========================
- *  Cart
- *  ========================= */
+/** Cart */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
-const cartCount = computed(() =>
-  cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
-);
+const cartCount = computed(() => cart.value.reduce((sum, item) => sum + (item.qty || 1), 0));
 
 function toggleCart() {
   showCart.value = !showCart.value;
 }
-
 function goToCheckout() {
   showCart.value = false;
   navigateTo("/checkout");
 }
 
-/** =========================
- *  MENU DATA
- *  ========================= */
+/** MENU DATA */
 const MENU = [
-  {
-    id: 1,
-    name: "Farm House Egg Sandwich",
-    price: 6.99,
-    calories: "680/770",
-    bagel: "Cheesy Hash",
-    ingredients: ["Eggs", "Bacon", "Smoked Ham", "Cheddar Cheese", "Country Pepper Shmear"],
-    img: "/Farmhouse.png",
-  },
-  {
-    id: 3,
-    name: "All Nighter Egg Sandwich",
-    price: 6.99,
-    calories: "900",
-    bagel: "Cheesy Hash",
-    ingredients: ["Eggs", "Bacon", "American Cheese", "Chipotle Aioli"],
-    img: "/AllNIght.png",
-  },
-  {
-    id: 2,
-    name: "Garden Avocado Egg Sandwich",
-    price: 6.39,
-    calories: "510/600",
-    bagel: "Everything",
-    ingredients: ["Eggs", "Avocado", "Tomato", "Spinach", "Roasted Tomato Spread"],
-    img: "/Garden.png",
-  },
-  {
-    id: 4,
-    name: "Breakfast Burrito",
-    price: 7.49,
-    calories: "1200",
-    bagel: "Tortilla",
-    ingredients: ["Eggs", "Bacon", "Turkey Sausage", "Shredded Cheese", "Green Chiles", "Hash Brown"],
-    img: "/Burrito.png",
-  },
-  {
-    id: 5,
-    name: "B.A.T.",
-    price: 6.59,
-    calories: "400/440",
-    bagel: "Plain Thin",
-    ingredients: ["Egg Whites", "Bacon", "Avocado", "Tomato", "Roasted Tomato Spread"],
-    img: "/BAT.png",
-  },
-  {
-    id: 6,
-    name: "Santa Fe",
-    price: 6.59,
-    calories: "420/460",
-    bagel: "Asiago Thin",
-    ingredients: ["Egg Whites", "Turkey Sausage", "Cheddar", "Salsa", "Jalapeno Shmear"],
-    img: "/SantaFe.png",
-  },
-  {
-    id: 7,
-    name: "Nova Lox",
-    price: 8.29,
-    calories: "500",
-    bagel: "Plain",
-    ingredients: ["Nova Lox", "Red Onion", "Capers", "Tomato", "Plain Shmear"],
-    img: "/Nova.png",
-  },
-  {
-    id: 8,
-    name: "T.B.A.",
-    price: 7.99,
-    calories: "580",
-    bagel: "Ciabatta",
-    ingredients: ["Turkey", "Bacon", "Avocado", "Lettuce", "Tomato", "Roasted Tomato Spread"],
-    img: "/TBA.png",
-  },
-  {
-    id: 9,
-    name: "Tasty Turkey",
-    price: 7.79,
-    calories: "510",
-    bagel: "Asiago",
-    ingredients: ["Turkey", "Spinach", "Cucumber", "Lettuce", "Tomato", "Onion"],
-    img: "/Tastey.png",
-  },
-  {
-    id: 10,
-    name: "Avocado Veg Out",
-    price: 7.29,
-    calories: "410",
-    bagel: "Sesame",
-    ingredients: ["Avocado", "Tomato", "Cucumber", "Red Onion", "Spinach", "Lettuce"],
-    img: "/Veg.png",
-  },
-  {
-    id: 11,
-    name: "Albuquerque Turkey",
-    price: 7.59,
-    calories: "680",
-    bagel: "6 Cheese",
-    ingredients: ["Turkey", "Bacon", "Cheddar", "Lettuce", "Tomato", "Green Chiles"],
-    img: "/Albuquerque.png",
-  },
-  {
-    id: 12,
-    name: "Pepperoni Chicken",
-    price: 7.59,
-    calories: "680",
-    bagel: "Ciabatta",
-    ingredients: ["Pepperoni", "Swiss", "Asiago", "Red Onion", "Spinach", "Roasted Tomato Spread"],
-    img: "/Pepperoni.png",
-  },
-  {
-    id: 13,
-    name: "Spicy Chicken",
-    price: 7.59,
-    calories: "620",
-    bagel: "Ciabatta",
-    ingredients: ["Chicken", "Bacon", "Cheddar", "Jalapenos", "Red Onion", "Jalapeno Shmear"],
-    img: "/Spicy.png",
-  },
-  {
-    id: 14,
-    name: "Cheesy Veggie Melt",
-    price: 7.09,
-    calories: "610",
-    bagel: "Ciabatta",
-    ingredients: ["Cheddar", "Swiss", "Tomato", "Spinach", "Roasted Tomato Spread"],
-    img: "/Cheesy.png",
-  },
+  { id: 1, name: "Farm House Egg Sandwich", price: 6.99, calories: "680/770", bagel: "Cheesy Hash", ingredients: ["Eggs", "Bacon", "Smoked Ham", "Cheddar Cheese", "Country Pepper Shmear"], img: "/Farmhouse.png" },
+  { id: 3, name: "All Nighter Egg Sandwich", price: 6.99, calories: "900", bagel: "Cheesy Hash", ingredients: ["Eggs", "Bacon", "American Cheese", "Chipotle Aioli"], img: "/AllNIght.png" },
+  { id: 2, name: "Garden Avocado Egg Sandwich", price: 6.39, calories: "510/600", bagel: "Everything", ingredients: ["Eggs", "Avocado", "Tomato", "Spinach", "Roasted Tomato Spread"], img: "/Garden.png" },
+  { id: 4, name: "Breakfast Burrito", price: 7.49, calories: "1200", bagel: "Tortilla", ingredients: ["Eggs", "Bacon", "Turkey Sausage", "Shredded Cheese", "Green Chiles", "Hash Brown"], img: "/Burrito.png" },
+  { id: 5, name: "B.A.T.", price: 6.59, calories: "400/440", bagel: "Plain Thin", ingredients: ["Egg Whites", "Bacon", "Avocado", "Tomato", "Roasted Tomato Spread"], img: "/BAT.png" },
+  { id: 6, name: "Santa Fe", price: 6.59, calories: "420/460", bagel: "Asiago Thin", ingredients: ["Egg Whites", "Turkey Sausage", "Cheddar", "Salsa", "Jalapeno Shmear"], img: "/SantaFe.png" },
+  { id: 7, name: "Nova Lox", price: 8.29, calories: "500", bagel: "Plain", ingredients: ["Nova Lox", "Red Onion", "Capers", "Tomato", "Plain Shmear"], img: "/Nova.png" },
+  { id: 8, name: "T.B.A.", price: 7.99, calories: "580", bagel: "Ciabatta", ingredients: ["Turkey", "Bacon", "Avocado", "Lettuce", "Tomato", "Roasted Tomato Spread"], img: "/TBA.png" },
+  { id: 9, name: "Tasty Turkey", price: 7.79, calories: "510", bagel: "Asiago", ingredients: ["Turkey", "Spinach", "Cucumber", "Lettuce", "Tomato", "Onion"], img: "/Tastey.png" },
+  { id: 10, name: "Avocado Veg Out", price: 7.29, calories: "410", bagel: "Sesame", ingredients: ["Avocado", "Tomato", "Cucumber", "Red Onion", "Spinach", "Lettuce"], img: "/Veg.png" },
+  { id: 11, name: "Albuquerque Turkey", price: 7.59, calories: "680", bagel: "6 Cheese", ingredients: ["Turkey", "Bacon", "Cheddar", "Lettuce", "Tomato", "Green Chiles"], img: "/Albuquerque.png" },
+  { id: 12, name: "Pepperoni Chicken", price: 7.59, calories: "680", bagel: "Ciabatta", ingredients: ["Pepperoni", "Swiss", "Asiago", "Red Onion", "Spinach", "Roasted Tomato Spread"], img: "/Pepperoni.png" },
+  { id: 13, name: "Spicy Chicken", price: 7.59, calories: "620", bagel: "Ciabatta", ingredients: ["Chicken", "Bacon", "Cheddar", "Jalapenos", "Red Onion", "Jalapeno Shmear"], img: "/Spicy.png" },
+  { id: 14, name: "Cheesy Veggie Melt", price: 7.09, calories: "610", bagel: "Ciabatta", ingredients: ["Cheddar", "Swiss", "Tomato", "Spinach", "Roasted Tomato Spread"], img: "/Cheesy.png" },
 ];
 
 function addToCart(input) {
@@ -590,9 +447,8 @@ function addToCart(input) {
 
   const existing = cart.value.find((x) => x.name === menuItem.name);
 
-  if (existing) {
-    existing.qty += 1;
-  } else {
+  if (existing) existing.qty += 1;
+  else {
     cart.value.push({
       name: menuItem.name,
       type: "sandwich",
@@ -607,13 +463,12 @@ function addToCart(input) {
   showCart.value = true;
 }
 
+/** remove */
 function removeFromCart(index) {
   cart.value.splice(index, 1);
 }
 
-/** =========================
- *  Page Content (images)
- *  ========================= */
+/** Page content */
 const bestSellers = ref([
   { id: 1, name: "Farm House Egg Sandwich", price: 7.19, img: "/Farmhouse.png" },
   { id: 2, name: "All Nighter Egg Sandwich", price: 6.99, img: "/AllNIght.png" },
@@ -637,64 +492,13 @@ const classics = ref([
   --cream2: #fbf8f3;
   --brown: #4b3429;
   --brown2: #6a4a3a;
-
-  /* Your plus button orange */
   --orange: #f4a51c;
   --orangeHover: #ffb42f;
-
   --yellow: #f4b316;
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-.topbarRight {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.signInBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-
-  border: 1px solid rgba(75, 52, 41, 0.12);
-  background: #fff;
-  border-radius: 16px;
-
-  padding: 8px 14px;
-  min-height: 44px;
-
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--brown);
-
-  cursor: pointer;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-  transition: all 0.15s ease;
-}
-
-.signInBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-  border-color: rgba(244, 179, 22, 0.5);
-}
-
-.logoImg {
-  width: 100%;
-  max-width: 160px;
-  height: auto;
-  display: block;
-  object-fit: contain;
-}
-
-.cartList {
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 12px;
-}
-
+/* ===== Layout ===== */
 .page {
   min-height: 100vh;
   display: grid;
@@ -703,7 +507,12 @@ const classics = ref([
   color: var(--brown);
 }
 
-/* Sidebar */
+/* ===== Mobile overlay for drawer ===== */
+.mobileOverlay {
+  display: none;
+}
+
+/* ===== Sidebar ===== */
 .sidebar {
   border-right: 1px solid rgba(75, 52, 41, 0.12);
   padding: 18px 14px;
@@ -716,19 +525,39 @@ const classics = ref([
   justify-content: center;
   margin-bottom: 14px;
   overflow: hidden;
+  position: relative;
 }
 
-.pricePill {
-  flex: 0 0 auto;
-  background: #111;
-  color: #fff;
-  font-weight: 1000;
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  letter-spacing: 0.3px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImg {
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Drawer close button (mobile only) */
+.drawerCloseBtn {
+  display: none;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  border: none;
+  background: rgba(75, 52, 41, 0.06);
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brown);
 }
 
 .nav {
@@ -796,13 +625,11 @@ const classics = ref([
   transform: translateY(0);
   transition: opacity 0.08s ease, transform 0.08s ease;
 }
-
 .starBtn.on {
   opacity: 1;
   color: var(--yellow);
   text-shadow: 0 2px 8px rgba(244, 179, 22, 0.25);
 }
-
 .starBtn:hover {
   transform: translateY(-1px);
 }
@@ -819,7 +646,6 @@ const classics = ref([
   display: block;
   margin-bottom: 6px;
 }
-
 .commentBox {
   width: 100%;
   border-radius: 12px;
@@ -841,31 +667,79 @@ const classics = ref([
   padding: 10px 12px;
   cursor: pointer;
 }
-
 .primaryBtn:hover {
   background: #ffbe21;
 }
-
 .submitted {
   margin-top: 8px;
   font-size: 0.85rem;
   opacity: 0.85;
 }
 
-/* Main */
+/* ===== Main ===== */
 .main {
   position: relative;
   padding: 20px 26px 50px;
 }
 
 .topbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 18px;
 }
 
-/* Location (simple prototype) */
+/* hamburger (mobile only) */
+.hamburgerBtn {
+  display: none;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  box-shadow: var(--cardShadow);
+}
+.hamburgerIcon {
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1;
+}
+
+.topbarSpacer {
+  min-height: 1px;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.signInBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: #fff;
+  border-radius: 16px;
+  padding: 8px 14px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--brown);
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+}
+.signInBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  border-color: rgba(244, 179, 22, 0.5);
+}
+
 .locationWrap {
   position: relative;
 }
@@ -879,6 +753,28 @@ const classics = ref([
   padding: 10px 14px;
   border-radius: 999px;
   font-weight: 900;
+  cursor: pointer;
+}
+
+.locationSelected {
+  opacity: 0.75;
+  font-weight: 900;
+}
+
+.locationDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  max-height: 312px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 8px;
+  z-index: 50;
 }
 
 .locationInput {
@@ -894,54 +790,23 @@ const classics = ref([
   margin-bottom: 8px;
 }
 
-.locationSelected {
-  opacity: 0.75;
-  font-weight: 900;
-}
-
-/* dropdown container */
-.locationDropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-
-  width: 320px;
-  max-height: 312px;
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  background: #fff;
-  border: 1px solid rgba(75, 52, 41, 0.14);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  padding: 8px;
-
-  z-index: 50;
-}
-
-/* each row */
 .locationOption {
   width: 100%;
   height: 44px;
   display: flex;
   align-items: center;
-
   text-align: left;
   border: none;
   background: transparent;
-
   padding: 0 12px;
   border-radius: 12px;
   cursor: pointer;
-
   font-weight: 900;
   color: #4b3429;
 }
-
 .locationOption:hover {
   background: rgba(244, 179, 22, 0.18);
 }
-
 .locationEmpty {
   padding: 10px;
   opacity: 0.75;
@@ -957,11 +822,9 @@ const classics = ref([
   cursor: pointer;
   box-shadow: var(--cardShadow);
 }
-
 .cartIcon {
   font-size: 18px;
 }
-
 .cartCount {
   position: absolute;
   top: -8px;
@@ -969,8 +832,8 @@ const classics = ref([
   width: 22px;
   height: 22px;
   border-radius: 999px;
-  background: var(--yellow);
-  color: #2c1b12;
+  background: #f4a51c; /* 🔥 hard-coded orange */
+  color: #111;
   font-weight: 900;
   display: grid;
   place-items: center;
@@ -978,11 +841,11 @@ const classics = ref([
   font-size: 12px;
 }
 
+/* Hero */
 .hero {
   text-align: center;
   padding: 8px 0 12px;
 }
-
 .title {
   margin: 0;
   font-size: 44px;
@@ -991,24 +854,22 @@ const classics = ref([
   color: var(--brown);
 }
 
+/* Sections */
 .section {
   margin-top: 26px;
 }
-
 .sectionHeader {
   display: flex;
   align-items: center;
   gap: 14px;
   margin-bottom: 14px;
 }
-
 .sectionTitle {
   margin: 0;
   font-size: 22px;
   font-weight: 900;
   color: var(--brown);
 }
-
 .sectionLine {
   height: 2px;
   flex: 1;
@@ -1054,11 +915,33 @@ const classics = ref([
   gap: 10px;
 }
 
+.namePrice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  max-width: 260px;
+}
+
 .tileName {
   font-size: 18px;
   font-weight: 1000;
   color: var(--brown);
   letter-spacing: 0.2px;
+}
+
+.pricePill {
+  flex: 0 0 auto;
+  background: #111;
+  color: #fff;
+  font-weight: 1000;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* plus btn */
@@ -1077,7 +960,6 @@ const classics = ref([
   place-items: center;
   box-shadow: 0 8px 18px rgba(244, 165, 28, 0.25);
 }
-
 .plusBtn:hover {
   background: var(--orangeHover);
 }
@@ -1105,7 +987,6 @@ const classics = ref([
   display: flex;
   flex-direction: column;
 }
-
 .cartPanel.open {
   right: 0;
 }
@@ -1131,17 +1012,12 @@ const classics = ref([
   opacity: 0.8;
 }
 
-.checkoutBtn {
-  width: 100%;
-  border: none;
-  background: var(--yellow);
-  color: #2c1b12;
-  font-weight: 1000;
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-  position: sticky;
-  bottom: 14px;
+.cartList {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
 }
 
 .cartItem {
@@ -1217,17 +1093,20 @@ const classics = ref([
   padding: 0;
 }
 
+.checkoutBtn {
+  width: 100%;
+  border: none;
+  background: var(--yellow);
+  color: #2c1b12;
+  font-weight: 1000;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  position: sticky;
+  bottom: 14px;
+}
 .checkoutBtn:hover {
   background: #ffbe21;
-}
-
-.namePrice {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  max-width: 260px;
 }
 
 /* account dropdown */
@@ -1277,8 +1156,8 @@ const classics = ref([
   background: rgba(176, 0, 32, 0.08);
 }
 
-/* ===== Logout overlay (same as payment verifyOverlay) ===== */
-.verifyOverlay{
+/* ===== Logout overlay ===== */
+.verifyOverlay {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.35);
@@ -1287,12 +1166,11 @@ const classics = ref([
   place-items: center;
   z-index: 9999;
 }
-
-.verifyCard{
+.verifyCard {
   width: min(420px, 92vw);
   border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.22);
-  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 24px 70px rgba(2, 6, 23, 0.18);
   padding: 18px 16px;
   display: grid;
@@ -1300,14 +1178,11 @@ const classics = ref([
   justify-items: center;
   animation: popIn 180ms ease-out;
 }
-
-.verifyText{
+.verifyText {
   font-weight: 950;
   color: rgba(15, 23, 42, 0.88);
 }
-
-/* spinner */
-.spinner{
+.spinner {
   width: 44px;
   height: 44px;
   border-radius: 999px;
@@ -1315,32 +1190,42 @@ const classics = ref([
   border-top-color: rgba(10, 132, 255, 0.95);
   animation: spin 0.9s linear infinite;
 }
-
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 @keyframes popIn {
-  from { transform: translateY(8px) scale(0.98); opacity: 0; }
-  to   { transform: translateY(0) scale(1); opacity: 1; }
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 /* tick */
-.tickWrap{
+.tickWrap {
   width: 56px;
   height: 56px;
   display: grid;
   place-items: center;
 }
-.tickSvg{ width: 56px; height: 56px; }
-
-.tickCircle{
+.tickSvg {
+  width: 56px;
+  height: 56px;
+}
+.tickCircle {
   fill: none;
-  stroke: rgba(34,197,94,0.25);
+  stroke: rgba(34, 197, 94, 0.25);
   stroke-width: 4;
   stroke-dasharray: 151;
   stroke-dashoffset: 151;
   animation: circleDraw 320ms ease-out forwards;
 }
-
-.tickMark{
+.tickMark {
   fill: none;
   stroke: #22c55e;
   stroke-width: 5;
@@ -1350,14 +1235,36 @@ const classics = ref([
   stroke-dashoffset: 48;
   animation: tickDraw 260ms 220ms ease-out forwards;
 }
-
-@keyframes circleDraw{ to { stroke-dashoffset: 0; } }
-@keyframes tickDraw{ to { stroke-dashoffset: 0; } }
-
-/* Responsive */
+@keyframes circleDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes tickDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.brandStrip {
+  display: none; /* ✅ hidden on desktop */
+}
+.brandStripLogo {
+  display: block;
+}
+/* ===== Responsive ===== */
 @media (max-width: 980px) {
   .page {
     grid-template-columns: 220px 1fr;
+  }
+
+  .tileGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+
+  .tileImg {
+    width: 100%;
   }
 }
 
@@ -1365,18 +1272,233 @@ const classics = ref([
   .page {
     grid-template-columns: 1fr;
   }
+
+  /* ✅ Topbar mobile layout */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .hamburgerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbarRight {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto auto; /* location | sign in | cart */
+    gap: 10px;
+    align-items: center;
+  }
+
+  .locationPill {
+    width: 100%;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+
+  .locationSelected {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .signInBtn {
+    padding: 8px 10px;
+    border-radius: 14px;
+    font-size: 14px;
+  }
+
+  .cartBtn {
+    padding: 9px 10px;
+    border-radius: 14px;
+  }
+
+  /* ✅ Mobile drawer behavior */
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;
+  }
+
   .sidebar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 10;
-    border-right: none;
-    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    left: 0;
+    height: 100vh;
+    width: min(320px, 88vw);
+    z-index: 100;
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.18);
+    border-right: 1px solid rgba(75, 52, 41, 0.12);
   }
-  .tileGrid {
-    grid-template-columns: 1fr;
+
+  .sidebar.open {
+    transform: translateX(0);
   }
+
+  .drawerCloseBtn {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .main {
+    padding: 14px 14px 44px;
+  }
+
+  .title {
+    font-size: 34px;
+    letter-spacing: 1px;
+  }
+
+
+  .tileCard {
+    width: 100%;
+  }
+
+  .tileImg {
+    width: 100%;
+  }
+
   .locationDropdown {
-    min-width: 260px;
+    width: min(320px, 86vw);
   }
+  /* Smaller image container on mobile */
+  .tileImg {
+    width: 100%;
+    margin: 0;
+    aspect-ratio: 1 / 1;   /* keep it square like the pretty grid */
+  }
+
+   /* ✅ Mobile: Name wraps, but Price + Plus stay on same line */
+  .tileNameRow {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;   /* price left | plus right */
+  grid-template-rows: auto auto;     /* name row | price row */
+  column-gap: 10px;
+  row-gap: 8px;
+  align-items: start;
+  }
+
+  .tileName {
+    grid-row: 1;
+  }
+
+  .pricePill {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  font-size: 12px;
+  padding: 5px 9px;
+  }
+
+  .plusBtn {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: center;
+  
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    border-radius: 9px;
+  }
+
+  .tileName {
+  grid-column: 1 / -1;              /* span full width */
+  grid-row: 1;
+  font-size: 13px;
+  line-height: 1.15;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  }
+  
+  /* ✅ Mobile: Name on top, then Price + Plus on same row */
+.tileFooter {
+  padding-top: 6px;
+  width: 100%;
+}
+
+.tileNameRow {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto; /* left (price) | right (+) */
+  grid-template-rows: auto auto;   /* row1: name | row2: price/+ */
+  column-gap: 10px;
+  row-gap: 8px;
+  align-items: start;
+}
+
+/* ✅ magic: makes the children behave as if they are direct kids of tileNameRow */
+.namePrice {
+  display: contents;
+}
+
+.tileName {
+  grid-column: 1 / -1; /* span full width */
+  grid-row: 1;
+  font-size: 13px;
+  line-height: 1.15;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pricePill {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  font-size: 12px;
+  padding: 5px 9px;
+}
+
+.plusBtn {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  align-self: center;
+
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  border-radius: 9px;
+}
+/* ===== Mini Brand Strip (mobile only) ===== */
+.brandStrip{
+  display: flex;
+  height: 58px;
+  background: #f6e28a;
+  border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+
+  /* match your .main padding on mobile */
+  margin: -14px -14px 12px;
+}
+
+.brandStripLogo{
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
+}
+
 }
 </style>

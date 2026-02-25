@@ -84,6 +84,8 @@ import { useApi } from "~/composables/useApi"
 const showDeleteModal = ref(false);
 const deleting = ref(false);
 
+const api = useApi();
+
 function deleteAccount() {
   showDeleteModal.value = true;
 }
@@ -96,14 +98,9 @@ async function confirmDelete() {
   deleting.value = true;
 
   try {
-    const res = await fetch("/api/auth/delete", {
-      method: "DELETE",
-      credentials: "include"
-    });
+   const data = await api.del("/api/auth/delete");
 
-    const data = await res.json();
-
-    if (data?.ok) {
+    if (data.ok) {
       setTimeout(() => {
         window.location.href = "/";
       }, 800);
@@ -124,18 +121,15 @@ const memberSince = ref("")
 const location = ref("Dubuque, Iowa")
 
 onMounted(async () => {
-  const res = await fetch("/api/me", {
-    credentials: "include"
-  });
+  const data = await api.get("/api/me");
 
-  const data = await res.json();
-
-  if (data?.ok && data.user) {
+  if (data.ok && data.user) {
     user.value = data.user;
   } else {
     navigateTo("/login");
   }
 });
+
 
 function goHome() {
   navigateTo("/")

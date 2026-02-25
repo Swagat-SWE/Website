@@ -314,9 +314,27 @@ app.post("/api/guest/logout", async (req, res) => {
 // WHO AM I
 // -------------------
 app.get("/api/me", (req, res) => {
-  if (req.session.user) return res.json({ ok: true, type: "user", user: req.session.user });
-  if (req.session.guest) return res.json({ ok: true, type: "guest", guest: req.session.guest });
-  return res.status(401).json({ ok: false, type: null });
+  if (req.session.user) {
+    return res.json({
+      ok: true,
+      type: "user",
+      user: { ...req.session.user, role: "user" },
+    });
+  }
+
+  if (req.session.guest) {
+    return res.json({
+      ok: true,
+      type: "guest",
+      user: {
+        id: req.session.guest.id,
+        username: req.session.guest.name, // shows in "Hello, ___"
+        role: "guest",
+      },
+    });
+  }
+
+  return res.status(401).json({ ok: false, type: null, user: null });
 });
 
 // 404
