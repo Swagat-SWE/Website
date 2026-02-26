@@ -1,5 +1,6 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  modules: ['@pinia/nuxt'],
   runtimeConfig: {
     public: {
       // On Render (Website service) set:
