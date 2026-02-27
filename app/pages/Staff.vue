@@ -19,9 +19,13 @@
       <label>Password</label>
       <input v-model="staffPassword" type="password" class="input" placeholder="Password" />
 
-      <button class="primaryBtn" @click="handleStaffLogin">
-        Log In
-      </button>
+     <button
+      class="primaryBtn"
+      :disabled="isStaffLoggingIn"
+      @click="handleStaffLogin"
+    >
+      {{ isStaffLoggingIn ? "Logging in..." : "Log In" }}
+    </button>
 
       <p v-if="staffError" class="errorText">{{ staffError }}</p>
     </div>
@@ -164,6 +168,7 @@ const staffUser = ref("")
 const activeTab = ref<"availability" | "orders" | "performance">("availability")
 const showStaffMenu = ref(false)
 const isStaffLoggingOut = ref(false)
+const isStaffLoggingIn = ref(false)
 const staffLogoutDone = ref(false)
 
 function sleep(ms: number) {
@@ -220,7 +225,10 @@ onBeforeUnmount(() => {
 
 // When staff clicks login button, use backend staff login
 async function handleStaffLogin() {
+  if (isStaffLoggingIn.value) return
+
   staffError.value = ""
+  isStaffLoggingIn.value = true
 
   try {
     const api = useApi()
@@ -239,6 +247,8 @@ async function handleStaffLogin() {
     staffError.value = ""
   } catch (e) {
     staffError.value = "Backend not running"
+  } finally {
+    isStaffLoggingIn.value = false
   }
 }
 
@@ -439,6 +449,10 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
   color: white;
   font-weight: 1000;
   cursor: pointer;
+}
+.primaryBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .errorText {
