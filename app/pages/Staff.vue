@@ -1,10 +1,55 @@
 <!-- app/pages/Staff.vue -->
 <template>
-  <div class="page">
+  <!-- ================= LOGIN SCREEN ================= -->
+  <div v-if="!staffLoggedIn" class="loginPage">
+    <div class="card staffLoginCard">
+      <div class="staffLoginHeader">
+      <h2 class="staffLoginTitle">Staff Login</h2>    
+
+      <img
+        src="/Logo.png"
+        alt="Einstein Bros Logo"
+        class="staffLoginLogo"
+      />
+    </div>
+
+      <label>Username</label>
+      <input v-model="staffUsername" class="input" placeholder="Staff username" />
+
+      <label>Password</label>
+      <input v-model="staffPassword" type="password" class="input" placeholder="Password" />
+
+      <button class="primaryBtn" @click="handleStaffLogin">
+        Log In
+      </button>
+
+      <p v-if="staffError" class="errorText">{{ staffError }}</p>
+    </div>
+  </div>
+
+  <!-- ================= REAL STAFF PAGE ================= -->
+  <div v-else class="page">
+  <!-- ✅ Logging out overlay -->
+  <div v-if="isStaffLoggingOut" class="verifyOverlay" role="status" aria-live="polite">
+    <div class="verifyCard">
+      <div v-if="!staffLogoutDone" class="spinner" aria-hidden="true"></div>
+  
+      <div v-else class="tickWrap" aria-hidden="true">
+        <svg class="tickSvg" viewBox="0 0 52 52">
+          <circle class="tickCircle" cx="26" cy="26" r="24" />
+          <path class="tickMark" d="M14 27 L22 35 L38 18" />
+        </svg>
+      </div>
+  
+      <div class="verifyText">
+        {{ staffLogoutDone ? "Success!" : "Logging Out" }}
+      </div>
+    </div>
+  </div>
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebarTop">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+        <NuxtLink to="/" class="logoLink">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
       </div>
@@ -18,7 +63,6 @@
         <button
           class="staffNavBtn"
           :class="{ active: activeTab === 'availability' }"
-          type="button"
           @click="activeTab = 'availability'"
         >
           Availability
@@ -27,40 +71,50 @@
         <button
           class="staffNavBtn"
           :class="{ active: activeTab === 'orders' }"
-          type="button"
           @click="activeTab = 'orders'"
         >
           Orders
         </button>
 
-        <!-- need to change this part below to go to performance page-->
         <button
           class="staffNavBtn"
           :class="{ active: activeTab === 'performance' }"
-          type="button"
           @click="activeTab = 'performance'"
         >
           Performance
         </button>
       </nav>
-
-     <!---- <nav class="nav"> 
-        <NuxtLink class="navItem" to="/">Main Page</NuxtLink>
-        <NuxtLink class="navItem" to="/food">Food Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/drinks">Drinks Menu</NuxtLink>
-        <NuxtLink class="navItem" to="/checkout">Checkout</NuxtLink>
-        <NuxtLink class="navItem" to="/tracking">Tracking</NuxtLink>
-      </nav>  -->
     </aside>
 
     <!-- Main -->
     <main class="main">
-      <header class="topbar">
-        <h1 class="title">Einstein Bros</h1>
-        <button class="ghostBtn" type="button" @click="navigateTo('/')">Back</button>
-      </header>
+    <header class="topbar">
+      <h1 class="title">Einstein Bros</h1>
+    
+      <div class="staffAccountWrap">
+        <button
+          class="ghostBtn"
+          @click="showStaffMenu = !showStaffMenu"
+        >
+          Hello Staff, {{ staffUser }}
+        </button>
+    
+        <div v-if="showStaffMenu" class="staffAccountMenu">
+    
+          <div class="menuDivider"></div>
+    
+          <button
+          class="menuItem danger"
+          :disabled="isStaffLoggingOut"
+          @click="staffLogout"
+        >
+          {{ isStaffLoggingOut ? "Logging out…" : "Logout" }}
+        </button>
+        </div>
+      </div>
+    </header>
 
-      <!-- ===================== AVAILABILITY TAB ===================== -->
+      <!-- AVAILABILITY -->
       <section v-if="activeTab === 'availability'" class="card">
         <div class="sectionHeader">
           <h2>AVAILABILITY</h2>
@@ -77,10 +131,9 @@
                 :key="it.id"
                 class="availItemBtn"
                 :class="availability.getStatus(it.name)"
-                type="button"
                 @click="availability.toggle(it.name)"
               >
-                <div class="availItemName">{{ it.name }}</div>
+                <div>{{ it.name }}</div>
                 <div class="availItemStatus">
                   {{ availability.getStatus(it.name) === "red" ? "Unavailable" : "Available" }}
                 </div>
@@ -88,222 +141,323 @@
             </div>
           </div>
         </div>
-
-        <div class="legend">
-          <span class="pill green">Green = Available (default)</span>
-          <span class="pill red">Red = Unavailable</span>
-
-          <button class="miniBtn" type="button" @click="availability.resetAll()">
-            Reset all (back to green)
-          </button>
-        </div>
       </section>
 
-      <!-- ===================== ORDERS TAB ===================== -->
+      <!-- ORDERS -->
       <section v-else class="card">
-        <div class="sectionHeader">
-          <h2>ORDERS</h2>
-          <div class="muted">Layout only (fake orders)</div>
-        </div>
-
-        <div class="kanban">
-          <div class="col" v-for="col in orderColumns" :key="col.key">
-            <div class="colHeader">{{ col.label }}</div>
-
-            <div v-if="ordersByStatus(col.key).length === 0" class="emptyCol">
-              No orders
-            </div>
-
-            <article v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
-              <div class="orderTop">
-                <div class="orderTitle">
-                  <b>Order {{ o.id }}</b>
-                  <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
-                </div>
-              </div>
-
-              <ul class="orderItems">
-                <li v-for="(it, idx) in o.items" :key="idx">{{ it }}</li>
-              </ul>
-
-              <div class="orderBtns">
-                <button
-                  class="miniBtn"
-                  type="button"
-                  @click="moveOrder(o.id)"
-                  :disabled="o.status === 'completed'"
-                >
-                  Move →
-                </button>
-
-                <button class="miniBtn ghost" type="button" @click="openDetails(o)">
-                  Details
-                </button>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <!-- DETAILS MODAL -->
-        <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
-          <div class="modal" @click.stop>
-            <div class="modalHeader">
-              <h3>Order {{ detailsOrder?.id }}</h3>
-              <button class="xBtn" type="button" @click="closeDetails">✕</button>
-            </div>
-
-            <div class="modalBody" v-if="detailsOrder">
-              <div class="muted">Placed: {{ detailsOrder.time }} • {{ detailsOrder.date }}</div>
-
-              <div class="modalSectionTitle">Items</div>
-              <ul class="modalList">
-                <li v-for="(it, idx) in detailsOrder.items" :key="idx">{{ it }}</li>
-              </ul>
-
-              <div class="modalFooter">
-                <button class="ghostBtn" type="button" @click="closeDetails">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <h2>ORDERS</h2>
       </section>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-// ✅ Staff.vue is in /app/pages and menu.ts is in /app/data
-import { MENU_ITEMS, type MenuItem } from "../data/menu";
 
-const staffUser = "1234";
-const activeTab = ref<"availability" | "orders" | "performance">("availability");
+import { MENU_ITEMS, type MenuItem } from "../data/menu"
 
-const availability = useAvailability();
+const staffLoggedIn = ref(false)
+const staffUsername = ref("")
+const staffPassword = ref("")
+const staffError = ref("")
 
-/**
- * ✅ Uses menu.ts categories.
- * ✅ Uses it.name as the availability key (matches Food page).
- */
-const availabilityGroups = computed<Record<string, MenuItem[]>>(() => {
-  const groups: Record<string, MenuItem[]> = {};
+const staffUser = ref("")
+const activeTab = ref<"availability" | "orders" | "performance">("availability")
+const showStaffMenu = ref(false)
+const isStaffLoggingOut = ref(false)
+const staffLogoutDone = ref(false)
 
-  for (const item of MENU_ITEMS) {
-    const cat = item.category || "Other";
-    if (!groups[cat]) groups[cat] = [];
-    groups[cat].push(item);
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
+function toggleStaffMenu() {
+  showStaffMenu.value = !showStaffMenu.value
+}
+
+function closeStaffMenu() {
+  showStaffMenu.value = false
+}
+
+const availability = useAvailability()
+
+import { computed, ref, onMounted, onBeforeUnmount } from "vue"
+// When Staff page loads, check session + role
+onMounted(async () => {
+  try {
+    const res = await fetch("/api/me", { credentials: "include" })
+    if (!res.ok) return
+
+    const data = await res.json()
+
+    if (data?.user?.role === "STAFF") {
+      staffLoggedIn.value = true
+      staffUser.value = data.user.username
+      staffError.value = ""
+    }
+  } catch (e) {
+    // silently fail
   }
+})
 
-  return groups;
-});
-
-const GROUP_ORDER = [
-  "Breakfast",
-  "Lunch",
-  "Bagels",
-  "Smears",
-  "Other",
-  "Misc.",
-  "Hot Drinks",
-  "Cold Drinks",
-  "Tea and Smoothies",
-  "Bottled Drinks",
-];
-
-const orderedGroupKeys = computed(() => {
-  const keys = Object.keys(availabilityGroups.value);
-  return keys.sort((a, b) => {
-    const ia = GROUP_ORDER.indexOf(a);
-    const ib = GROUP_ORDER.indexOf(b);
-    const ra = ia === -1 ? 999 : ia;
-    const rb = ib === -1 ? 999 : ib;
-    if (ra !== rb) return ra - rb;
-    return a.localeCompare(b);
-  });
-});
-
-/** ----------------- Fake Orders (Move works) ----------------- */
-const orderColumns = [
-  { key: "new", label: "New" },
-  { key: "progress", label: "In Progress" },
-  { key: "ready", label: "Ready" },
-  { key: "completed", label: "Completed" },
-] as const;
-
-type OrderStatus = (typeof orderColumns)[number]["key"];
-
-type Order = {
-  id: string;
-  status: OrderStatus;
-  time: string;
-  date: string;
-  items: string[];
-};
-
-const orders = ref<Order[]>([
-  {
-    id: "1234",
-    status: "new",
-    time: "7:30am",
-    date: "1/23/24",
-    items: ["1 Bagel, toasted", "2 Cold brews, small"],
-  },
-  {
-    id: "1235",
-    status: "progress",
-    time: "7:34am",
-    date: "1/23/24",
-    items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"],
-  },
-]);
-
-function ordersByStatus(statusKey: OrderStatus) {
-  return orders.value.filter((o) => o.status === statusKey);
+// Close dropdown when clicking outside
+function handleStaffDocClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (target?.closest(".staffAccountWrap")) return
+  showStaffMenu.value = false
 }
 
-const flow: OrderStatus[] = ["new", "progress", "ready", "completed"];
+// Register + cleanup document click listener
+onMounted(() => {
+  document.addEventListener("click", handleStaffDocClick)
+})
 
-function moveOrder(orderId: string) {
-  const order = orders.value.find((o) => o.id === orderId);
-  if (!order) return;
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleStaffDocClick)
+})
 
-  const i = flow.indexOf(order.status);
-  if (i === -1) return;
 
-  const nextKey = flow[i + 1];
-  if (!nextKey) return;
+// When staff clicks login button, use backend staff login
+async function handleStaffLogin() {
+  staffError.value = ""
 
-  order.status = nextKey;
+  try {
+    const res = await fetch("/api/staff/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        username: staffUsername.value,
+        password: staffPassword.value,
+      }),
+    })
+
+    const data = await res.json().catch(() => ({}))
+
+    if (!res.ok) {
+      staffError.value = data.error || "Login failed"
+      return
+    }
+
+    staffLoggedIn.value = true
+    staffUser.value = data?.user?.username || staffUsername.value
+    staffError.value = ""
+  } catch (e) {
+    staffError.value = "Backend not running"
+  }
 }
 
-/** Details modal */
-const detailsOpen = ref(false);
-const detailsOrder = ref<Order | null>(null);
+const availabilityGroups = computed<Record<string, MenuItem[]>>(() => {
+  const groups: Record<string, MenuItem[]> = {}
+  for (const item of MENU_ITEMS) {
+    const cat = item.category || "Other"
+    if (!groups[cat]) groups[cat] = []
+    groups[cat].push(item)
+  }
+  return groups
+})
 
-function openDetails(order: Order) {
-  detailsOrder.value = order;
-  detailsOpen.value = true;
+async function staffLogout() {
+  if (isStaffLoggingOut.value) return
+
+  showStaffMenu.value = false
+  staffLogoutDone.value = false
+  isStaffLoggingOut.value = true
+
+  try {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    })
+
+    // show spinner a bit
+    await sleep(1200)
+
+    // switch to tick
+    staffLogoutDone.value = true
+    await sleep(600)
+
+    // now fully reset staff state
+    staffLoggedIn.value = false
+    staffUser.value = ""
+    staffUsername.value = ""
+    staffPassword.value = ""
+  } catch (e) {
+    // if logout fails, hide overlay
+  } finally {
+    isStaffLoggingOut.value = false
+    staffLogoutDone.value = false
+  }
 }
-function closeDetails() {
-  detailsOpen.value = false;
-  detailsOrder.value = null;
-}
+
+const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 </script>
 
 <style scoped>
-:root {
-  --cream: #f6f0e8;
-  --cream2: #fbf8f3;
-  --brown: #4b3429;
-  --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+.staffLoginHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
+
+.staffLoginTitle {
+  margin: 0;
+  font-weight: 1100;
+}
+
+.staffLoginLogo {
+  width: 84px;
+  height: auto;
+  object-fit: contain;
+}
+.loginPage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #fbf8f3, #f6f0e8);
+}
+.staffAccountWrap {
+  position: relative;
+}
+/* ===== Logout overlay (same as index.vue) ===== */
+.verifyOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+.verifyCard {
+  width: min(420px, 92vw);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.18);
+  padding: 18px 16px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  animation: popIn 180ms ease-out;
+}
+.verifyText {
+  font-weight: 950;
+  color: rgba(15, 23, 42, 0.88);
+}
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 4px solid rgba(15, 23, 42, 0.14);
+  border-top-color: rgba(10, 132, 255, 0.95);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes popIn {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* tick */
+.tickWrap {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+}
+.tickSvg {
+  width: 56px;
+  height: 56px;
+}
+.tickCircle {
+  fill: none;
+  stroke: rgba(34, 197, 94, 0.25);
+  stroke-width: 4;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: circleDraw 320ms ease-out forwards;
+}
+.tickMark {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: tickDraw 260ms 220ms ease-out forwards;
+}
+@keyframes circleDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes tickDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.staffAccountMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 160px;
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 50;
+}
+.staffLoginCard {
+  max-width: 420px;
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.input {
+  border-radius: 12px;
+  border: 1px solid rgba(75, 52, 41, 0.2);
+  padding: 10px;
+  font-weight: 900;
+}
+
+.primaryBtn {
+  border-radius: 12px;
+  border: none;
+  padding: 10px;
+  background: #4b3429;
+  color: white;
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+.errorText {
+  color: red;
+  font-weight: 900;
+}
+
+/* ===== ORIGINAL DESIGN BELOW (UNCHANGED) ===== */
 
 .page {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 260px 1fr;
-  background: linear-gradient(180deg, var(--cream2), var(--cream));
-  color: var(--brown);
+  background: linear-gradient(180deg, #fbf8f3, #f6f0e8);
+  color: #4b3429;
 }
 
 /* Sidebar */
@@ -391,6 +545,60 @@ function closeDetails() {
   justify-content: space-between;
   margin-bottom: 14px;
 }
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.accountWrap {
+  position: relative;
+}
+
+.signInBtn {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(75, 52, 41, 0.12);
+  background: #fff;
+  border-radius: 16px;
+  padding: 8px 14px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #4b3429;
+  cursor: pointer;
+  box-shadow: var(--cardShadow);
+}
+
+.accountMenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 160px;
+  background: #fff;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 999;
+}
+
+.menuItem {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+  color: #4b3429;
+}
+
+.menuItem:hover {
+  background: rgba(244, 179, 22, 0.18);
+}
+
 .title {
   margin: 0;
   font-size: 46px;

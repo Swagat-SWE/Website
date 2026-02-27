@@ -12,6 +12,7 @@ model User {
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
+  role      Role     @default(USER)
 }
 
 model Guest {
@@ -19,4 +20,9 @@ model Guest {
   name      String
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+enum Role {
+  USER
+  STAFF
 }
