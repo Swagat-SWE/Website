@@ -241,10 +241,75 @@
         </div>
       </section>
 
-      <!-- ORDERS -->
-      <section v-else class="card">
-        <h2>ORDERS</h2>
-      </section>
+<!-- ===================== ORDERS TAB ===================== -->
+<section v-else-if="activeTab === 'orders'" class="card">
+  <div class="sectionHeader">
+    <h2>ORDERS</h2>
+    <div class="muted">Layout only (fake orders)</div>
+  </div>
+
+  <!-- Kanban -->
+  <div class="kanban">
+    <div class="col" v-for="col in orderColumns" :key="col.key">
+      <div class="colHeader">{{ col.label }}</div>
+
+      <div v-if="ordersByStatus(col.key).length === 0" class="emptyCol">
+        No orders
+      </div>
+
+      <article v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
+        <div class="orderTop">
+          <div class="orderTitle">
+            <b>Order {{ o.id }}</b>
+            <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
+          </div>
+        </div>
+
+        <ul class="orderItems">
+          <li v-for="(it, idx) in o.items" :key="idx">{{ it }}</li>
+        </ul>
+
+        <div class="orderBtns">
+          <button
+            class="miniBtn"
+            type="button"
+            @click="moveOrder(o.id)"
+            :disabled="o.status === 'completed'"
+          >
+            Move →
+          </button>
+
+          <button class="miniBtn ghost" type="button" @click="openDetails(o)">
+            Details
+          </button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- DETAILS MODAL -->
+  <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
+    <div class="modal" @click.stop>
+      <div class="modalHeader">
+        <h3>Order {{ detailsOrder?.id }}</h3>
+        <button class="xBtn" type="button" @click="closeDetails">✕</button>
+      </div>
+
+      <div class="modalBody" v-if="detailsOrder">
+        <div class="muted">Placed: {{ detailsOrder.time }} • {{ detailsOrder.date }}</div>
+
+        <div class="modalSectionTitle">Items</div>
+        <ul class="modalList">
+          <li v-for="(it, idx) in detailsOrder.items" :key="idx">{{ it }}</li>
+        </ul>
+
+        <div class="modalFooter">
+          <button class="ghostBtn" type="button" @click="closeDetails">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
     </main>
   </div>
 </template>
@@ -480,7 +545,73 @@ async function staffLogout() {
     staffLogoutDone.value = false
   }
 }
+/** ----------------- Fake Orders (Move works) ----------------- */
+const orderColumns = [
+  { key: "new", label: "New" },
+  { key: "progress", label: "In Progress" },
+  { key: "ready", label: "Ready" },
+  { key: "completed", label: "Completed" },
+] as const
 
+type OrderStatus = (typeof orderColumns)[number]["key"]
+
+type Order = {
+  id: string
+  status: OrderStatus
+  time: string
+  date: string
+  items: string[]
+}
+
+const orders = ref<Order[]>([
+  {
+    id: "1234",
+    status: "new",
+    time: "7:30am",
+    date: "1/23/24",
+    items: ["1 Bagel, toasted", "2 Cold brews, small"],
+  },
+  {
+    id: "1235",
+    status: "progress",
+    time: "7:34am",
+    date: "1/23/24",
+    items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"],
+  },
+])
+
+function ordersByStatus(statusKey: OrderStatus) {
+  return orders.value.filter((o) => o.status === statusKey)
+}
+
+const flow: OrderStatus[] = ["new", "progress", "ready", "completed"]
+
+function moveOrder(orderId: string) {
+  const order = orders.value.find((o) => o.id === orderId)
+  if (!order) return
+
+  const i = flow.indexOf(order.status)
+  if (i === -1) return
+
+  const nextKey = flow[i + 1]
+  if (!nextKey) return // already completed
+
+  order.status = nextKey
+}
+
+/** Details modal */
+const detailsOpen = ref(false)
+const detailsOrder = ref<Order | null>(null)
+
+function openDetails(order: Order) {
+  detailsOrder.value = order
+  detailsOpen.value = true
+}
+
+function closeDetails() {
+  detailsOpen.value = false
+  detailsOrder.value = null
+}
 const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 </script>
 
@@ -1243,7 +1374,12 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
     /* match your .main padding style on mobile */
     margin: -14px -14px 12px;
   }
-
+.brandStripLogo{
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
   .staffBrandStrip {
     display: flex;
     height: 58px;
