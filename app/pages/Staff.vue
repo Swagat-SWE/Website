@@ -184,14 +184,16 @@ import { computed, ref, onMounted, onBeforeUnmount } from "vue"
 // When Staff page loads, check session + role
 onMounted(async () => {
   try {
-    const res = await fetch("/api/me", { credentials: "include" })
-    if (!res.ok) return
+    const api = useApi()
+    const me = await api.get("/api/me")
 
-    const data = await res.json()
+    // if not logged in, just stop
+    if (!me.ok) return
 
-    if (data?.user?.role === "STAFF") {
+    // only allow STAFF
+    if (me.user?.role === "STAFF") {
       staffLoggedIn.value = true
-      staffUser.value = data.user.username
+      staffUser.value = me.user.username
       staffError.value = ""
     }
   } catch (e) {
@@ -221,25 +223,19 @@ async function handleStaffLogin() {
   staffError.value = ""
 
   try {
-    const res = await fetch("/api/staff/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        username: staffUsername.value,
-        password: staffPassword.value,
-      }),
+    const api = useApi()
+    const data = await api.post("/api/staff/login", {
+      username: staffUsername.value,
+      password: staffPassword.value,
     })
 
-    const data = await res.json().catch(() => ({}))
-
-    if (!res.ok) {
+    if (!data.ok) {
       staffError.value = data.error || "Login failed"
       return
     }
 
     staffLoggedIn.value = true
-    staffUser.value = data?.user?.username || staffUsername.value
+    staffUser.value = (data as any)?.user?.username || staffUsername.value
     staffError.value = ""
   } catch (e) {
     staffError.value = "Backend not running"
