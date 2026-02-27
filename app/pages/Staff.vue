@@ -1,8 +1,12 @@
 <!-- app/pages/Staff.vue -->
 <template>
   <!-- ================= LOGIN SCREEN ================= -->
-  <div v-if="!staffLoggedIn" class="loginPage">
-    <div class="card staffLoginCard">
+    <div v-if="!staffLoggedIn" class="loginPage">
+      <!-- Mobile-only mini brand strip -->
+      <div class="brandStrip" aria-hidden="true">
+        <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+      </div>
+      <div class="card staffLoginCard">
       <div class="staffLoginHeader">
       <h2 class="staffLoginTitle">Staff Login</h2>    
 
@@ -28,11 +32,84 @@
     </button>
 
       <p v-if="staffError" class="errorText">{{ staffError }}</p>
+      <p class="muted">
+        Forgot your password?
+        <button
+          type="button"
+          class="linkBtn"
+          @click="
+            showStaffReset = !showStaffReset;
+            staffResetMsg = '';
+            staffResetLoading = false;
+            staffResetChecked = false;
+            staffResetUsername = '';
+            staffNewPassword = '';
+            staffConfirmPassword = '';
+          "
+        >
+          Reset it here
+        </button>
+      </p>
+      
+    <div v-if="showStaffReset" class="resetBox">
+      <label>Username</label>
+      <input
+        v-model="staffResetUsername"
+        class="input"
+        placeholder="Staff username"
+        maxlength="10"
+      />
+    
+      <button
+        class="primaryBtn"
+        :disabled="!staffResetUsername.trim() || staffResetLoading"
+        @click="checkStaffUsername"
+      >
+        {{ staffResetLoading ? "Checking..." : "Check" }}
+      </button>
+    
+      <p v-if="staffResetMsg" class="errorText">{{ staffResetMsg }}</p>
+      <!-- ✅ Step B: only show after username is verified -->
+      <div v-if="staffResetChecked" class="resetInner">
+        <label>New Password</label>
+        <input
+          v-model="staffNewPassword"
+          class="input"
+          type="password"
+          placeholder="New password"
+          maxlength="12"
+        />
+      
+        <label>Confirm New Password</label>
+        <input
+          v-model="staffConfirmPassword"
+          class="input"
+          type="password"
+          placeholder="Confirm new password"
+          maxlength="12"
+        />
+      
+        <button
+          class="primaryBtn"
+          :disabled="!staffNewPassword || !staffConfirmPassword || staffResetLoading"
+          @click="resetStaffPassword"
+        >
+          {{ staffResetLoading ? "Resetting..." : "Reset Password" }}
+        </button>
+      </div>
+    </div>
     </div>
   </div>
 
   <!-- ================= REAL STAFF PAGE ================= -->
   <div v-else class="page">
+    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <div
+      v-if="staffMobileNavOpen"
+      class="mobileOverlay"
+      @click="closeStaffMobileNav"
+      aria-hidden="true"
+    />
   <!-- ✅ Logging out overlay -->
   <div v-if="isStaffLoggingOut" class="verifyOverlay" role="status" aria-live="polite">
     <div class="verifyCard">
@@ -51,7 +128,7 @@
     </div>
   </div>
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ open: staffMobileNavOpen }" aria-label="Staff sidebar">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
@@ -91,11 +168,28 @@
     </aside>
 
     <!-- Main -->
-    <main class="main">
-    <header class="topbar">
-      <h1 class="title">Einstein Bros</h1>
-    
+    <main class="main">    
+
+      <!-- ✅ Mobile-only yellow Einstein strip -->
+      <div class="staffBrandStrip" aria-hidden="true">
+        <img class="staffBrandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+      </div>    
+
+      <header class="topbar">
+      <!-- ✅ Mobile hamburger (shows only on phone) -->
+      <button
+        class="hamburgerBtn"
+        type="button"
+        @click="openStaffMobileNav"
+        aria-label="Open staff menu"
+      >
+        <span class="hamburgerIcon" aria-hidden="true">☰</span>
+      </button>    
+
+      <h1 class="title">Einstein Bros</h1>    
+
       <div class="staffAccountWrap">
+    
         <button
           class="ghostBtn"
           @click="showStaffMenu = !showStaffMenu"
@@ -170,6 +264,23 @@ const showStaffMenu = ref(false)
 const isStaffLoggingOut = ref(false)
 const isStaffLoggingIn = ref(false)
 const staffLogoutDone = ref(false)
+const showStaffReset = ref(false)
+const staffNewPassword = ref("")
+const staffResetLoading = ref(false)
+const staffResetMsg = ref("")
+const staffResetChecked = ref(false)       // did we already verify username?
+const staffConfirmPassword = ref("")       // confirm password box (later step)
+const staffResetUsername = ref("")         // separate input just for reset username
+
+// ✅ Mobile staff drawer
+const staffMobileNavOpen = ref(false)
+function openStaffMobileNav() {
+  staffMobileNavOpen.value = true
+}
+function closeStaffMobileNav() {
+  staffMobileNavOpen.value = false
+}
+
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
@@ -252,6 +363,81 @@ async function handleStaffLogin() {
   }
 }
 
+async function checkStaffUsername() {
+  staffResetMsg.value = ""
+  staffResetChecked.value = false
+  staffResetLoading.value = true
+
+  try {
+    // fake delay so user sees "Checking..."
+    await sleep(2000)
+
+    const api = useApi()
+    const check = await api.post("/api/auth/reset/check", {
+      username: staffResetUsername.value.trim(),
+    })
+
+    if (!check.ok) {
+      staffResetMsg.value = check.error || "Could not check username"
+      return
+    }
+
+    if ((check as any).exists === false) {
+      staffResetMsg.value = "No account found with that username"
+      return
+    }
+
+    // ✅ username exists
+    staffResetChecked.value = true
+    staffResetMsg.value = "" // clear errors
+  } catch (e) {
+    staffResetMsg.value = "Check failed"
+  } finally {
+    staffResetLoading.value = false
+  }
+}
+
+async function resetStaffPassword() {
+  staffResetMsg.value = ""
+
+  // 1) must match
+  if (staffNewPassword.value !== staffConfirmPassword.value) {
+    staffResetMsg.value = "Passwords do not match"
+    return
+  }
+
+  staffResetLoading.value = true
+
+  try {
+    const api = useApi()
+
+    // optional: small delay so they see "Resetting..."
+    await sleep(1200)
+
+    const reset = await api.post("/api/auth/reset", {
+      username: staffResetUsername.value.trim(),
+      newPassword: staffNewPassword.value,
+    })
+
+    if (!reset.ok) {
+      staffResetMsg.value = reset.error || "Reset failed"
+      return
+    }
+
+    // ✅ success message
+    staffResetMsg.value = "Password reset! Now log in."
+
+    // clear fields + return to Step A
+    staffNewPassword.value = ""
+    staffConfirmPassword.value = ""
+    staffResetChecked.value = false
+  } catch (e) {
+    staffResetMsg.value = "Reset failed"
+  } finally {
+    staffResetLoading.value = false
+  }
+}
+
 const availabilityGroups = computed<Record<string, MenuItem[]>>(() => {
   const groups: Record<string, MenuItem[]> = {}
   for (const item of MENU_ITEMS) {
@@ -299,7 +485,36 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 </script>
 
 <style scoped>
+.muted {
+  opacity: 0.7;
+  font-weight: 900;
+  margin-top: 6px;
+}
+.resetInner {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+.linkBtn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin-left: 6px;
+  font-weight: 1000;
+  text-decoration: underline;
+  color: #4b3429;
+  cursor: pointer;
+}
 
+.resetBox {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(75, 52, 41, 0.14);
+  background: #fff;
+  display: grid;
+  gap: 10px;
+}
 .staffLoginHeader {
   display: flex;
   align-items: center;
@@ -325,6 +540,13 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 }
 .staffAccountWrap {
   position: relative;
+}
+/* ===== Mini Brand Strip (desktop hidden) ===== */
+.brandStrip {
+  display: none; /* hidden on desktop */
+}
+.brandStripLogo {
+  display: block;
 }
 /* ===== Logout overlay (same as index.vue) ===== */
 .verifyOverlay {
@@ -854,7 +1076,16 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
   padding-top: 10px;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
-
+.hamburgerBtn {
+  display: none;
+}
+.staffMobileBrand {
+  display: none;
+}
+/* ✅ full-width yellow strip ONLY on mobile */
+.staffBrandStrip {
+  display: none; /* default off */
+}
 /* Responsive */
 @media (max-width: 1100px) {
   .kanban {
@@ -865,18 +1096,187 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
   }
 }
 @media (max-width: 720px) {
+  /* ✅ make the login card feel like your other mobile cards */
+  .staffLoginCard {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 520px;       /* a bit wider so it fills nicely */
+    border-radius: 18px;
+    padding: 14px;          /* tighter */
+    gap: 10px;              /* tighter spacing between fields */
+    box-sizing: border-box;
+  }
+
+  /* ✅ shrink header spacing */
+  .staffLoginHeader {
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .staffLoginTitle {
+    font-size: 26px;
+    line-height: 1.1;
+  }
+
+  .staffLoginLogo {
+    width: 64px;            /* smaller logo on phone */
+  }
+
+  /* ✅ inputs look tighter like food/drinks */
+  .input {
+    padding: 11px 12px;
+    border-radius: 14px;
+    font-size: 15px;
+  }
+
+  label {
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  /* ✅ button size matches mobile style */
+  .primaryBtn {
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 15px;
+  }
+
+  /* ✅ forgot password row tighter */
+  .muted {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  /* ✅ stop centering everything on mobile */
+  .loginPage {
+    display: block;
+    place-items: unset;
+    padding: 14px;
+  }
+
+  /* ✅ make the yellow strip full width like other pages */
+  .brandStrip {
+    width: calc(100% + 28px);
+    margin: -14px -14px 14px; /* pull to edges, then add spacing below */
+  }
+
+  /* ✅ keep the card centered and not too wide */
+  .staffLoginCard {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 420px;
+  }
   .page {
     grid-template-columns: 1fr;
   }
   .sidebar {
-    border-right: none;
-    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(320px, 88vw);
+    z-index: 100;
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.18);
+
+    /* keep your style */
+    background: #fff8ee;
+    border-right: 1px solid rgba(75, 52, 41, 0.12);
+    border-bottom: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+   .hamburgerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(75, 52, 41, 0.14);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
+
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+
+  .hamburgerBtn:active {
+    transform: scale(0.98);
+  }
+
+  .hamburgerIcon {
+    font-size: 20px;
+    line-height: 1;
+    color: #4b3429;
+    font-weight: 900;
+  }
+
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;
   }
   .kanban {
     grid-template-columns: 1fr;
   }
   .availItems {
     grid-template-columns: 1fr;
+  }
+  /* ===== Mini Brand Strip (mobile only) ===== */
+  .brandStrip{
+    display: flex;
+    height: 58px;
+    background: #f6e28a;
+    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+
+    /* match your .main padding style on mobile */
+    margin: -14px -14px 12px;
+  }
+
+  .staffBrandStrip {
+    display: flex;
+    height: 58px;
+    background: #f6e28a;
+    border-bottom: 1px solid rgba(75, 52, 41, 0.12);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+
+    /* pull to edges inside main padding */
+    margin: -20px -26px 12px;
+    border-radius: 0;
+  }
+
+  .staffBrandStripLogo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
+  }
+.sectionHeader .muted {
+    font-size: 12px;        /* smaller text */
+    margin-left: 10px;     /* push slightly right */
+    text-align: right;     /* aligns nicely under header */
+    opacity: 0.65;         /* softer look */
+  }
+  .title {
+    font-size: 23px;        /* smaller than desktop */
+    line-height: 1.15;     /* tighter spacing */
+    letter-spacing: 0.3px;
+    margin-left: 6px;      /* slight breathing room from hamburger */
+    margin-bottom: 6px;
+    font-weight: 1100;     /* keep brand strong */
   }
 }
 </style>
