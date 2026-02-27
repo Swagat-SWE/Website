@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.3",
+    "@prisma/client": "^7.4.1",
     "chart.js": "^4.5.1",
     "nuxt": "^4.2.2",
     "pinia": "^3.0.4",
@@ -20,6 +21,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3"
+    "@types/node": "^25.2.3",
+    "prisma": "^7.4.1"
   }
 }
