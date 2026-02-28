@@ -13,6 +13,8 @@ model User {
   password  String
   createdAt DateTime @default(now())
   role      Role     @default(USER)
+
+  orders    Order[]
 }
 
 model Guest {
@@ -20,6 +22,68 @@ model Guest {
   name      String
   createdAt DateTime @default(now())
   expiresAt DateTime
+
+  orders    Order[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+
+  // Pretty order number shown to humans
+  orderNumber   String     @unique
+
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+
+  guestId       String?
+  guest         Guest?      @relation(fields: [guestId], references: [id])
+
+  customerName  String
+  status        OrderStatus @default(PENDING)
+
+  subtotal      Int         @default(0)
+  tax           Int         @default(0)
+  total         Int         @default(0)
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items         OrderItem[]
+
+  @@index([userId])
+  @@index([guestId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  name      String
+  quantity  Int
+  unitPrice Int
+  lineTotal Int
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// Single-row counter table to generate EIN100001, EIN100002, ...
+model OrderCounter {
+  id         Int @id      // always use id = 1
+  lastNumber Int @default(100000)
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  MAKING
+  READY
+  COMPLETED
+  CANCELED
 }
 
 enum Role {

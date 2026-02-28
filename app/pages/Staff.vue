@@ -245,7 +245,7 @@
 <section v-else-if="activeTab === 'orders'" class="card">
   <div class="sectionHeader">
     <h2>ORDERS</h2>
-    <div class="muted">Layout only (fake orders)</div>
+    <div class="muted">Live orders from database</div>
   </div>
 
   <!-- Kanban -->
@@ -260,25 +260,29 @@
       <article v-for="o in ordersByStatus(col.key)" :key="o.id" class="orderCard">
         <div class="orderTop">
           <div class="orderTitle">
-            <b>Order {{ o.id }}</b>
-            <span class="orderMeta">{{ o.time }} • {{ o.date }}</span>
+          <div class="orderMeta">Customer: {{ o.customerName }}</div>
+            <b>Order {{ (o as any).orderNumber || o.id }}</b>
+            <span class="orderMeta">
+              {{ formatDateTime(o.createdAt).time }} • {{ formatDateTime(o.createdAt).date }}
+            </span>
           </div>
         </div>
 
         <ul class="orderItems">
-          <li v-for="(it, idx) in o.items" :key="idx">{{ it }}</li>
+          <li v-for="it in o.items" :key="it.id">
+            {{ it.quantity }} × {{ it.name }}
+          </li>
         </ul>
 
         <div class="orderBtns">
-          <button
-            class="miniBtn"
-            type="button"
-            @click="moveOrder(o.id)"
-            :disabled="o.status === 'completed'"
-          >
-            Move →
-          </button>
-
+        <button
+          class="miniBtn"
+          type="button"
+          @click="moveOrder(o)"
+          :disabled="o.status === 'COMPLETED' || o.status === 'CANCELED'"
+        >
+          Move →
+        </button>
           <button class="miniBtn ghost" type="button" @click="openDetails(o)">
             Details
           </button>
@@ -291,16 +295,20 @@
   <div v-if="detailsOpen" class="modalOverlay" @click="closeDetails">
     <div class="modal" @click.stop>
       <div class="modalHeader">
-        <h3>Order {{ detailsOrder?.id }}</h3>
+        <h3>Order {{ (detailsOrder as any)?.orderNumber || detailsOrder?.id }}</h3>
         <button class="xBtn" type="button" @click="closeDetails">✕</button>
       </div>
 
       <div class="modalBody" v-if="detailsOrder">
-        <div class="muted">Placed: {{ detailsOrder.time }} • {{ detailsOrder.date }}</div>
+      <div class="muted">
+        Placed: {{ formatDateTime(detailsOrder.createdAt).time }} • {{ formatDateTime(detailsOrder.createdAt).date }}
+      </div>
 
         <div class="modalSectionTitle">Items</div>
         <ul class="modalList">
-          <li v-for="(it, idx) in detailsOrder.items" :key="idx">{{ it }}</li>
+        <li v-for="it in detailsOrder.items" :key="it.id">
+          {{ it.quantity }} × {{ it.name }}
+        </li>
         </ul>
 
         <div class="modalFooter">
@@ -316,6 +324,7 @@
 
 <script setup lang="ts">
 
+import { computed, ref, onMounted, onBeforeUnmount, watch } from "vue"
 import { MENU_ITEMS, type MenuItem } from "../data/menu"
 
 const staffLoggedIn = ref(false)
@@ -361,7 +370,6 @@ function closeStaffMenu() {
 
 const availability = useAvailability()
 
-import { computed, ref, onMounted, onBeforeUnmount } from "vue"
 // When Staff page loads, check session + role
 onMounted(async () => {
   try {
@@ -421,6 +429,9 @@ async function handleStaffLogin() {
     staffLoggedIn.value = true
     staffUser.value = (data as any)?.user?.username || staffUsername.value
     staffError.value = ""
+    if (activeTab.value === "orders") {
+      await fetchOrders()
+    }
   } catch (e) {
     staffError.value = "Backend not running"
   } finally {
@@ -545,7 +556,9 @@ async function staffLogout() {
     staffLogoutDone.value = false
   }
 }
-/** ----------------- Fake Orders (Move works) ----------------- */
+/** ----------------- REAL Orders (from DB) ----------------- */
+
+// These columns stay exactly like your UI
 const orderColumns = [
   { key: "new", label: "New" },
   { key: "progress", label: "In Progress" },
@@ -553,57 +566,123 @@ const orderColumns = [
   { key: "completed", label: "Completed" },
 ] as const
 
-type OrderStatus = (typeof orderColumns)[number]["key"]
+type ColumnKey = (typeof orderColumns)[number]["key"]
 
-type Order = {
+// This matches Prisma enums you made (OrderStatus)
+type DbStatus = "PENDING" | "PAID" | "MAKING" | "READY" | "COMPLETED" | "CANCELED"
+
+type DbOrderItem = {
   id: string
-  status: OrderStatus
-  time: string
-  date: string
-  items: string[]
+  name: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
 }
 
-const orders = ref<Order[]>([
-  {
-    id: "1234",
-    status: "new",
-    time: "7:30am",
-    date: "1/23/24",
-    items: ["1 Bagel, toasted", "2 Cold brews, small"],
-  },
-  {
-    id: "1235",
-    status: "progress",
-    time: "7:34am",
-    date: "1/23/24",
-    items: ["1 Farmhouse Egg Sandwich", "1 Latte, medium"],
-  },
-])
-
-function ordersByStatus(statusKey: OrderStatus) {
-  return orders.value.filter((o) => o.status === statusKey)
+type DbOrder = {
+  id: string
+  customerName: string
+  status: DbStatus
+  createdAt: string
+  total: number
+  items: DbOrderItem[]
 }
 
-const flow: OrderStatus[] = ["new", "progress", "ready", "completed"]
+// store all orders from db
+const dbOrders = ref<DbOrder[]>([])
 
-function moveOrder(orderId: string) {
-  const order = orders.value.find((o) => o.id === orderId)
-  if (!order) return
-
-  const i = flow.indexOf(order.status)
-  if (i === -1) return
-
-  const nextKey = flow[i + 1]
-  if (!nextKey) return // already completed
-
-  order.status = nextKey
+function mapDbStatusToColumn(status: DbStatus): ColumnKey {
+  if (status === "READY") return "ready"
+  if (status === "COMPLETED") return "completed"
+  if (status === "MAKING" || status === "PAID") return "progress"
+  return "new" // PENDING (and anything else)
 }
+
+function formatDateTime(iso: string) {
+  const d = new Date(iso)
+  const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+  const date = d.toLocaleDateString()
+  return { time, date }
+}
+
+function ordersByStatus(col: ColumnKey) {
+  return dbOrders.value.filter((o) => mapDbStatusToColumn(o.status) === col)
+}
+
+async function fetchOrders() {
+  try {
+    const api = useApi()
+
+    // ✅ change this path if your backend is different:
+    // if you mounted it as app.use("/api/orders", router) => "/api/orders"
+    // if you mounted it as app.use("/orders", router) => "/orders"
+    const res = await api.get("/api/orders")
+
+    if (!res?.ok) return
+    dbOrders.value = (res as any).orders || []
+  } catch (e) {
+    // fail silently (or show message if you want)
+  }
+}
+const statusFlow: DbStatus[] = ["PENDING", "MAKING", "READY", "COMPLETED"]
+
+function nextStatus(curr: DbStatus): DbStatus {
+  // treat PAID like MAKING for the kanban flow
+  if (curr === "PAID") return "MAKING"
+  if (curr === "CANCELED") return "CANCELED"
+
+  const i = statusFlow.indexOf(curr)
+  if (i === -1) return "PENDING"
+  const next = statusFlow[i + 1]
+  return next ?? curr // if already last, stay
+}
+
+async function moveOrder(order: DbOrder) {
+  const next = nextStatus(order.status)
+  if (next === order.status) return
+
+  try {
+    const api = useApi()
+
+    const res = await api.patch(`/api/orders/${order.id}/status`, {
+      status: next,
+    })
+
+    if (!res.ok) return
+
+    // refresh the board so it jumps columns
+    await fetchOrders()
+
+    // if details modal is open for this order, refresh it
+    if (detailsOrder.value?.id === order.id) {
+      const updated =
+        dbOrders.value.find((x) => x.id === order.id) || null
+      detailsOrder.value = updated
+    }
+  } catch (e) {
+    // optional: console.error(e)
+  }
+}
+
+// ✅ Fetch when staff opens Orders tab
+watch(activeTab, async (tab) => {
+  if (tab === "orders") {
+    await fetchOrders()
+  }
+})
+
+// ✅ optional: also fetch once if page loads already on orders
+onMounted(async () => {
+  if (activeTab.value === "orders") {
+    await fetchOrders()
+  }
+})
 
 /** Details modal */
 const detailsOpen = ref(false)
-const detailsOrder = ref<Order | null>(null)
+const detailsOrder = ref<DbOrder | null>(null)
 
-function openDetails(order: Order) {
+function openDetails(order: DbOrder) {
   detailsOrder.value = order
   detailsOpen.value = true
 }
@@ -612,6 +691,7 @@ function closeDetails() {
   detailsOpen.value = false
   detailsOrder.value = null
 }
+
 const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 </script>
 

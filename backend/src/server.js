@@ -379,6 +379,9 @@ app.get("/api/me", (req, res) => {
   return res.status(401).json({ ok: false, type: null, user: null });
 });
 
+const ordersRouter = require("../routes/order");
+app.use("/api/orders", ordersRouter);
+
 // 404
 app.use((req, res) => res.status(404).json({ ok: false, error: "Route not found" }));
 

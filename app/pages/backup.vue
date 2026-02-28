@@ -25,7 +25,7 @@
           <div class="subtitle">Your bagel is on the belt. We’ll update you live 😄</div>
         </div>
 
-        <button class="cartBtn" type="button" @click="navigateTo('/Checkout')">
+        <button class="cartBtn" type="button" @click="navigateTo('/checkout')">
           ← Back to Checkout
         </button>
       </header>
@@ -34,8 +34,7 @@
       <section class="card">
         <div class="cardHeader">
           <h2>Order Status</h2>
-          <!-- ✅ show REAL order number from URL like EIN100002 -->
-          <span class="muted">Order #{{ orderNumber || "—" }}</span>
+          <span class="muted">Order #{{ orderId }}</span>
         </div>
 
         <div class="layout">
@@ -234,21 +233,22 @@
 
           <!-- RIGHT: text panel -->
           <div class="sidePanel">
-            <div class="current">
-              <Transition name="status" mode="out-in">
-                <div class="statusWrap" :key="steps[statusIndex].key">
-                  <div class="bigStatus">
-                    <span class="badge bigBadge" :class="steps[statusIndex].key">
-                      {{ steps[statusIndex].label }}
-                    </span>
-                  </div>
 
-                  <div class="bigDesc">
-                    {{ steps[statusIndex].desc }}
-                  </div>
-                </div>
-              </Transition>
-            </div>
+           <div class="current">
+  <Transition name="status" mode="out-in">
+    <div class="statusWrap" :key="steps[statusIndex].key">
+      <div class="bigStatus">
+        <span class="badge bigBadge" :class="steps[statusIndex].key">
+          {{ steps[statusIndex].label }}
+        </span>
+      </div>
+
+      <div class="bigDesc">
+        {{ steps[statusIndex].desc }}
+      </div>
+    </div>
+  </Transition>
+</div>
           </div>
         </div>
       </section>
@@ -257,107 +257,59 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue"
-import { useRoute } from "vue-router"
+import { computed, ref, watch } from "vue";
 
 /**
- * Shared status across pages.
- * We'll now keep it in sync with the DB by polling by orderNumber.
+ * Shared status across pages (Staff page will update this later).
  * 0: ordered, 1: preparing, 2: oven, 3: ready
  */
-const orderStatus = useOrderStatus()
+const orderStatus = useOrderStatus();
 
 const steps = [
   { key: "ordered", label: "Ordered", desc: "We got it. You’re officially in the system." },
   { key: "preparing", label: "Preparing", desc: "We’re making it fresh. Good things take a minute." },
   { key: "oven", label: "In the Oven", desc: "Heat is on. This is where the magic happens." },
   { key: "ready", label: "Ready", desc: "Come grab it! Your order is ready." },
-]
+];
 
 function clamp(n, min, max) {
-  return Math.min(max, Math.max(min, n))
+  return Math.min(max, Math.max(min, n));
 }
 function rand(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const statusIndex = computed(() => clamp(orderStatus.value, 0, steps.length - 1))
-
-/** ✅ REAL order number from URL: /tracking?orderNumber=EIN100002 */
-const route = useRoute()
-const api = useApi()
-const orderNumber = computed(() => String(route.query.orderNumber || ""))
-
-/** Map DB status -> your 0..3 steps (keeps animations unchanged) */
-function mapDbStatusToStep(dbStatus) {
-  // Prisma: "PENDING" | "PAID" | "MAKING" | "READY" | "COMPLETED" | "CANCELED"
-  if (dbStatus === "PENDING") return 0
-  if (dbStatus === "PAID") return 1
-  if (dbStatus === "MAKING") return 2   // oven step in your UI
-  if (dbStatus === "READY") return 3
-  if (dbStatus === "COMPLETED") return 3
-  if (dbStatus === "CANCELED") return 0
-  return 0
-}
-
-/** Poll the DB so staff "Move →" updates show here in near real-time */
-let pollTimer = null
-
-async function fetchLatestStatus() {
-  try {
-    if (!orderNumber.value) return
-
-    // ✅ You must have this backend endpoint:
-    // GET /api/orders/by-number/:orderNumber
-    const res = await api.get(`/api/orders/by-number/${orderNumber.value}`)
-    if (!res?.ok) return
-
-    const status = res?.order?.status
-    if (!status) return
-
-    orderStatus.value = clamp(mapDbStatusToStep(status), 0, steps.length - 1)
-  } catch (e) {
-    // silently ignore (keeps UI smooth)
-  }
-}
-
-onMounted(async () => {
-  await fetchLatestStatus()
-  pollTimer = setInterval(fetchLatestStatus, 2000)
-})
-
-onBeforeUnmount(() => {
-  if (pollTimer) clearInterval(pollTimer)
-})
+const statusIndex = computed(() => clamp(orderStatus.value, 0, steps.length - 1));
+const orderId = "EB-" + String(Math.floor(100000 + Math.random() * 900000));
 
 /** Vertical geometry */
 function stationTop(i) {
-  const pad = 10 // %
-  const span = 100 - pad * 2
-  return pad + (span * i) / (steps.length - 1)
+  const pad = 10; // %
+  const span = 100 - pad * 2;
+  return pad + (span * i) / (steps.length - 1);
 }
 
 const bagelTop = computed(() => {
-  const base = stationTop(statusIndex.value)
+  const base = stationTop(statusIndex.value);
 
   // ✅ when we're at oven step, push cart DOWN a bit into the oven window
-  if (steps[statusIndex.value].key === "oven") return base + 15
+  if (steps[statusIndex.value].key === "oven") return base + 15;
 
-  return base
-})
+  return base;
+});
 
-const progressHeight = computed(() => stationTop(statusIndex.value))
+const progressHeight = computed(() => stationTop(statusIndex.value));
 
 /** Animation flags */
-const isMoving = ref(false)
-const doBounce = ref(false)
+const isMoving = ref(false);
+const doBounce = ref(false);
 
 /** Crumbs */
-const crumbs = ref([])
-let crumbId = 0
+const crumbs = ref([]);
+let crumbId = 0;
 
 function burstCrumbs() {
-  const arr = []
+  const arr = [];
   for (let i = 0; i < 14; i++) {
     arr.push({
       id: ++crumbId,
@@ -367,38 +319,37 @@ function burstCrumbs() {
       dy: rand(-18, 10),
       r: rand(-180, 180),
       o: 1,
-    })
+    });
   }
-  crumbs.value = arr
+  crumbs.value = arr;
 
   setTimeout(() => {
-    crumbs.value = crumbs.value.map((c) => ({ ...c, o: 0 }))
-  }, 80)
+    crumbs.value = crumbs.value.map((c) => ({ ...c, o: 0 }));
+  }, 80);
 
   setTimeout(() => {
-    crumbs.value = []
-  }, 520)
+    crumbs.value = [];
+  }, 520);
 }
 
 watch(
   () => statusIndex.value,
   () => {
-    isMoving.value = true
-    doBounce.value = false
-    burstCrumbs()
+    isMoving.value = true;
+    doBounce.value = false;
+    burstCrumbs();
 
     setTimeout(() => {
-      isMoving.value = false
-      doBounce.value = true
-      setTimeout(() => (doBounce.value = false), 420)
-    }, 520)
+      isMoving.value = false;
+      doBounce.value = true;
+      setTimeout(() => (doBounce.value = false), 420);
+    }, 520);
   },
   { immediate: true }
-)
+);
 
-// (kept for your testing / future controls)
 function setStatus(i) {
-  orderStatus.value = clamp(i, 0, steps.length - 1)
+  orderStatus.value = clamp(i, 0, steps.length - 1);
 }
 </script>
 
@@ -527,6 +478,7 @@ function setStatus(i) {
   align-items: stretch; /* ✅ makes sidePanel match belt height */
 }
 
+
 /* Belt (VERTICAL) */
 .belt {
   position: relative;
@@ -537,6 +489,8 @@ function setStatus(i) {
   overflow: hidden;
   isolation: isolate;
 }
+
+
 
 .beltStripes {
   position: absolute;
@@ -776,9 +730,11 @@ function setStatus(i) {
   padding: 6px 6px 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding-top: 160px;   /* adjust this number */
+
+ justify-content: flex-start;
+ padding-top: 160px;   /* adjust this number */
 }
+
 
 .current {
   margin-top: 40px;
@@ -811,6 +767,7 @@ function setStatus(i) {
   margin-left: auto;
   margin-right: auto;
 }
+
 
 .bigStatus {
   justify-content: center; /* ✅ centers the badge */
@@ -1182,18 +1139,36 @@ function setStatus(i) {
 .status-leave-active {
   transition: opacity 260ms ease, transform 260ms ease;
 }
+
 .status-enter-from {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .status-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }
 
+/* Fade + slight slide animation on status change */
+.status-enter-active,
+.status-leave-active {
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.status-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.status-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 /* =========================
    MOBILE UPGRADE (tracking)
    ========================= */
+
 @media (max-width: 760px) {
   /* 1) Hide sidebar on phones */
   .sidebar {
@@ -1368,4 +1343,6 @@ function setStatus(i) {
     min-height: 480px;
   }
 }
+
+
 </style>

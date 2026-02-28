@@ -1,14 +1,14 @@
 // app/composables/useApi.ts
 
-type ApiOk<T = any> = { ok: true } & T;
-type ApiErr = { ok: false; error: string };
-export type ApiResponse<T = any> = ApiOk<T> | ApiErr;
+type ApiOk<T = any> = { ok: true } & T
+type ApiErr = { ok: false; error: string }
+export type ApiResponse<T = any> = ApiOk<T> | ApiErr
 
 export const useApi = () => {
   // dev: apiBase = "" -> calls /api/* (Nuxt proxy sends to localhost:3001)
   // prod: apiBase = "https://backend-xxxx.onrender.com" -> calls backend directly
-  const config = useRuntimeConfig();
-  const baseURL = (config.public.apiBase as string) || "";
+  const config = useRuntimeConfig()
+  const baseURL = (config.public.apiBase as string) || ""
 
   async function post<T = any>(
     path: string,
@@ -20,32 +20,56 @@ export const useApi = () => {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      });
+      })
 
-      const data = await res.json().catch(() => null);
+      const data = await res.json().catch(() => null)
 
       if (!res.ok) {
-        return { ok: false, error: data?.error || `Request failed (${res.status})` };
+        return { ok: false, error: data?.error || `Request failed (${res.status})` }
       }
 
-      return data;
+      return data
     } catch (e: any) {
-      return { ok: false, error: e?.message || "Failed to fetch" };
+      return { ok: false, error: e?.message || "Failed to fetch" }
+    }
+  }
+
+  async function patch<T = any>(
+    path: string,
+    body: Record<string, any> = {}
+  ): Promise<ApiResponse<T>> {
+    try {
+      const res = await fetch(baseURL + path, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        return { ok: false, error: data?.error || `Request failed (${res.status})` }
+      }
+
+      return data
+    } catch (e: any) {
+      return { ok: false, error: e?.message || "Failed to fetch" }
     }
   }
 
   async function get<T = any>(path: string): Promise<ApiResponse<T>> {
     try {
-      const res = await fetch(baseURL + path, { credentials: "include" });
-      const data = await res.json().catch(() => null);
+      const res = await fetch(baseURL + path, { credentials: "include" })
+      const data = await res.json().catch(() => null)
 
       if (!res.ok) {
-        return { ok: false, error: data?.error || `Request failed (${res.status})` };
+        return { ok: false, error: data?.error || `Request failed (${res.status})` }
       }
 
-      return data;
+      return data
     } catch (e: any) {
-      return { ok: false, error: e?.message || "Failed to fetch" };
+      return { ok: false, error: e?.message || "Failed to fetch" }
     }
   }
 
@@ -54,19 +78,20 @@ export const useApi = () => {
       const res = await fetch(baseURL + path, {
         method: "DELETE",
         credentials: "include",
-      });
+      })
 
-      const data = await res.json().catch(() => null);
+      const data = await res.json().catch(() => null)
 
       if (!res.ok) {
-        return { ok: false, error: data?.error || `Request failed (${res.status})` };
+        return { ok: false, error: data?.error || `Request failed (${res.status})` }
       }
 
-      return data;
+      return data
     } catch (e: any) {
-      return { ok: false, error: e?.message || "Failed to fetch" };
+      return { ok: false, error: e?.message || "Failed to fetch" }
     }
   }
 
-  return { post, get, del };
-};
+  // ✅ IMPORTANT: return patch too
+  return { post, patch, get, del }
+}
