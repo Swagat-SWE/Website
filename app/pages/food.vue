@@ -1,11 +1,18 @@
 <!-- app/pages/index.vue -->
 <template>
   <div class="page">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebarTop">
+    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <div
+      v-if="mobileNavOpen"
+      class="mobileOverlay"
+      @click="closeMobileNav"
+      aria-hidden="true"
+    />
 
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page">
+    <!-- Sidebar (desktop fixed column, mobile slide-in drawer) -->
+    <aside class="sidebar" :class="{ open: mobileNavOpen }" aria-label="Sidebar navigation">
+      <div class="sidebarTop">
+        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
       </div>
@@ -66,7 +73,12 @@
     <main class="main">
       <!-- Top bar: Location (simple prototype) + Cart -->
       <header class="topbar">
-        <div> </div> <!-- empty div to balance the flex space on the left -->
+        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
+          <span class="hamburgerIcon" aria-hidden="true">☰</span>
+        </button>
+
+        <div class="topbarSpacer"></div>
 
         <div class="topbarRight">
           <!-- Sign In button -->
@@ -87,7 +99,7 @@
         <h1 class="title">Food Selection</h1>
       </section>
 
-      <!-- Breakfest -->
+      <!-- Breakfast -->
       <section class="section">
         <div class="sectionHeader">
           <h2 class="sectionTitle">Breakfast</h2>
@@ -261,16 +273,36 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-const showLocationDropdown = ref(false);
-const locationQuery = ref("");
-const location = ref("");
-const locations = ref([]);
+/** ✅ Mobile nav */
+const mobileNavOpen = ref(false);
+function openMobileNav() {
+  mobileNavOpen.value = true;
+}
+function closeMobileNav() {
+  mobileNavOpen.value = false;
+}
 
+/** close drawer with ESC */
+function handleKeydown(e) {
+  if (e.key === "Escape") closeMobileNav();
+}
+onMounted(() => document.addEventListener("keydown", handleKeydown));
+onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 
+/** ✅ Availability (shared state with Staff) — key by NAME */
+const availability = useAvailability();
+function isAvailable(name) {
+  return availability.isAvailable(name);
+}
+
+/** =========================
+ *  Prices (ALL)
+ *  ========================= */
 const PRICE_BY_NAME = {
-  // ===== Breakfast sandwiches (from your index MENU / common Einstein prices) =====
-  "Farm House Egg Sandwich": 6.99,
+  // ===== Breakfast =====
+  "Farm House Egg Sandwich": 7.19,
   "All Nighter Egg Sandwich": 6.99,
   "Garden Avocado Egg Sandwich": 6.39,
   "Bacon Cheddar Egg Sandwich": 6.59,
@@ -283,10 +315,10 @@ const PRICE_BY_NAME = {
   "Big Breakfast Burrito": 7.49,
   "Avocado Toast": 5.49,
 
-  // ===== Lunch sandwiches (from your index MENU / common items) =====
-  "Tastey Turkey Sandwich": 7.79,
-  "Avocado Veg Out Sandwich": 7.29,
-  "Nova Lox Sandwich": 8.29,
+  // ===== Lunch =====
+  "Tastey Turkey Sandwich": 7.99,
+  "Avocado Veg Out Sandwich": 7.54,
+  "Nova Lox Sandwich": 8.49,
   "Pepperoni Chicken": 7.59,
   "Ham & Swiss Sandwich": 7.29,
   "Turkey, Bacon & Avocado Sandwich": 7.99,
@@ -311,9 +343,9 @@ const PRICE_BY_NAME = {
   "Chocolate Chip Bagel": 2.59,
 
   // ===== Smears =====
-  "Plain": 1.29,
-  "Strawberry": 1.49,
-  "Almond": 1.49,
+  Plain: 1.29,
+  Strawberry: 1.49,
+  Almond: 1.49,
   "Country Pepper": 1.49,
   "Garden Veggie": 1.49,
   "Onion Chive": 1.49,
@@ -368,7 +400,7 @@ onBeforeUnmount(() => {
 });
 
 /** =========================
- *  Sidebar Review
+ *  Review
  *  ========================= */
 const showReview = ref(false);
 const rating = ref(0);
@@ -401,6 +433,7 @@ function submitReview() {
  *  ========================= */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
+
 const cartCount = computed(() =>
   cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
 );
@@ -445,7 +478,8 @@ function getCategory(item) {
 }
 
 function addToCart(item) {
-  const existing = cart.value.find((x) => x.name === item.name);
+  // ✅ block if staff marked it unavailable (by NAME)
+  if (!isAvailable(item.name)) return;
 
   const base = Number(item.price ?? priceByName(item.name) ?? 0); // keep your pricing working
 
@@ -454,7 +488,7 @@ function addToCart(item) {
   } else {
     cart.value.push({
       id: item.id,
-      category: getCategory(item),   // ✅ STEP 2 HERE
+      category: getCategory(item),
       name: item.name,
       qty: 1,
       img: item.img,
@@ -475,70 +509,21 @@ function removeFromCart(index) {
 
 
 /** =========================
- *  Page Content (images)
- *  Replace URLs later with your own images in /public
+ *  Menu items
  *  ========================= */
-const Breakfest = ref([
-  {
-    id: "bs1",
-    name: "Farm House Egg Sandwich",
-    img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg",
-  },
-  {
-    id: "bs2",
-    name: "All Nighter Egg Sandwich",
-    img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg",
-  },
-  {
-    id: "bs3",
-    name: "Garden Avocado Egg Sandwich",
-    img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg",
-  },
-  {
-    id: "bs4",
-    name: "Bacon Cheddar Egg Sandwich",
-    img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg",
-  },
-  {
-    id: "bs5",
-    name: "Cheddar Egg Sandwich",
-    img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg",
-  },
-  {
-    id: "bs6",
-    name: "Ham Swiss Egg Sandwich",
-    img: "EBB-Ham-Swiss-Classic-Egg-Sandwich.jpg",
-  },
-  {
-    id: "bs7",
-    name: "Turkey Sausage Egg Sandwich",
-    img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg",
-  },
-  {
-    id: "bs8",
-    name: "Bacon Avocado Tomato Sandwich",
-    img: "EBB-SignatureEgg-BaconAvocadoTomatoEggWhite-650x6501-1.jpg",
-  },
-  {
-    id: "bs9",
-    name: "Santa Fe Egg White Sandwich",
-    img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg",
-  },
-  {
-    id: "bs10",
-    name: "Texas Brisket Egg Sandwich",
-    img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg",
-  },
-  {
-    id: "bs11",
-    name: "Big Breakfast Burrito",
-    img: "Burriro.png",
-  },
-  {
-    id: "bs12",
-    name: "Avocado Toast",
-    img: "ToastAvo.png",
-  },
+const Breakfast = ref([
+  { id: "bs1", name: "Farm House Egg Sandwich", img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg" },
+  { id: "bs2", name: "All Nighter Egg Sandwich", img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg" },
+  { id: "bs3", name: "Garden Avocado Egg Sandwich", img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg" },
+  { id: "bs4", name: "Bacon Cheddar Egg Sandwich", img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg" },
+  { id: "bs5", name: "Cheddar Egg Sandwich", img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg" },
+  { id: "bs6", name: "Ham Swiss Egg Sandwich", img: "EBB-Ham-Swiss-Classic-Egg-Sandwich.jpg" },
+  { id: "bs7", name: "Turkey Sausage Egg Sandwich", img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg" },
+  { id: "bs8", name: "Bacon Avocado Tomato Sandwich", img: "EBB-SignatureEgg-BaconAvocadoTomatoEggWhite-650x6501-1.jpg" },
+  { id: "bs9", name: "Santa Fe Egg White Sandwich", img: "EBB-SignatureEgg-SantaFeEggWhite-650x6501-1.jpg" },
+  { id: "bs10", name: "Texas Brisket Egg Sandwich", img: "EBB-SignatureEgg-TexasBrisket-650x6501-1.jpg" },
+  { id: "bs11", name: "Big Breakfast Burrito", img: "Burriro.png" },
+  { id: "bs12", name: "Avocado Toast", img: "ToastAvo.png" },
 ]);
 
 const Lunch = ref([

@@ -112,7 +112,7 @@ app.post("/api/auth/register", async (req, res) => {
       select: { id: true, username: true, createdAt: true },
     });
 
-    req.session.user = { id: user.id, username: user.username };
+    req.session.user = { id: user.id, username: user.username, role: "USER" };
     delete req.session.guest;
 
     return res.status(201).json({ ok: true, user });
@@ -150,12 +150,54 @@ app.post("/api/auth/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ ok: false, error: "Invalid credentials" });
 
-    req.session.user = { id: user.id, username: user.username };
+    req.session.user = { id: user.id, username: user.username, role: user.role };
     delete req.session.guest;
 
     return res.json({ ok: true });
   } catch (e) {
     console.error("LOGIN ERROR:", e);
+    return res.status(500).json({ ok: false, error: "Server error" });
+  }
+});
+
+// -------------------
+// STAFF LOGIN (only STAFF role can pass)
+// -------------------
+app.post("/api/staff/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ ok: false, error: "Username & password required" });
+    }
+
+    if (!/^[a-zA-Z0-9_]{1,10}$/.test(username)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Username must be 1-10 characters and only letters, numbers, underscore.",
+      });
+    }
+
+    if (password.length > 12) {
+      return res.status(400).json({ ok: false, error: "Password max 12 characters." });
+    }
+
+    const user = await prisma.user.findUnique({ where: { username } });
+    if (!user) return res.status(401).json({ ok: false, error: "Invalid credentials" });
+
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).json({ ok: false, error: "Invalid credentials" });
+
+    if (user.role !== "STAFF") {
+      return res.status(403).json({ ok: false, error: "Staff only" });
+    }
+
+    req.session.user = { id: user.id, username: user.username, role: user.role };
+    delete req.session.guest;
+
+    return res.json({ ok: true, user: req.session.user });
+  } catch (e) {
+    console.error("STAFF LOGIN ERROR:", e);
     return res.status(500).json({ ok: false, error: "Server error" });
   }
 });
@@ -318,7 +360,7 @@ app.get("/api/me", (req, res) => {
     return res.json({
       ok: true,
       type: "user",
-      user: { ...req.session.user, role: "user" },
+      user: req.session.user,
     });
   }
 
@@ -336,6 +378,9 @@ app.get("/api/me", (req, res) => {
 
   return res.status(401).json({ ok: false, type: null, user: null });
 });
+
+const ordersRouter = require("../routes/order");
+app.use("/api/orders", ordersRouter);
 
 // 404
 app.use((req, res) => res.status(404).json({ ok: false, error: "Route not found" }));
