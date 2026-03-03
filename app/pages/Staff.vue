@@ -269,9 +269,13 @@
         </div>
 
         <ul class="orderItems">
-          <li v-for="it in o.items" :key="it.id">
-            {{ it.quantity }} × {{ it.name }}
-          </li>
+        <li v-for="it in o.items" :key="it.id">
+          {{ it.quantity }} × {{ it.name }}
+        
+          <div v-if="it.customizations" class="orderMeta">
+            {{ formatCustomizations(it.customizations) }}
+          </div>
+        </li>
         </ul>
 
         <div class="orderBtns">
@@ -406,6 +410,16 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleStaffDocClick)
 })
 
+function formatCustomizations(c: Record<string, any> | null) {
+  if (!c) return ""
+
+  return Object.entries(c)
+    .map(([k, v]) => {
+      if (Array.isArray(v)) return `${k}: ${v.join(", ")}`
+      return `${k}: ${String(v)}`
+    })
+    .join(" • ")
+}
 
 // When staff clicks login button, use backend staff login
 async function handleStaffLogin() {
@@ -472,6 +486,7 @@ async function checkStaffUsername() {
     staffResetLoading.value = false
   }
 }
+
 
 async function resetStaffPassword() {
   staffResetMsg.value = ""
@@ -577,6 +592,7 @@ type DbOrderItem = {
   quantity: number
   unitPrice: number
   lineTotal: number
+  customizations?: Record<string, any> | null
 }
 
 type DbOrder = {

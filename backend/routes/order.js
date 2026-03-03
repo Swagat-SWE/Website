@@ -111,6 +111,16 @@ router.post("/", async (req, res) => {
 
     // Validate items (expects cents as integers)
     for (const it of items) {
+      if (it.customizations !== undefined) {
+        const isObj = typeof it.customizations === "object" && it.customizations !== null
+        const isArray = Array.isArray(it.customizations)
+        if (!isObj || isArray) {
+          return res.status(400).json({
+            ok: false,
+            error: "customizations must be an object (not an array)",
+          })
+        }
+      }
       if (!it?.name || typeof it.name !== "string") {
         return res.status(400).json({ ok: false, error: "Each item must have a name" });
       }
@@ -167,6 +177,7 @@ router.post("/", async (req, res) => {
               quantity: it.quantity,
               unitPrice: it.unitPrice,
               lineTotal: it.unitPrice * it.quantity,
+              customizations: it.customizations ?? null,
             })),
           },
         },

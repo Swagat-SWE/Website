@@ -371,7 +371,6 @@ function resolvePrice(item) {
 }
 
 
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 const filteredLocations = computed(() => {
   const q = locationQuery.value.trim().toLowerCase();
   if (!q) return locations.slice(0, 50);

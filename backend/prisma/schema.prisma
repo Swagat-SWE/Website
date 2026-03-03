@@ -67,6 +67,7 @@ model OrderItem {
   lineTotal Int
 
   createdAt DateTime @default(now())
+  customizations Json?
 
   @@index([orderId])
 }

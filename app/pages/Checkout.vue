@@ -370,8 +370,9 @@ async function placeOrder() {
       name: String(it.name || "Item"),
       quantity: Number.isInteger(it.qty) ? it.qty : Number(it.qty || 1),
       unitPrice: toCents(it.priceEach ?? 0),
-      // keep your existing cart shape intact; backend can ignore these if not needed
-      // custom: it.custom || undefined,
+    
+      // ✅ NEW: send customizations to backend -> Prisma
+      customizations: it.custom || null,
     }));
 
     // Step 2
