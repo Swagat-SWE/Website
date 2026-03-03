@@ -111,16 +111,18 @@ router.post("/", async (req, res) => {
 
     // Validate items (expects cents as integers)
     for (const it of items) {
-      if (it.customizations !== undefined) {
-        const isObj = typeof it.customizations === "object" && it.customizations !== null
-        const isArray = Array.isArray(it.customizations)
-        if (!isObj || isArray) {
-          return res.status(400).json({
-            ok: false,
-            error: "customizations must be an object (not an array)",
-          })
-        }
+    // ✅ Allow: undefined (not sent), null (no customizations), or a plain object
+    if (it.customizations !== undefined && it.customizations !== null) {
+      const isObj = typeof it.customizations === "object";
+      const isArray = Array.isArray(it.customizations);
+    
+      if (!isObj || isArray) {
+        return res.status(400).json({
+          ok: false,
+          error: "customizations must be an object (not an array)",
+        });
       }
+    }
       if (!it?.name || typeof it.name !== "string") {
         return res.status(400).json({ ok: false, error: "Each item must have a name" });
       }

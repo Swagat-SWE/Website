@@ -372,7 +372,7 @@ async function placeOrder() {
       unitPrice: toCents(it.priceEach ?? 0),
     
       // ✅ NEW: send customizations to backend -> Prisma
-      customizations: it.custom || null,
+      customizations: (!it.custom || Array.isArray(it.custom) || Object.keys(it.custom).length === 0) ? null : it.custom,
     }));
 
     // Step 2
