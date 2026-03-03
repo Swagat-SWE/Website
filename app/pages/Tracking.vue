@@ -271,7 +271,7 @@ const steps = [
   { key: "ordered", label: "Ordered", desc: "We got it. You’re officially in the system." },
   { key: "preparing", label: "Preparing", desc: "We’re making it fresh. Good things take a minute." },
   { key: "oven", label: "In the Oven", desc: "Heat is on. This is where the magic happens." },
-  { key: "ready", label: "Ready", desc: "Come grab it! Your order is ready." },
+  { key: "ready", label: "Ready", desc: "Order is ready for pickup at the Einstein’s Pickup Station." },
 ]
 
 function clamp(n, min, max) {

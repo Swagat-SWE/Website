@@ -269,13 +269,79 @@
         </div>
 
         <ul class="orderItems">
-        <li v-for="it in o.items" :key="it.id">
-          {{ it.quantity }} × {{ it.name }}
+          <li v-for="it in o.items" :key="it.id" class="orderItem">
+            <div class="itemRow">
+              <div class="itemTitle">
+                {{ it.quantity }} × {{ it.name }}
+              </div>
         
-          <div v-if="it.customizations" class="orderMeta">
-            {{ formatCustomizations(it.customizations) }}
-          </div>
-        </li>
+              <button
+                v-if="it.customizations"
+                class="miniBtn ghost"
+                type="button"
+                @click="toggleItemDetails(o.id, it.id)"
+              >
+                {{ isItemOpen(o.id, it.id) ? "Hide" : "Details" }}
+              </button>
+            </div>
+        
+            <div v-if="it.customizations && isItemOpen(o.id, it.id)" class="itemDetails">
+             <!-- ✅ FOOD (keep this first) -->
+            <div v-if="!isDrink(it.name) && it.customizations.bagel">
+              <span class="detailLabel">Bagel:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.bagel) }}</span>
+            </div>            
+
+            <div v-if="!isDrink(it.name) && it.customizations.shmear">
+              <span class="detailLabel">Shmear:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.shmear) }}</span>
+            </div>            
+
+            <div v-if="!isDrink(it.name) && it.customizations.extras?.length">
+              <span class="detailLabel">Extras:</span>
+              <div class="detailValue detailList">
+                <div v-for="(ex, i) in it.customizations.extras" :key="i">
+                  • {{ titleCase(ex) }}
+                </div>
+              </div>
+            </div>            
+
+            <div v-if="!isDrink(it.name) && it.customizations.notes">
+              <span class="detailLabel">Notes:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.notes) }}</span>
+            </div>            
+
+            <!-- ✅ DRINKS -->
+            <div v-if="isDrink(it.name) && it.customizations.milk">
+              <span class="detailLabel">Milk:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.milk) }}</span>
+            </div>            
+
+            <div v-if="isDrink(it.name) && it.customizations.sweetener">
+              <span class="detailLabel">Sweetener:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.sweetener) }}</span>
+            </div>            
+
+            <div v-if="isDrink(it.name) && it.customizations.ice">
+              <span class="detailLabel">Ice:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.ice) }}</span>
+            </div>            
+
+            <div v-if="isDrink(it.name) && it.customizations.upgrades?.length">
+              <span class="detailLabel">Upgrades:</span>
+              <div class="detailValue detailList">
+                <div v-for="(up, i) in it.customizations.upgrades" :key="i">
+                  • {{ titleCase(up) }}
+                </div>
+              </div>
+            </div>            
+
+            <div v-if="isDrink(it.name) && it.customizations.notes">
+              <span class="detailLabel">Notes:</span>
+              <span class="detailValue">{{ titleCase(it.customizations.notes) }}</span>
+            </div>
+            </div>
+          </li>
         </ul>
 
         <div class="orderBtns">
@@ -349,6 +415,46 @@ const staffResetMsg = ref("")
 const staffResetChecked = ref(false)       // did we already verify username?
 const staffConfirmPassword = ref("")       // confirm password box (later step)
 const staffResetUsername = ref("")         // separate input just for reset username
+
+const openItems = ref<Record<string, boolean>>({})
+
+function keyFor(orderId: string, itemId: string) {
+  return `${orderId}__${itemId}`
+}
+
+function toggleItemDetails(orderId: string, itemId: string) {
+  const k = keyFor(orderId, itemId)
+  openItems.value[k] = !openItems.value[k]
+}
+
+function isItemOpen(orderId: string, itemId: string) {
+  return !!openItems.value[keyFor(orderId, itemId)]
+}
+
+function titleCase(s: any) {
+  if (!s) return ""
+  return String(s)
+    .trim()
+    .split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ")
+}
+
+function isDrink(name: string) {
+  const n = name.toLowerCase()
+  return (
+    n.includes("mocha") ||
+    n.includes("latte") ||
+    n.includes("coffee") ||
+    n.includes("espresso") ||
+    n.includes("americano") ||
+    n.includes("tea") ||
+    n.includes("smoothie") ||
+    n.includes("refresher") ||
+    n.includes("macchiato") ||
+    n.includes("cappuccino")
+  )
+}
 
 // ✅ Mobile staff drawer
 const staffMobileNavOpen = ref(false)
@@ -712,6 +818,48 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 </script>
 
 <style scoped>
+
+.orderItem { margin-top: 8px; }
+
+.itemRow{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.itemTitle{
+  font-weight: 950;
+}
+
+.itemDetails{
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(75, 52, 41, 0.04);
+  border: 1px solid rgba(75, 52, 41, 0.10);
+}
+.detailLabel {
+  font-weight: 1000;   /* bold */
+  margin-right: 6px;
+}
+
+.detailValue {
+  font-weight: 600;    /* normal-ish */
+}
+
+.detailList {
+  margin-left: 4px;
+}
+
+.rawBox{
+  margin: 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  opacity: 0.85;
+}
+
 .muted {
   opacity: 0.7;
   font-weight: 900;
