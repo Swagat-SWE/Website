@@ -1,9 +1,9 @@
 <!-- app/pages/contact.vue -->
-<!-- Full working version: Sidebar logo hidden on desktop/laptop, visible on mobile (like other pages) -->
+<!-- Full working version with light Tailwind usage only -->
 
 <template>
   <div class="page">
-    <!-- ✅ Mobile overlay (tap to close drawer) -->
+    <!-- Mobile overlay -->
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -11,7 +11,7 @@
       aria-hidden="true"
     />
 
-    <!-- ✅ Sidebar (desktop column, mobile drawer) -->
+    <!-- Sidebar -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
         <NuxtLink
@@ -23,7 +23,6 @@
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
-        <!-- ✅ Mobile close button inside drawer -->
         <button
           class="drawerCloseBtn"
           type="button"
@@ -36,17 +35,10 @@
 
       <nav class="nav">
         <NuxtLink class="navItem" to="/" @click="closeMobileNav">Home</NuxtLink>
-        <NuxtLink class="navItem" to="/food" @click="closeMobileNav"
-          >Food Menu</NuxtLink
-        >
-        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav"
-          >Drinks Menu</NuxtLink
-        >
-        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav"
-          >Contact</NuxtLink
-        >
+        <NuxtLink class="navItem" to="/food" @click="closeMobileNav">Food Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav">Drinks Menu</NuxtLink>
+        <NuxtLink class="navItem" to="/contact" @click="closeMobileNav">Contact</NuxtLink>
 
-        <!-- Review + popout -->
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
           Review
           <span class="chev" :class="{ open: showReview }">▾</span>
@@ -91,16 +83,13 @@
       </nav>
     </aside>
 
-    <!-- Main content area -->
-    <main class="main">
-      <!-- ✅ Mobile-only mini brand strip (shows on phone only) -->
+    <!-- Main content -->
+    <main class="main w-full">
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>
 
-      <!-- ✅ Top bar -->
       <header class="topbar">
-        <!-- ✅ Mobile hamburger (hidden on desktop) -->
         <button
           class="hamburgerBtn"
           type="button"
@@ -123,17 +112,13 @@
         </div>
       </header>
 
-      <!-- Page Title -->
-      <section class="hero">
+      <section class="hero max-w-4xl mx-auto">
         <h1 class="title">CONTACT</h1>
         <p class="subtitle">Loras College • Dubuque, Iowa</p>
       </section>
 
-      <!-- Content grid -->
       <section class="contactGrid">
-        <!-- Left column -->
         <div class="leftCol">
-          <!-- Address + Phone -->
           <div class="card">
             <div class="cardHeader">
               <h2 class="cardTitle">Loras College</h2>
@@ -163,10 +148,9 @@
             </div>
           </div>
 
-          <!-- About -->
           <div class="card aboutCard">
             <h2 class="cardTitle">About Einstein Bros. Bagels at Loras</h2>
-            <p class="aboutText">
+            <p class="aboutText max-w-prose">
               Right on Loras College’s campus in Dubuque, Einstein Bros. Bagels serves fresh-baked
               bagels, breakfast sandwiches, and coffee
             </p>
@@ -175,7 +159,7 @@
 
             <p class="aboutText">We’re open weekdays from <b>7:30 AM to 1:30 PM</b>.</p>
 
-            <p class="aboutText">
+            <p class="aboutText max-w-prose">
               Whether you’re picking up bagel before class or meeting friends between lectures,
               expect fast service, quality food, and a warm, campus friendly vibe.
             </p>
@@ -188,7 +172,6 @@
             </div>
           </div>
 
-          <!-- FAQ + Privacy + Message -->
           <div class="card">
             <h2 class="cardTitle">FAQ</h2>
 
@@ -236,7 +219,6 @@
               information.
             </div>
 
-            <!-- Privacy -->
             <button class="privacyBar" type="button" @click="showPrivacy = !showPrivacy">
               <span>Privacy & Disclaimers</span>
               <span class="privacyChev" :class="{ open: showPrivacy }">▾</span>
@@ -244,7 +226,7 @@
 
             <div v-if="showPrivacy" class="privacyPanel">
               <div class="privacyCols">
-                <div class="privacyText">
+                <div class="privacyText max-w-prose">
                   <p class="privacyP">
                     <b>Message us:</b> Use the form to send a question or request. Please avoid
                     sharing sensitive info (passwords, payment details, or private IDs).
@@ -301,7 +283,6 @@
           </div>
         </div>
 
-        <!-- Right column -->
         <div class="rightCol">
           <div class="card">
             <h2 class="cardTitle">Hours</h2>
@@ -333,7 +314,6 @@
         </div>
       </section>
 
-      <!-- Slide-out cart panel -->
       <div class="overlay" v-if="showCart" @click="showCart = false" />
       <aside class="cartPanel" :class="{ open: showCart }" aria-label="Cart panel">
         <div class="cartHeader">
@@ -363,7 +343,8 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** ✅ Mobile nav drawer */
+
+/** Mobile nav drawer */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
   mobileNavOpen.value = true;
@@ -524,6 +505,7 @@ function removeFromCart(index) {
 </script>
 
 <style scoped>
+
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
@@ -543,12 +525,10 @@ function removeFromCart(index) {
   color: var(--brown);
 }
 
-/* ✅ Mobile overlay */
 .mobileOverlay {
   display: none;
 }
 
-/* Sidebar */
 .sidebar {
   border-right: 1px solid rgba(75, 52, 41, 0.12);
   padding: 18px 14px;
@@ -575,14 +555,12 @@ function removeFromCart(index) {
   object-fit: contain;
 }
 
-/* ✅ IMPORTANT: Hide sidebar logo on desktop/laptop ONLY */
 @media (min-width: 721px) {
   .sidebarTop {
     display: none;
   }
 }
 
-/* ✅ drawer close (only mobile) */
 .drawerCloseBtn {
   display: none;
   position: absolute;
@@ -705,13 +683,11 @@ function removeFromCart(index) {
   opacity: 0.85;
 }
 
-/* Main */
 .main {
   position: relative;
   padding: 20px 26px 50px;
 }
 
-/* ✅ Mini Brand Strip: default hidden everywhere */
 .brandStrip {
   display: none;
 }
@@ -719,7 +695,6 @@ function removeFromCart(index) {
   display: block;
 }
 
-/* Topbar */
 .topbar {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -740,7 +715,6 @@ function removeFromCart(index) {
   justify-content: flex-end;
 }
 
-/* Hamburger hidden on desktop */
 .hamburgerBtn {
   display: none;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -756,7 +730,6 @@ function removeFromCart(index) {
   line-height: 1;
 }
 
-/* Location */
 .locationWrap {
   position: relative;
   min-width: 0;
@@ -787,7 +760,6 @@ function removeFromCart(index) {
   text-overflow: ellipsis;
 }
 
-/* Cart */
 .cartBtn {
   position: relative;
   border: 1px solid rgba(75, 52, 41, 0.14);
@@ -816,7 +788,6 @@ function removeFromCart(index) {
   font-size: 12px;
 }
 
-/* Hero */
 .hero {
   text-align: center;
   padding: 8px 0 16px;
@@ -834,7 +805,6 @@ function removeFromCart(index) {
   font-weight: 800;
 }
 
-/* Contact Layout */
 .contactGrid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
@@ -941,7 +911,6 @@ function removeFromCart(index) {
   opacity: 0.9;
 }
 
-/* Hours */
 .hoursTable {
   display: flex;
   flex-direction: column;
@@ -965,7 +934,6 @@ function removeFromCart(index) {
   opacity: 0.9;
 }
 
-/* Map */
 .mapWrap {
   border-radius: 14px;
   overflow: hidden;
@@ -995,7 +963,6 @@ function removeFromCart(index) {
   box-shadow: var(--cardShadow);
 }
 
-/* FAQ */
 .faqItem {
   width: 100%;
   display: flex;
@@ -1031,7 +998,6 @@ function removeFromCart(index) {
   opacity: 0.9;
 }
 
-/* Privacy + Message */
 .privacyBar {
   margin-top: 14px;
   width: 100%;
@@ -1107,7 +1073,6 @@ function removeFromCart(index) {
   resize: vertical;
 }
 
-/* Cart slide-over */
 .overlay {
   position: fixed;
   inset: 0;
@@ -1186,7 +1151,6 @@ function removeFromCart(index) {
   background: #ffbe21;
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 980px) {
   .page {
     grid-template-columns: 220px 1fr;
@@ -1199,13 +1163,11 @@ function removeFromCart(index) {
   }
 }
 
-/* ✅ Mobile: drawer sidebar like your other pages */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
   }
 
-  /* ✅ Show mini strip only on mobile */
   .brandStrip {
     display: flex;
     height: 58px;
@@ -1214,7 +1176,7 @@ function removeFromCart(index) {
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
-    margin: -14px -14px 12px; /* match mobile main padding */
+    margin: -14px -14px 12px;
   }
   .brandStripLogo {
     height: 38px;
