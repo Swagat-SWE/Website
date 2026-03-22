@@ -53,8 +53,9 @@ html, body {
 }
 
 .darkToggle {
-  top: 72px;
-  right: 16px;
+  position: fixed;
+  top: 80px;
+  right: 36px;
   z-index: 9999;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #ffffff;
