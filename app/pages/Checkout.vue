@@ -405,23 +405,28 @@ async function placeOrder() {
     orderStepText.value = "Finalizing your order…";
     await sleep(700);
 
-    // ✅ tick
+    // tick
     orderDone.value = true;
     await sleep(700);
 
-    // ✅ clear cart now that it's placed
+    // clear cart now that it's placed
     cart.value = [];
     confirmed.value = false;
 
-    // ✅ go to tracking with real orderNumber
+    // go to tracking with real orderNumber
     const orderNumber = created.order?.orderNumber || created.orderNumber;
+
+    // save the order number for later tracking
+    if (orderNumber) {
+      localStorage.setItem("lastOrderNumber", orderNumber);
+    }
+
     navigateTo(
       orderNumber
         ? { path: "/tracking", query: { orderNumber } }
         : "/tracking"
     );
   } catch (e) {
-    // If anything fails, stop overlay and show an alert for now
     orderDone.value = false;
     alert(e?.message || "Order failed");
   } finally {

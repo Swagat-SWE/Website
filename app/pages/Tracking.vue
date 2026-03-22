@@ -265,7 +265,8 @@ import { useRoute } from "vue-router"
  * We'll now keep it in sync with the DB by polling by orderNumber.
  * 0: ordered, 1: preparing, 2: oven, 3: ready
  */
-const orderStatus = useOrderStatus()
+
+const orderStatus = ref(0)
 
 const steps = [
   { key: "ordered", label: "Ordered", desc: "We got it. You’re officially in the system." },
