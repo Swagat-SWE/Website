@@ -511,10 +511,25 @@ function removeFromCart(index) {
  *  Menu items
  *  ========================= */
 const Breakfast = ref([
-  { id: "bs1", name: "Farm House Egg Sandwich", img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg" },
-  { id: "bs2", name: "All Nighter Egg Sandwich", img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg" },
-  { id: "bs3", name: "Garden Avocado Egg Sandwich", img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg" },
-  { id: "bs4", name: "Bacon Cheddar Egg Sandwich", img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg" },
+  { 
+    id: "bs1", 
+    name: "Farm House Egg Sandwich", 
+    img: "EBB-SignatureEgg-Farmhouse-650x6501-1.jpg" 
+  },
+  { 
+    id: "bs2",
+    name: "All Nighter Egg Sandwich",
+    img: "EBB-SignatureEgg-All-Nighter-650x6501-1.jpg" 
+  },
+  { 
+    id: "bs3",
+    name: "Garden Avocado Egg Sandwich", 
+    img: "EBB-SignatureEgg-GardenAvocado-650x6501-1.jpg" },
+  { 
+    id: "bs4",
+    name: "Bacon Cheddar Egg Sandwich", 
+    img: "EBB-Baconcheddar-Classic-Egg-Sandwich-1.jpg" 
+  },
   { id: "bs5", name: "Cheddar Egg Sandwich", img: "EBB-Cheddar-Classic-Egg-Sandwich.jpg" },
   { id: "bs6", name: "Ham Swiss Egg Sandwich", img: "EBB-Ham-Swiss-Classic-Egg-Sandwich.jpg" },
   { id: "bs7", name: "Turkey Sausage Egg Sandwich", img: "EBB-Turkey-Sausage-Cheddar-Classic-Egg-Sandwich.jpg" },
