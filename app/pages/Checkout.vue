@@ -319,35 +319,37 @@ function toCents(n) {
   return Math.round(Number(n || 0) * 100);
 }
 
-// ✅ minimal helper: ensure a guestId exists for non-logged-in users
-async function ensureGuestId(api) {
+  // ✅ minimal helper: ensure a guestId exists for non-logged-in users
+ async function ensureGuestId(api) {
   if (!process.client) return null;
 
+  // If backend session already knows this guest, use it
+  try {
+    const me = await api.get("/api/me");
+    if (me?.ok && me?.type === "guest" && me?.user?.id) {
+      localStorage.setItem("guestId", me.user.id);
+      return me.user.id;
+    }
+  } catch {
+    // ignore and continue
+  }
+
+  // If we already stored one before, try to use it
   const existing = localStorage.getItem("guestId");
   if (existing) return existing;
 
-  // 1) Try common guest creation endpoints (keeps your backend flexible)
-  const tries = ["/api/auth/guest", "/api/guest", "/api/guests"];
+  // Create a REAL guest in backend DB
+  const guestName =
+    localStorage.getItem("guestName") ||
+    "Guest";
 
-  for (const url of tries) {
-    try {
-      const res = await api.post(url, {});
-      if (res?.ok && (res.guest?.id || res.id)) {
-        const id = String(res.guest?.id || res.id);
-        localStorage.setItem("guestId", id);
-        return id;
-      }
-    } catch {
-      // ignore and try next
-    }
+  const res = await api.post("/api/guest", { name: guestName });
+
+  if (!res?.ok || !res?.guest?.id) {
+    throw new Error(res?.error || "Could not create guest session.");
   }
 
-  // 2) If backend doesn't support guest creation, fall back to a local UUID.
-  // This still lets you attach orders to a consistent guest key.
-  const id =
-    (globalThis.crypto?.randomUUID && globalThis.crypto.randomUUID()) ||
-    `guest_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
+  const id = String(res.guest.id);
   localStorage.setItem("guestId", id);
   return id;
 }
@@ -372,7 +374,7 @@ async function placeOrder() {
       unitPrice: toCents(it.priceEach ?? 0),
     
       // ✅ NEW: send customizations to backend -> Prisma
-      customizations: it.custom || null,
+      customizations: (!it.custom || Array.isArray(it.custom) || Object.keys(it.custom).length === 0) ? null : it.custom,
     }));
 
     // Step 2
@@ -384,15 +386,15 @@ async function placeOrder() {
 
     const payload = { items };
 
-    if (me?.ok && me.user?.id) {
-      payload.userId = me.user.id;
-    } else {
-      const guestId = await ensureGuestId(api);
-      if (!guestId) {
-        throw new Error("Could not create guest session.");
-      }
-      payload.guestId = guestId;
+  if (me?.ok && me.type === "user" && me.user?.id) {
+    payload.userId = me.user.id;
+  } else {
+    const guestId = await ensureGuestId(api);
+    if (!guestId) {
+      throw new Error("Could not create guest session.");
     }
+    payload.guestId = guestId;
+  }
 
     // ✅ REAL create order in DB
     // (This must match what Staff.vue fetches. We'll keep it /api/orders here.)
@@ -405,23 +407,28 @@ async function placeOrder() {
     orderStepText.value = "Finalizing your order…";
     await sleep(700);
 
-    // ✅ tick
+    // tick
     orderDone.value = true;
     await sleep(700);
 
-    // ✅ clear cart now that it's placed
+    // clear cart now that it's placed
     cart.value = [];
     confirmed.value = false;
 
-    // ✅ go to tracking with real orderNumber
+    // go to tracking with real orderNumber
     const orderNumber = created.order?.orderNumber || created.orderNumber;
+
+    // save the order number for later tracking
+    if (orderNumber) {
+      localStorage.setItem("lastOrderNumber", orderNumber);
+    }
+
     navigateTo(
       orderNumber
         ? { path: "/tracking", query: { orderNumber } }
         : "/tracking"
     );
   } catch (e) {
-    // If anything fails, stop overlay and show an alert for now
     orderDone.value = false;
     alert(e?.message || "Order failed");
   } finally {

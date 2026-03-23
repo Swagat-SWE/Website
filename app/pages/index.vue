@@ -333,7 +333,14 @@ function goOrders() {
 }
 function goTracking() {
   closeAccountMenu();
-  navigateTo("/Tracking");
+
+  const lastOrderNumber = localStorage.getItem("lastOrderNumber");
+
+  if (lastOrderNumber) {
+    navigateTo(`/Tracking?orderNumber=${lastOrderNumber}`);
+  } else {
+    navigateTo("/Tracking");
+  }
 }
 
 async function logout() {

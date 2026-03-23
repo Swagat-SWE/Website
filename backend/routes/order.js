@@ -111,16 +111,18 @@ router.post("/", async (req, res) => {
 
     // Validate items (expects cents as integers)
     for (const it of items) {
-      if (it.customizations !== undefined) {
-        const isObj = typeof it.customizations === "object" && it.customizations !== null
-        const isArray = Array.isArray(it.customizations)
-        if (!isObj || isArray) {
-          return res.status(400).json({
-            ok: false,
-            error: "customizations must be an object (not an array)",
-          })
-        }
+    // ✅ Allow: undefined (not sent), null (no customizations), or a plain object
+    if (it.customizations !== undefined && it.customizations !== null) {
+      const isObj = typeof it.customizations === "object";
+      const isArray = Array.isArray(it.customizations);
+    
+      if (!isObj || isArray) {
+        return res.status(400).json({
+          ok: false,
+          error: "customizations must be an object (not an array)",
+        });
       }
+    }
       if (!it?.name || typeof it.name !== "string") {
         return res.status(400).json({ ok: false, error: "Each item must have a name" });
       }
@@ -156,10 +158,11 @@ router.post("/", async (req, res) => {
       }
 
       const subtotal = items.reduce((sum, it) => sum + it.unitPrice * it.quantity, 0);
-      const tax = 0;
+      // 7% tax, stored in cents
+      const tax = Math.round(subtotal * 0.07);
       const total = subtotal + tax;
 
-      // ✅ pretty order number
+      // pretty order number
       const orderNumber = await generateNextOrderNumber(tx);
 
       const order = await tx.order.create({
@@ -196,6 +199,35 @@ router.post("/", async (req, res) => {
     }
 
     return res.status(500).json({ ok: false, error: "Server error creating order" });
+  }
+});
+
+// GET /api/orders/my-completed
+router.get("/my-completed", async (req, res) => {
+  try {
+    if (!req.session?.user?.id) {
+      return res.status(401).json({
+        ok: false,
+        error: "You must be signed in to view your completed orders",
+      });
+    }
+
+    const orders = await prisma.order.findMany({
+      where: {
+        userId: req.session.user.id,
+        status: "COMPLETED",
+      },
+      orderBy: { createdAt: "desc" },
+      include: { items: true },
+    });
+
+    return res.json({ ok: true, orders });
+  } catch (e) {
+    console.error("GET /api/orders/my-completed ERROR:", e);
+    return res.status(500).json({
+      ok: false,
+      error: "Failed to fetch completed orders",
+    });
   }
 });
 
