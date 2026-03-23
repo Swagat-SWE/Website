@@ -1,23 +1,16 @@
 <template>
-  <div>
-    <button
-      type="button"
-      class="darkToggle"
-      @click="toggleDark"
-    >
-      {{ isDark ? "Light Mode" : "Dark Mode" }}
-    </button>
-
+  <div class="appShell">
+    
     <NuxtPage />
     <SiteFooter />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { onMounted } from "vue"
 import SiteFooter from "~/components/SiteFooter.vue"
 
-const isDark = ref(false)
+const isDark = useState("darkMode", () => false)
 
 function applyDarkMode(value) {
   if (value) {
@@ -45,18 +38,24 @@ onMounted(() => {
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   font-weight: 500;
 }
 
+.appShell {
+  position: relative;
+  min-height: 100vh;
+}
+
 .darkToggle {
-  position: fixed;
-  top: 80px;
-  right: 36px;
-  z-index: 9999;
+  position: absolute;
+  top: 20px;
+  right: 110px;
+  z-index: 50;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: #ffffff;
   color: #2c1b12;
@@ -75,9 +74,8 @@ html, body {
 
 @media (max-width: 720px) {
   .darkToggle {
-    top: auto;
-    bottom: 16px;
-    right: 16px;
+    top: 12px;
+    right: 12px;
     padding: 9px 12px;
     font-size: 14px;
   }

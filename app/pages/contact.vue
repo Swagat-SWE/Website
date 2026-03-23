@@ -1,9 +1,7 @@
 <!-- app/pages/contact.vue -->
-<!-- Full working version with light Tailwind usage only -->
 
 <template>
-  <div class="page">
-    <!-- Mobile overlay -->
+  <div class="page contactPage">
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -11,7 +9,6 @@
       aria-hidden="true"
     />
 
-    <!-- Sidebar -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
         <NuxtLink
@@ -42,6 +39,14 @@
         <button class="navItem reviewBtn" type="button" @click="toggleReview">
           Review
           <span class="chev" :class="{ open: showReview }">▾</span>
+        </button>
+
+        <button
+          class="navItem"
+          type="button"
+          @click="toggleDark"
+        >
+          {{ isDark ? "Light Mode" : "Dark Mode" }}
         </button>
 
         <div v-if="showReview" class="reviewPanel">
@@ -83,7 +88,6 @@
       </nav>
     </aside>
 
-    <!-- Main content -->
     <main class="main w-full">
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
@@ -108,8 +112,7 @@
           </div>
         </div>
 
-        <div class="topbarRight">
-        </div>
+        <div class="topbarRight"></div>
       </header>
 
       <section class="hero max-w-4xl mx-auto">
@@ -342,7 +345,19 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+const isDark = useState("darkMode")
 
+function toggleDark() {
+  isDark.value = !isDark.value
+
+  if (isDark.value) {
+    document.documentElement.classList.add("dark")
+  } else {
+    document.documentElement.classList.remove("dark")
+  }
+
+  localStorage.setItem("darkMode", JSON.stringify(isDark.value))
+}
 
 /** Mobile nav drawer */
 const mobileNavOpen = ref(false);
@@ -505,6 +520,7 @@ function removeFromCart(index) {
 </script>
 
 <style scoped>
+
 
 :root {
   --cream: #f6f0e8;
@@ -911,6 +927,13 @@ function removeFromCart(index) {
   opacity: 0.9;
 }
 
+/* Ensure quick tip text stays readable in dark mode */
+:global(.dark) .aboutHighlightTitle,
+:global(.dark) .aboutHighlightBody,
+:global(.dark) .aboutHighlightBody p {
+  color: #fff7ee;
+}
+
 .hoursTable {
   display: flex;
   flex-direction: column;
@@ -1236,5 +1259,122 @@ function removeFromCart(index) {
   .mapFrame {
     height: 240px;
   }
+}
+
+
+
+</style>
+
+<style>
+html.dark .contactPage {
+  background: linear-gradient(180deg, #1b1714, #231d19);
+  color: #f7efe6;
+}
+
+html.dark .contactPage .sidebar {
+  background: #201b18;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html.dark .contactPage .navItem,
+html.dark .contactPage .reviewPanel,
+html.dark .contactPage .card,
+html.dark .contactPage .contactForm,
+html.dark .contactPage .cartPanel,
+html.dark .contactPage .faqItem,
+html.dark .contactPage .commentBox,
+html.dark .contactPage .fieldInput,
+html.dark .contactPage .fieldTextarea,
+html.dark .contactPage .hamburgerBtn,
+html.dark .contactPage .cartBtn,
+html.dark .contactPage .secondaryBtn {
+  background: #2b2420 !important;
+  color: #f7efe6 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .contactPage .card,
+html.dark .contactPage .reviewPanel,
+html.dark .contactPage .contactForm,
+html.dark .contactPage .cartPanel {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+}
+
+html.dark .contactPage .privacyPanel {
+  background: #312926 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .contactPage .locationPill {
+  background: #312926 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .contactPage .faqBody {
+  background: #332c28 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f7efe6 !important;
+}
+
+html.dark .contactPage .phoneLink,
+html.dark .contactPage .privacyLink {
+  color: #f4c95d !important;
+}
+
+html.dark .contactPage .title,
+html.dark .contactPage .subtitle,
+html.dark .contactPage .cardTitle,
+html.dark .contactPage .infoLabel,
+html.dark .contactPage .infoValue,
+html.dark .contactPage .hoursDay,
+html.dark .contactPage .hoursTime,
+html.dark .contactPage .aboutText,
+html.dark .contactPage .privacyP,
+html.dark .contactPage .ratingText,
+html.dark .contactPage .commentLabel,
+html.dark .contactPage .fieldLabel,
+html.dark .contactPage .cartItemName,
+html.dark .contactPage .locationSelected,
+html.dark .contactPage .navItem,
+html.dark .contactPage .faqItem,
+html.dark .contactPage .secondaryBtn {
+  color: #fff7ee !important;
+}
+
+html.dark .contactPage .hoursRow,
+html.dark .contactPage .infoRow,
+html.dark .contactPage .cartHeader {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .contactPage .aboutHighlight {
+  background: linear-gradient(
+    180deg,
+    rgba(244, 179, 22, 0.18),
+    rgba(244, 179, 22, 0.08)
+  ) !important;
+  border-color: rgba(244, 179, 22, 0.35) !important;
+}
+
+html.dark .contactPage .aboutHighlightTitle,
+html.dark .contactPage .aboutHighlightBody,
+html.dark .contactPage .aboutHighlightBody p {
+  color: #fff7ee !important;
+}
+
+html.dark .contactPage .privacyBar {
+  background: rgba(244, 179, 22, 0.14) !important;
+  border-color: rgba(244, 179, 22, 0.32) !important;
+  color: #fff7ee !important;
+}
+
+html.dark .contactPage .brandStrip {
+  background: #2a241f !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .contactPage .submitted {
+  color: #f7efe6 !important;
+  opacity: 0.92;
 }
 </style>
