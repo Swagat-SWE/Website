@@ -15,6 +15,7 @@ model User {
   role      Role     @default(USER)
 
   orders    Order[]
+  reviews   Review[]   
 }
 
 model Guest {
@@ -90,4 +91,21 @@ enum OrderStatus {
 enum Role {
   USER
   STAFF
+}
+
+model Review {
+  id        String   @id @default(cuid())
+
+  rating    Int
+  comment   String?
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  guestName String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }

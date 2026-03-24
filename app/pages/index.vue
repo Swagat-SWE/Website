@@ -405,14 +405,42 @@ function toggleReview() {
   showReview.value = !showReview.value;
 }
 
-function submitReview() {
-  submitted.value = true;
+async function submitReview() {
+  if (!rating.value) {
+    alert("Please select a rating");
+    return;
+  }
 
-  rating.value = 0;
-  hoverRating.value = 0;
-  comment.value = "";
+  try {
+    const payload = {
+      rating: rating.value,
+      comment: comment.value,
+    };
 
-  setTimeout(() => (submitted.value = false), 2000);
+    // ✅ if logged in user
+    if (user.value) {
+      payload.userId = user.value.id;
+    } else {
+      payload.guestName = "Guest"; // or you can make this dynamic later
+    }
+
+    const res = await api.post("/api/reviews", payload);
+
+    if (res?.ok) {
+      submitted.value = true;
+
+      rating.value = 0;
+      hoverRating.value = 0;
+      comment.value = "";
+
+      setTimeout(() => (submitted.value = false), 2000);
+    } else {
+      alert(res?.message || "Failed to submit review");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
 }
 
 /** Cart */
