@@ -1,6 +1,13 @@
 export default defineNuxtConfig({
   modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
 
+  postcss: {
+    plugins: {
+      '@tailwindcss/postcss': {},
+      autoprefixer: {},
+    },
+  },
+
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "",
