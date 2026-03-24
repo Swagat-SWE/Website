@@ -1,0 +1,51 @@
+html.dark body {
+  background: #1b1714;
+  color: #fff7ee;
+}
+
+html.dark .page {
+  background: linear-gradient(180deg, #1b1714, #231d19) !important;
+  color: #fff7ee !important;
+}
+
+html.dark .sidebar {
+  background: #201b18 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .navItem,
+html.dark .card,
+html.dark .faqItem,
+html.dark .reviewPanel,
+html.dark .contactForm,
+html.dark .secondaryBtn,
+html.dark .fieldInput,
+html.dark .fieldTextarea,
+html.dark .commentBox {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+html.dark .topbarRight button,
+html.dark .topbarRight a,
+html.dark .locationPill {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .addBtn,
+html.dark .plusBtn {
+  background: #3a2f29 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+html.dark .pricePill,
+html.dark .priceTag {
+  background: #161312 !important;
+  color: #f4c95d !important;
+}
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}

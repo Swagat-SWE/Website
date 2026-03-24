@@ -30,13 +30,14 @@ onMounted(() => {
   const saved = localStorage.getItem("darkMode")
   if (saved !== null) {
     isDark.value = JSON.parse(saved)
-    applyDarkMode(isDark.value)
   }
+  applyDarkMode(isDark.value)
 })
 </script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
+@import "../assets/css/dark-theme.css";
 
 html,
 body {

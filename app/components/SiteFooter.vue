@@ -6,14 +6,38 @@
         <NuxtLink to="/privacy">Privacy Policy</NuxtLink>
         <span class="sep">•</span>
         <NuxtLink to="/terms">Terms of Use</NuxtLink>
+        <button class="darkFooterBtn" @click="toggleDark">
+          {{ isDark ? "☀️ Light" : "🌙 Dark" }}
+        </button>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted } from 'vue'
+
 const year = new Date().getFullYear()
+
+const isDark = useState("darkMode", () => false)
+
+function applyDarkMode(value) {
+  if (value) {
+    document.documentElement.classList.add("dark")
+  } else {
+    document.documentElement.classList.remove("dark")
+  }
+}
+
+function toggleDark() {
+  isDark.value = !isDark.value
+  applyDarkMode(isDark.value)
+  localStorage.setItem("darkMode", JSON.stringify(isDark.value))
+}
+
+onMounted(() => {
+  applyDarkMode(isDark.value)
+})
 </script>
 
 <style scoped>
@@ -46,5 +70,27 @@ const year = new Date().getFullYear()
 }
 @media (max-width:720px){
   .container{flex-direction:column;gap:6px;text-align:center}
+}
+
+.darkFooterBtn {
+  margin-left: 14px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: 1px solid rgba(75,52,41,0.2);
+  background: #ffffff;
+  color: #2c1b12;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.darkFooterBtn:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+html.dark .darkFooterBtn {
+  background: #2b2420;
+  color: #fff7ee;
+  border-color: rgba(255,255,255,0.1);
 }
 </style>

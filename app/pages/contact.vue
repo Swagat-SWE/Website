@@ -41,14 +41,6 @@
           <span class="chev" :class="{ open: showReview }">▾</span>
         </button>
 
-        <button
-          class="navItem"
-          type="button"
-          @click="toggleDark"
-        >
-          {{ isDark ? "Light Mode" : "Dark Mode" }}
-        </button>
-
         <div v-if="showReview" class="reviewPanel">
           <div class="starsRow" role="radiogroup" aria-label="Rate us">
             <button
