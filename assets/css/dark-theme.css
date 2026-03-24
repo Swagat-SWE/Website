@@ -49,3 +49,133 @@ html.dark .priceTag {
 * {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
+
+html.dark .cartPanel {
+  background: #211b18 !important;
+  color: #fff7ee !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .cartHeader,
+html.dark .cartItem,
+html.dark .cartRow,
+html.dark .cartCard {
+  background: transparent !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .cartItem {
+  background: #2b2420 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .cartItemName,
+html.dark .cartTitle,
+html.dark .cartPrice,
+html.dark .cartQty,
+html.dark .emptyCart {
+  color: #fff7ee !important;
+}
+
+html.dark .checkoutBtn {
+  background: #f4c95d !important;
+  color: #2b1f15 !important;
+  border: none !important;
+}
+
+html.dark .checkoutBtn:hover {
+  background: #ffd76c !important;
+}
+
+html.dark .xBtn,
+html.dark .removeBtn {
+  color: #fff7ee !important;
+}
+
+html.dark .overlay {
+  background: rgba(0, 0, 0, 0.45) !important;
+}
+
+html.dark .sizePicker {
+  background: #211b18 !important;
+  color: #fff7ee !important;
+}
+
+/* ===== CART PANEL ===== */
+html.dark .cartPanel {
+  background: #1e1916 !important;
+  color: #fff7ee !important;
+  border-left: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+html.dark .cartItem {
+  background: #2a221e !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+html.dark .cartThumb {
+  background: #2a221e !important;
+}
+
+html.dark .cartName,
+html.dark .cartSub,
+html.dark .cartPrice {
+  color: #fff7ee !important;
+}
+
+html.dark .checkoutBtn {
+  background: #f4b316 !important;
+  color: #2c1b12 !important;
+}
+
+/* ===== CART BUTTON ===== */
+html.dark .cartBtn {
+  background: #2a221e !important;
+  color: #fff7ee !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ===== MODAL OVERLAY ===== */
+html.dark .overlay {
+  background: rgba(0,0,0,0.6) !important;
+}
+
+/* ===== SIZE MODAL ===== */
+html.dark .sizeModal {
+  background: #1e1916 !important;
+  color: #fff7ee !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+html.dark .sizeBtn {
+  background: #2a221e !important;
+  color: #fff7ee !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+html.dark .sizeLabel {
+  color: #fff7ee !important;
+}
+
+html.dark .sizePrice {
+  background: rgba(244,179,22,0.25) !important;
+  color: #fff7ee !important;
+}
+
+html.dark .cancelBtn {
+  background: #2a221e !important;
+  color: #fff7ee !important;
+}
+
+/* ===== CARDS / TILE FIX ===== */
+html.dark .tileImg {
+  background: #2a221e !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+html.dark .pricePill {
+  background: #111 !important;
+  color: #fff !important;
+}
