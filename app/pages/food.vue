@@ -104,7 +104,7 @@
 
       <!-- Title -->
       <section class="hero">
-        <h1 class="title">Food Selection</h1>
+        <h1 class="title">FOOD MENU</h1>
       </section>
 
       <!-- Breakfast -->
