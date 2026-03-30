@@ -1011,7 +1011,7 @@ const bottledDrinks = ref([
 /* Orange + button */
 .plusBtn {
   width: 32px;
-  height: 32px;
+  height: 52px;
   border-radius: 10px;
   border: 1px solid rgba(75, 52, 41, 0.14);
   background: var(--orange);
