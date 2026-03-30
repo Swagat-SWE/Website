@@ -62,6 +62,7 @@
         <span class="value">********</span>
       </div>
 
+
       <!-- Actions -->
       <div class="actions">
         <button class="primaryBtn" @click="goChangePassword">

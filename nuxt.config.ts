@@ -1,6 +1,13 @@
 export default defineNuxtConfig({
   modules: ["@pinia/nuxt"],
 
+  postcss: {
+    plugins: {
+      '@tailwindcss/postcss': {},
+      autoprefixer: {},
+    },
+  },
+
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "",
@@ -15,6 +22,7 @@ export default defineNuxtConfig({
     },
   },
 
+  // Note: Only runs in dev, won't crash Render build
   devServer: {
     https: {
       key: "./certs/localhost-key.pem",

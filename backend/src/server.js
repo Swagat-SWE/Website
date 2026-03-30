@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
+const reviewsGet = require("./reviews.get");
+const reviewsPost = require("./reviews.post");
 require("dotenv").config();
 
 const { PrismaClient } = require("@prisma/client");
@@ -378,6 +380,10 @@ app.get("/api/me", (req, res) => {
 
   return res.status(401).json({ ok: false, type: null, user: null });
 });
+
+// Reviews routes
+app.get("/api/reviews", reviewsGet);
+app.post("/api/reviews", reviewsPost);
 
 const ordersRouter = require("../routes/order");
 app.use("/api/orders", ordersRouter);
