@@ -1,7 +1,7 @@
 <!-- app/pages/drinks.vue -->
 <template>
   <div class="page">
-    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <!-- Mobile dark overlay (tap to close) -->
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -9,14 +9,13 @@
       aria-hidden="true"
     />
 
-    <!-- ✅ Sidebar (desktop fixed column, mobile slide-in drawer) -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }" aria-label="Sidebar navigation">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
-        <!-- ✅ Mobile close button inside drawer -->
+        <!-- Mobile close button inside drawer -->
         <button
           class="drawerCloseBtn"
           type="button"
@@ -77,13 +76,13 @@
 
     <!-- Main -->
     <main class="main">
-    <!-- ✅ Mobile-only mini brand strip -->
+    <!--  Mobile-only mini brand strip -->
     <div class="brandStrip" aria-hidden="true">
       <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
     </div>
-      <!-- ✅ Topbar -->
+      <!--  Topbar -->
       <header class="topbar">
-        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <!-- Mobile hamburger (hidden on desktop) -->
         <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
           <span class="hamburgerIcon" aria-hidden="true">☰</span>
         </button>
@@ -284,7 +283,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** ✅ Mobile nav drawer */
+/** Mobile nav drawer */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
   mobileNavOpen.value = true;
@@ -1285,7 +1284,7 @@ const bottledDrinks = ref([
 }
 /* ===== Mini Brand Strip (desktop hidden) ===== */
 .brandStrip {
-  display: none; /* ✅ hidden on desktop */
+  display: none; /* hidden on desktop */
 }
 .brandStripLogo {
   display: block;
@@ -1306,7 +1305,7 @@ const bottledDrinks = ref([
   }
 }
 
-/* ✅ Mobile: drawer + 3 tiles per row */
+/* Mobile: drawer + 3 tiles per row */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
@@ -1357,7 +1356,7 @@ const bottledDrinks = ref([
     letter-spacing: 1px;
   }
 
-  /* ✅ 3 items per row like main page */
+  /* 3 items per row like main page */
   .tileGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
@@ -1389,7 +1388,7 @@ const bottledDrinks = ref([
     height: 28px;
     font-size: 18px;
     border-radius: 9px;
-    margin-right: 0; /* ✅ undo desktop push */
+    margin-right: 0; /* undo desktop push */
   }
   /* ===== Mini Brand Strip ===== */
 .brandStrip{
@@ -1449,7 +1448,7 @@ const bottledDrinks = ref([
   .modal {
     width: 100%;
     max-width: 520px;
-    max-height: 75vh;            /* ✅ IMPORTANT: prevents huge box */
+    max-height: 75vh;            /* IMPORTANT: prevents huge box */
     overflow: hidden;            /* hide overflow; body will scroll */
     border-radius: 18px 18px 22px 22px;
   }
@@ -1461,7 +1460,7 @@ const bottledDrinks = ref([
   .modalBody {
     padding: 12px 14px;
     max-height: calc(75vh - 120px); /* leaves room for header+footer */
-    overflow-y: auto;              /* ✅ scroll inside */
+    overflow-y: auto;              /* scroll inside */
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1504,7 +1503,7 @@ const bottledDrinks = ref([
   .sizeModal {
     width: 100%;
     max-width: 520px;
-    max-height: 60vh;            /* ✅ key: cap height */
+    max-height: 60vh;            /* key: cap height */
     overflow: hidden;            /* body will scroll */
     border-radius: 18px 18px 22px 22px;
     padding: 12px 12px 12px;     /* smaller padding */
@@ -1524,7 +1523,7 @@ const bottledDrinks = ref([
   }
 
   .sizeOptions {
-    max-height: calc(60vh - 140px); /* ✅ scroll area */
+    max-height: calc(60vh - 140px); /* scroll area */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     gap: 8px;

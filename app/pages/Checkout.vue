@@ -27,13 +27,13 @@
         </button>
       </header>
 
-      <!-- ✅ Ordering overlay -->
+      <!-- Ordering overlay -->
       <div v-if="isOrdering" class="verifyOverlay" role="status" aria-live="polite">
         <div class="verifyCard">
           <!-- while loading -->
           <div v-if="!orderDone" class="spinner" aria-hidden="true"></div>
 
-          <!-- after done: ✅ tick -->
+          <!-- after done: tick -->
           <div v-else class="tickWrap" aria-hidden="true">
             <svg class="tickSvg" viewBox="0 0 52 52">
               <circle class="tickCircle" cx="26" cy="26" r="24" />
@@ -222,7 +222,7 @@
           <div v-if="editingItem" class="modalBody">
             <div class="modalTitle">{{ editingItem.name }}</div>
 
-            <!-- ✅ DRINK FIELDS -->
+            <!-- DRINK FIELDS -->
             <template v-if="editingCategory === 'drink'">
               <label class="fieldLabel">Milk</label>
               <select v-model="editDraft.milk" class="select">
@@ -258,7 +258,7 @@
               </div>
             </template>
 
-            <!-- ✅ SANDWICH / BAGEL / OTHER FIELDS -->
+            <!-- SANDWICH / BAGEL / OTHER FIELDS -->
             <template v-else>
               <label v-if="editingOptions.bagels?.length" class="fieldLabel">Bagel</label>
               <select v-if="editingOptions.bagels?.length" v-model="editDraft.bagel" class="select">
@@ -319,7 +319,7 @@ function toCents(n) {
   return Math.round(Number(n || 0) * 100);
 }
 
-  // ✅ minimal helper: ensure a guestId exists for non-logged-in users
+  // minimal helper: ensure a guestId exists for non-logged-in users
  async function ensureGuestId(api) {
   if (!process.client) return null;
 
@@ -367,13 +367,13 @@ async function placeOrder() {
     orderStepText.value = "Creating an order number…";
     await sleep(900);
 
-    // ✅ Build items for backend (cents + quantity)
+    // Build items for backend (cents + quantity)
     const items = cart.value.map((it) => ({
       name: String(it.name || "Item"),
       quantity: Number.isInteger(it.qty) ? it.qty : Number(it.qty || 1),
       unitPrice: toCents(it.priceEach ?? 0),
     
-      // ✅ NEW: send customizations to backend -> Prisma
+      // NEW: send customizations to backend -> Prisma
       customizations: (!it.custom || Array.isArray(it.custom) || Object.keys(it.custom).length === 0) ? null : it.custom,
     }));
 
@@ -381,7 +381,7 @@ async function placeOrder() {
     orderStepText.value = "Sending the info to the staff…";
     await sleep(600);
 
-    // ✅ figure out user vs guest
+    // figure out user vs guest
     const me = await api.get("/api/me");
 
     const payload = { items };
@@ -396,7 +396,7 @@ async function placeOrder() {
     payload.guestId = guestId;
   }
 
-    // ✅ REAL create order in DB
+    // REAL create order in DB
     // (This must match what Staff.vue fetches. We'll keep it /api/orders here.)
     const created = await api.post("/api/orders", payload);
     if (!created?.ok) {
@@ -1211,7 +1211,7 @@ function saveEdit() {
   opacity: 0.85;
 }
 
-/* ✅ your responsive styles kept */
+/* your responsive styles kept */
 @media (max-width: 980px) {
   .layout {
     grid-template-columns: 1fr;
