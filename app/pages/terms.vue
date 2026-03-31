@@ -1,7 +1,7 @@
 <!-- app/pages/terms.vue -->
 <template>
   <div class="page">
-    <!-- ✅ Mobile overlay (tap to close drawer) -->
+    <!-- Mobile overlay (tap to close drawer) -->
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -9,14 +9,14 @@
       aria-hidden="true"
     />
 
-    <!-- ✅ Sidebar (desktop column, mobile drawer) -->
+    <!-- Sidebar (desktop column, mobile drawer) -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
-        <!-- ✅ Mobile close button inside drawer -->
+        <!-- Mobile close button inside drawer -->
         <button
           class="drawerCloseBtn"
           type="button"
@@ -77,12 +77,12 @@
 
     <!-- Main content -->
     <main class="main">
-      <!-- ✅ Mobile-only mini brand strip -->
+      <!-- Mobile-only mini brand strip -->
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>
 
-      <!-- ✅ Topbar: hamburger (mobile) -->
+      <!-- Topbar: hamburger (mobile) -->
       <header class="topbar">
         <button
           class="hamburgerBtn"
@@ -298,7 +298,7 @@ const currentDate = new Date().toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-/** ✅ Mobile nav drawer */
+/** Mobile nav drawer */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
   mobileNavOpen.value = true;
@@ -360,7 +360,7 @@ function removeFromCart(index) {
   color: var(--brown);
 }
 
-/* ✅ Mobile overlay */
+/* Mobile overlay */
 .mobileOverlay {
   display: none;
 }
@@ -392,7 +392,7 @@ function removeFromCart(index) {
   object-fit: contain;
 }
 
-/* ✅ Hide sidebar logo on laptop/desktop, show on mobile via brand strip */
+/* Hide sidebar logo on laptop/desktop, show on mobile via brand strip */
 @media (min-width: 721px) {
   .sidebarTop {
     display: none;
@@ -739,7 +739,7 @@ function removeFromCart(index) {
   }
 }
 
-/* ✅ Mobile drawer + better spacing */
+/* Mobile drawer + better spacing */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;

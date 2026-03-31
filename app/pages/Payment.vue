@@ -38,13 +38,13 @@
         </button>
       </header>
 
-      <!-- ✅ Verifying overlay -->
+      <!-- Verifying overlay -->
       <div v-if="isVerifying" class="verifyOverlay" role="status" aria-live="polite">
         <div class="verifyCard">
           <!-- while loading -->
           <div v-if="!verifyDone" class="spinner" aria-hidden="true"></div>
       
-          <!-- after done: ✅ tick -->
+          <!-- after done: tick -->
           <div v-else class="tickWrap" aria-hidden="true">
             <svg class="tickSvg" viewBox="0 0 52 52">
               <circle class="tickCircle" cx="26" cy="26" r="24" />
@@ -100,7 +100,7 @@
           
                   <div class="walletRow1">
                     <div class="walletLeft">
-                      <!-- ✅ brand logo slot (white box, blends in) -->
+                      <!-- brand logo slot (white box, blends in) -->
                       <div class="brandLogoBox" aria-hidden="true">
                         <img
                           v-if="brandLogoSrc(c.brand)"
@@ -534,7 +534,7 @@ function onCardNumberInput() {
   // strip non-digits
   let digits = onlyDigits(cardNumber.value);
 
-  // ✅ HARD LIMIT: max 16 digits
+  // HARD LIMIT: max 16 digits
   digits = digits.slice(0, 16);
 
   // reformat with spaces
@@ -704,7 +704,7 @@ function validate() {
        isVerifying.value = true;
      
        await sleep(1800);      // buffering
-       verifyDone.value = true; // ✅ tick
+       verifyDone.value = true; // tick
        await sleep(700);
      
        const digits = onlyDigits(cardNumber.value);
@@ -735,10 +735,10 @@ function validate() {
          savedAt: Date.now(),
        };
      
-       // ✅ add to list (multiple cards)
+       // add to list (multiple cards)
        cards.value.push(newCard);
      
-       // ✅ first card becomes default automatically
+       // first card becomes default automatically
        if (!defaultCardId.value) {
          defaultCardId.value = newCard.id;
        }
@@ -1406,12 +1406,12 @@ function validate() {
 
   transition: transform 0.10s ease, box-shadow 0.10s ease, background 0.10s ease;
 
-  /* ✅ center content */
+  /* center content */
   position: relative;
   display: grid;
   place-items: center;
 }
-/* ✅ Success bounce for Save card */
+/* Success bounce for Save card */
 .successPulse {
   animation: successBounce 520ms cubic-bezier(.34,1.56,.64,1);
 }
@@ -1430,7 +1430,7 @@ function validate() {
   box-shadow: 0 18px 40px rgba(10, 132, 255, 0.32);
 }
 
-/* ✅ keep arrow on the right */
+/* keep arrow on the right */
 .btnArrow{
   position: absolute;
   right: 16px;
@@ -1698,7 +1698,7 @@ function validate() {
   gap: 10px;
 }
 
-/* ✅ White logo slot that blends into the row */
+/* White logo slot that blends into the row */
 .brandLogoBox{
   width: 34px;
   height: 22px;
