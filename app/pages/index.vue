@@ -1449,9 +1449,9 @@ const classics = ref([
     font-size: 18px;
     border-radius: 9px;
   }
-
+/* 
   .tileName {
-  grid-column: 1 / -1;              /* span full width */
+  grid-column: 1 / -1;              span full width
   grid-row: 1;
   font-size: 13px;
   line-height: 1.15;
@@ -1460,7 +1460,9 @@ const classics = ref([
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  }
+}   */
+
+
   
   /* Mobile: Name on top, then Price + Plus on same row */
 .tileFooter {
@@ -1491,6 +1493,7 @@ const classics = ref([
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
