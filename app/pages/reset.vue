@@ -48,7 +48,7 @@
         <p v-if="localErr" class="err">{{ localErr }}</p>
       </div>
 
-      <p v-if="done" class="ok">✅ Password updated. Redirecting…</p>
+      <p v-if="done" class="ok"> Password updated. Redirecting…</p>
       <p v-if="serverErr" class="err">{{ serverErr }}</p>
     </div>
   </div>
