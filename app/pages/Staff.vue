@@ -1659,4 +1659,127 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
     font-weight: 1100;     /* keep brand strong */
   }
 }
+
+:global(html.dark) .loginPage {
+  background:
+    radial-gradient(circle at top left, rgba(244, 179, 22, 0.06), transparent 30%),
+    linear-gradient(180deg, #181311 0%, #221916 100%) !important;
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .staffLoginCard {
+  background: #2b2420 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+:global(html.dark) .staffLoginTitle,
+:global(html.dark) .loginPage label {
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .input {
+  background: #f8f6f3 !important;
+  color: #2b1f15 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+:global(html.dark) .input::placeholder {
+  color: #766b63 !important;
+}
+
+:global(html.dark) .primaryBtn {
+  background: linear-gradient(90deg, #5a3a2b, #704531) !important;
+  color: #fff7ee !important;
+  border: none !important;
+}
+
+:global(html.dark) .primaryBtn:hover {
+  background: linear-gradient(90deg, #684131, #7d4d38) !important;
+}
+
+:global(html.dark) .muted {
+  color: #c7bbb0 !important;
+  opacity: 1 !important;
+}
+
+:global(html.dark) .linkBtn {
+  color: #9c684a !important;
+}
+
+:global(html.dark) .resetBox {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .errorText {
+  color: #ff8d8d !important;
+}
+
+/* logged-in staff page improvements too */
+:global(html.dark) .staffTag {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .staffNavBtn {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .staffNavBtn.active {
+  border-color: rgba(244, 179, 22, 0.55) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+:global(html.dark) .ghostBtn,
+:global(html.dark) .staffAccountMenu,
+:global(html.dark) .modal,
+:global(html.dark) .colHeader,
+:global(html.dark) .availGroupTitle {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .col,
+:global(html.dark) .availGroup {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .orderCard,
+:global(html.dark) .availItemBtn,
+:global(html.dark) .miniBtn,
+:global(html.dark) .xBtn {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .itemDetails {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .menuItem {
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .menuItem:hover {
+  background: rgba(244, 179, 22, 0.14) !important;
+}
+
+:global(html.dark) .menuDivider {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .modalHeader,
+:global(html.dark) .modalFooter,
+:global(html.dark) .sectionHeader,
+:global(html.dark) .colHeader {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
 </style>
