@@ -304,12 +304,22 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useApi } from "../composables/useApi"; // if path differs, adjust
 
 const isOrdering = ref(false);
 const orderDone = ref(false);
 const orderStepText = ref("Creating an order number…");
+
+watch(
+  cart,
+  (newCart) => {
+    if (process.client) {
+      localStorage.setItem("cart", JSON.stringify(newCart));
+    }
+  },
+  { deep: true }
+);
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -445,7 +455,13 @@ const defaultCard = computed(() => {
 });
 
 /** CART STATE (shared with index.vue) */
-const cart = useState("cart", () => []);
+const cart = useState("cart", () => {
+  if (process.client) {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  }
+  return [];
+});
 
 function itemCategory(item) {
   return item.category || item.type || "other";
