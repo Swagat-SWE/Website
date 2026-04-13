@@ -311,16 +311,6 @@ const isOrdering = ref(false);
 const orderDone = ref(false);
 const orderStepText = ref("Creating an order number…");
 
-watch(
-  cart,
-  (newCart) => {
-    if (process.client) {
-      localStorage.setItem("cart", JSON.stringify(newCart));
-    }
-  },
-  { deep: true }
-);
-
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -455,13 +445,23 @@ const defaultCard = computed(() => {
 });
 
 /** CART STATE (shared with index.vue) */
-const cart = useState("cart", () => {
-  if (process.client) {
-    const saved = localStorage.getItem("cart");
-    return saved ? JSON.parse(saved) : [];
+const cart = useState("cart", () => []);
+
+if (import.meta.client) {
+  const saved = localStorage.getItem("cart");
+  if (saved) {
+    cart.value = JSON.parse(saved);
   }
-  return [];
-});
+}
+
+watch(
+  () => cart.value,
+  (newCart) => {
+    if (!import.meta.client) return;
+    localStorage.setItem("cart", JSON.stringify(newCart || []));
+  },
+  { deep: true, immediate: true }
+);
 
 function itemCategory(item) {
   return item.category || item.type || "other";

@@ -474,6 +474,21 @@ function submitReview() {
 const showCart = ref(false);
 const cart = useState("cart", () => []);
 
+onMounted(() => {
+  const saved = localStorage.getItem("cart");
+  if (saved) {
+    cart.value = JSON.parse(saved);
+  }
+});
+
+watch(
+  cart,
+  (newCart) => {
+    localStorage.setItem("cart", JSON.stringify(newCart));
+  },
+  { deep: true }
+);
+
 const cartCount = computed(() =>
   cart.value.reduce((sum, item) => sum + (item.qty || 1), 0)
 );

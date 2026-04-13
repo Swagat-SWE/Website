@@ -374,6 +374,13 @@ async function checkAuth() {
 }
 onMounted(() => checkAuth());
 
+onMounted(() => {
+  const saved = localStorage.getItem("cart");
+  if (saved) {
+    cart.value = JSON.parse(saved);
+  }
+});
+
 /** Location */
 function selectLocation(opt) {
   location.value = opt;
@@ -445,7 +452,11 @@ async function submitReview() {
 
 /** Cart */
 const showCart = ref(false);
-const cart = useState("cart", () => []);
+const cart = ref([]);
+
+watch(cart, (newCart) => {
+  localStorage.setItem("cart", JSON.stringify(newCart));
+}, { deep: true });
 const cartCount = computed(() => cart.value.reduce((sum, item) => sum + (item.qty || 1), 0));
 
 function toggleCart() {

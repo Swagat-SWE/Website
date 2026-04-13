@@ -281,7 +281,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 
 /** Mobile nav drawer */
 const mobileNavOpen = ref(false);
@@ -318,6 +318,23 @@ function submitReview() {
 /** Cart */
 const showCart = ref(false);
 const cart = useState("cart", () => []);
+
+onMounted(() => {
+  const saved = localStorage.getItem("cart");
+  if (saved) {
+    cart.value = JSON.parse(saved);
+  }
+});
+
+watch(
+  cart,
+  (newCart) => {
+    if (process.client) {
+      localStorage.setItem("cart", JSON.stringify(newCart));
+    }
+  },
+  { deep: true }
+);
 
 function toggleCart() {
   showCart.value = !showCart.value;
