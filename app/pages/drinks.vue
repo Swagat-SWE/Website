@@ -274,7 +274,7 @@
           </li>
         </ul>
 
-        <button class="checkoutBtn" type="button" @click="goToCheckout">Checkout</button>
+        <button class="checkoutBtn" type="button" :disabled="cart.length === 0" @click="goToCheckout">Checkout</button>
       </aside>
     </main>
   </div>
@@ -1091,6 +1091,12 @@ const bottledDrinks = ref([
 }
 .checkoutBtn:hover {
   background: #ffbe21;
+}
+
+.checkoutBtn:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
 }
 
 .cartList {
