@@ -1,7 +1,7 @@
 <!-- app/pages/index.vue -->
 <template>
   <div class="page">
-    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <!-- Mobile dark overlay (tap to close) -->
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -16,7 +16,7 @@
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
-        <!-- ✅ Mobile close button inside drawer -->
+        <!-- Mobile close button inside drawer -->
         <button class="drawerCloseBtn" type="button" @click="closeMobileNav" aria-label="Close menu">
           ✕
         </button>
@@ -73,7 +73,7 @@
       </nav>
     </aside>
 
-    <!-- ✅ Logging out overlay -->
+    <!-- Logging out overlay -->
     <div v-if="isLoggingOut" class="verifyOverlay" role="status" aria-live="polite">
       <div class="verifyCard">
         <div v-if="!logoutDone" class="spinner" aria-hidden="true"></div>
@@ -93,13 +93,13 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- ✅ Mobile-only mini brand strip -->
+      <!-- Mobile-only mini brand strip -->
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>
       <!-- Top bar -->
       <header class="topbar">
-        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <!-- Mobile hamburger (hidden on desktop) -->
         <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
           <span class="hamburgerIcon" aria-hidden="true">☰</span>
         </button>
@@ -293,7 +293,7 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-/** ✅ Mobile nav */
+/** Mobile nav */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
   mobileNavOpen.value = true;
@@ -417,7 +417,7 @@ async function submitReview() {
       comment: comment.value,
     };
 
-    // ✅ if logged in user
+    // if logged in user
     if (user.value) {
       payload.userId = user.value.id;
     } else {
@@ -1281,7 +1281,7 @@ const classics = ref([
   }
 }
 .brandStrip {
-  display: none; /* ✅ hidden on desktop */
+  display: none; /* hidden on desktop */
 }
 .brandStripLogo {
   display: block;
@@ -1308,7 +1308,7 @@ const classics = ref([
     grid-template-columns: 1fr;
   }
 
-  /* ✅ Topbar mobile layout */
+  /* Topbar mobile layout */
   .topbar {
     display: flex;
     align-items: center;
@@ -1356,7 +1356,7 @@ const classics = ref([
     border-radius: 14px;
   }
 
-  /* ✅ Mobile drawer behavior */
+  /* Mobile drawer behavior */
   .mobileOverlay {
     display: block;
     position: fixed;
@@ -1415,7 +1415,7 @@ const classics = ref([
     aspect-ratio: 1 / 1;   /* keep it square like the pretty grid */
   }
 
-   /* ✅ Mobile: Name wraps, but Price + Plus stay on same line */
+   /* Mobile: Name wraps, but Price + Plus stay on same line */
   .tileNameRow {
   width: 100%;
   display: grid;
@@ -1464,7 +1464,7 @@ const classics = ref([
 
 
   
-  /* ✅ Mobile: Name on top, then Price + Plus on same row */
+  /* Mobile: Name on top, then Price + Plus on same row */
 .tileFooter {
   padding-top: 6px;
   width: 100%;
@@ -1480,7 +1480,7 @@ const classics = ref([
   align-items: start;
 }
 
-/* ✅ magic: makes the children behave as if they are direct kids of tileNameRow */
+/* magic: makes the children behave as if they are direct kids of tileNameRow */
 .namePrice {
   display: contents;
 }

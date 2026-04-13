@@ -1,7 +1,7 @@
 <!-- app/pages/food.vue -->
 <template>
   <div class="page">
-    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <!-- Mobile dark overlay (tap to close) -->
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -16,7 +16,7 @@
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
-        <!-- ✅ Mobile close button inside drawer -->
+        <!--  Mobile close button inside drawer -->
         <button
           class="drawerCloseBtn"
           type="button"
@@ -80,14 +80,14 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- ✅ Mobile-only mini brand strip -->
+      <!--Mobile-only mini brand strip -->
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>
 
       <!-- Top bar -->
       <header class="topbar">
-        <!-- ✅ Mobile hamburger (hidden on desktop) -->
+        <!--Mobile hamburger (hidden on desktop) -->
         <button class="hamburgerBtn" type="button" @click="openMobileNav" aria-label="Open menu">
           <span class="hamburgerIcon" aria-hidden="true">☰</span>
         </button>
@@ -359,7 +359,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-/** ✅ Mobile nav */
+/** Mobile nav */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
   mobileNavOpen.value = true;
@@ -375,7 +375,7 @@ function handleKeydown(e) {
 onMounted(() => document.addEventListener("keydown", handleKeydown));
 onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 
-/** ✅ Availability (shared state with Staff) — key by NAME */
+/** Availability (shared state with Staff) — key by NAME */
 const availability = useAvailability();
 function isAvailable(name) {
   return availability.isAvailable(name);
@@ -496,7 +496,7 @@ function getCategory(item) {
 }
 
 function addToCart(item) {
-  // ✅ block if staff marked it unavailable (by NAME)
+  // block if staff marked it unavailable (by NAME)
   if (!isAvailable(item.name)) return;
 
   const existing = cart.value.find((x) => x.id === item.id);
@@ -962,7 +962,7 @@ const Other = ref([
   width: 82%;
 }
 
-/* ✅ Clean name + bottom row (price | +) */
+/*  Clean name + bottom row (price | +) */
 .tileFooterGrid {
   width: 100%;
   display: grid;
@@ -1193,7 +1193,7 @@ const Other = ref([
   }
 }
 
-/* ✅ MOBILE: 3 items per row + drawer */
+/* MOBILE: 3 items per row + drawer */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;
@@ -1214,7 +1214,7 @@ const Other = ref([
     letter-spacing: 1px;
   }
 
-  /* ✅ overlay */
+  /* overlay */
   .mobileOverlay {
     display: block;
     position: fixed;
@@ -1223,7 +1223,7 @@ const Other = ref([
     z-index: 90;
   }
 
-  /* ✅ sidebar becomes drawer */
+  /* sidebar becomes drawer */
   .sidebar {
     position: fixed;
     top: 0;
@@ -1246,7 +1246,7 @@ const Other = ref([
     place-items: center;
   }
 
-  /* ✅ 3 tiles per row on mobile */
+  /* 3 tiles per row on mobile */
   .tileGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;

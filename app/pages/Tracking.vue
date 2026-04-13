@@ -34,7 +34,7 @@
       <section class="card">
         <div class="cardHeader">
           <h2>Order Status</h2>
-          <!-- ✅ show REAL order number from URL like EIN100002 -->
+          <!-- show REAL order number from URL like EIN100002 -->
           <span class="muted">Order #{{ orderNumber || "—" }}</span>
         </div>
 
@@ -284,7 +284,7 @@ function rand(min, max) {
 
 const statusIndex = computed(() => clamp(orderStatus.value, 0, steps.length - 1))
 
-/** ✅ REAL order number from URL: /tracking?orderNumber=EIN100002 */
+/** REAL order number from URL: /tracking?orderNumber=EIN100002 */
 const route = useRoute()
 const api = useApi()
 const orderNumber = computed(() => String(route.query.orderNumber || ""))
@@ -308,7 +308,7 @@ async function fetchLatestStatus() {
   try {
     if (!orderNumber.value) return
 
-    // ✅ You must have this backend endpoint:
+    // You must have this backend endpoint:
     // GET /api/orders/by-number/:orderNumber
     const res = await api.get(`/api/orders/by-number/${orderNumber.value}`)
     if (!res?.ok) return
@@ -341,7 +341,7 @@ function stationTop(i) {
 const bagelTop = computed(() => {
   const base = stationTop(statusIndex.value)
 
-  // ✅ when we're at oven step, push cart DOWN a bit into the oven window
+  // when we're at oven step, push cart DOWN a bit into the oven window
   if (steps[statusIndex.value].key === "oven") return base + 15
 
   return base
@@ -465,7 +465,7 @@ function setStatus(i) {
 /* Main */
 .main {
   padding: 20px 26px 50px;
-  min-height: 100vh; /* ✅ makes main area tall */
+  min-height: 100vh; /* makes main area tall */
 }
 
 .topbar {
@@ -525,7 +525,7 @@ function setStatus(i) {
   display: grid;
   grid-template-columns: minmax(520px, 40%) 1fr; /* belt grows with screen */
   gap: 24px;
-  align-items: stretch; /* ✅ makes sidePanel match belt height */
+  align-items: stretch; /* makes sidePanel match belt height */
 }
 
 /* Belt (VERTICAL) */
@@ -814,7 +814,7 @@ function setStatus(i) {
 }
 
 .bigStatus {
-  justify-content: center; /* ✅ centers the badge */
+  justify-content: center; /* centers the badge */
 }
 
 .badge {

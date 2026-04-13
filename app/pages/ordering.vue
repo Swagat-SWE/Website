@@ -412,12 +412,13 @@ function reorder(order) {
   margin: 0;
   font-size: 34px;
   font-weight: 900;
-  color: #111;
+  color: inherit;
 }
 
 .sub {
   margin-top: 8px;
-  color: #666;
+  color: inherit;
+  opacity: 0.8;
   font-size: 15px;
 }
 
@@ -656,5 +657,61 @@ function reorder(order) {
   .checkoutBtn {
     width: fit-content;
   }
+}
+
+:global(html.dark) .title {
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .sub {
+  color: #b9aca0 !important;
+}
+
+:global(html.dark) .emptyCard,
+:global(html.dark) .orderCard {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28) !important;
+}
+
+:global(html.dark) .primaryBtn,
+:global(html.dark) .reorderBtn {
+  background: #111 !important;
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .orderNumber,
+:global(html.dark) .itemName,
+:global(html.dark) .itemRight,
+:global(html.dark) .totalRow {
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .orderMeta,
+:global(html.dark) .itemDetails,
+:global(html.dark) .footerRow,
+:global(html.dark) .emptyCard {
+  color: #c7bbb0 !important;
+}
+
+:global(html.dark) .itemsList {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .itemThumb {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .statusBadge {
+  background: rgba(71, 161, 98, 0.16) !important;
+  color: #8ae0a4 !important;
+  border: 1px solid rgba(138, 224, 164, 0.18) !important;
+}
+
+:global(html.dark) .totalRow {
+  border-top: 1px dashed rgba(255, 255, 255, 0.14) !important;
 }
 </style>

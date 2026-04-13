@@ -292,7 +292,7 @@ function stationTop(i) {
 const bagelTop = computed(() => {
   const base = stationTop(statusIndex.value);
 
-  // ✅ when we're at oven step, push cart DOWN a bit into the oven window
+  // when we're at oven step, push cart DOWN a bit into the oven window
   if (steps[statusIndex.value].key === "oven") return base + 15;
 
   return base;
@@ -415,7 +415,7 @@ function setStatus(i) {
 /* Main */
 .main {
   padding: 20px 26px 50px;
-  min-height: 100vh; /* ✅ makes main area tall */
+  min-height: 100vh; /* makes main area tall */
 }
 
 .topbar {
@@ -475,7 +475,7 @@ function setStatus(i) {
   display: grid;
   grid-template-columns: minmax(520px, 40%) 1fr; /* belt grows with screen */
   gap: 24px;
-  align-items: stretch; /* ✅ makes sidePanel match belt height */
+  align-items: stretch; /* makes sidePanel match belt height */
 }
 
 
@@ -770,7 +770,7 @@ function setStatus(i) {
 
 
 .bigStatus {
-  justify-content: center; /* ✅ centers the badge */
+  justify-content: center; /* centers the badge */
 }
 
 .badge {

@@ -1,7 +1,7 @@
 <!-- app/pages/privacy.vue -->
 <template>
   <div class="page">
-    <!-- ✅ Mobile overlay (tap to close drawer) -->
+    <!-- Mobile overlay (tap to close drawer) -->
     <div
       v-if="mobileNavOpen"
       class="mobileOverlay"
@@ -9,14 +9,14 @@
       aria-hidden="true"
     />
 
-    <!-- ✅ Sidebar (desktop column, mobile drawer) -->
+    <!-- Sidebar (desktop column, mobile drawer) -->
     <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
         </NuxtLink>
 
-        <!-- ✅ Mobile close button inside drawer -->
+        <!-- Mobile close button inside drawer -->
         <button
           class="drawerCloseBtn"
           type="button"
@@ -78,12 +78,12 @@
 
     <!-- Main content area -->
     <main class="main">
-      <!-- ✅ Mobile-only mini brand strip -->
+      <!-- Mobile-only mini brand strip -->
       <div class="brandStrip" aria-hidden="true">
         <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>
 
-      <!-- ✅ Top bar: hamburger (mobile) + spacer -->
+      <!-- Top bar: hamburger (mobile) + spacer -->
       <header class="topbar">
         <button
           class="hamburgerBtn"
@@ -370,7 +370,7 @@
 <script setup>
 import { ref } from "vue";
 
-/** ✅ Mobile nav drawer */
+/** Mobile nav drawer */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
   mobileNavOpen.value = true;
@@ -440,7 +440,7 @@ function removeFromCart(index) {
   color: var(--brown);
 }
 
-/* ✅ Mobile overlay */
+/* Mobile overlay */
 .mobileOverlay {
   display: none;
 }
@@ -472,7 +472,7 @@ function removeFromCart(index) {
   object-fit: contain;
 }
 
-/* ✅ Hide sidebar logo on desktop/laptop (optional – matches what you did on Contact) */
+/* Hide sidebar logo on desktop/laptop (optional – matches what you did on Contact) */
 @media (min-width: 721px) {
   .sidebarTop {
     display: none;
@@ -606,7 +606,7 @@ function removeFromCart(index) {
 .main {
   position: relative;
   padding: 20px 26px 50px;
-  max-width: 980px; /* ✅ nicer reading width */
+  max-width: 980px; /* nicer reading width */
   margin: 0 auto;
 }
 
@@ -827,7 +827,7 @@ function removeFromCart(index) {
   }
 }
 
-/* ✅ Mobile: drawer sidebar + better reading */
+/* Mobile: drawer sidebar + better reading */
 @media (max-width: 720px) {
   .page {
     grid-template-columns: 1fr;

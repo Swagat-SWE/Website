@@ -69,7 +69,7 @@
       </button>
     
       <p v-if="staffResetMsg" class="errorText">{{ staffResetMsg }}</p>
-      <!-- ✅ Step B: only show after username is verified -->
+      <!-- Step B: only show after username is verified -->
       <div v-if="staffResetChecked" class="resetInner">
         <label>New Password</label>
         <input
@@ -103,14 +103,14 @@
 
   <!-- ================= REAL STAFF PAGE ================= -->
   <div v-else class="page">
-    <!-- ✅ Mobile dark overlay (tap to close) -->
+    <!-- Mobile dark overlay (tap to close) -->
     <div
       v-if="staffMobileNavOpen"
       class="mobileOverlay"
       @click="closeStaffMobileNav"
       aria-hidden="true"
     />
-  <!-- ✅ Logging out overlay -->
+  <!-- Logging out overlay -->
   <div v-if="isStaffLoggingOut" class="verifyOverlay" role="status" aria-live="polite">
     <div class="verifyCard">
       <div v-if="!staffLogoutDone" class="spinner" aria-hidden="true"></div>
@@ -170,13 +170,13 @@
     <!-- Main -->
     <main class="main">    
 
-      <!-- ✅ Mobile-only yellow Einstein strip -->
+      <!-- Mobile-only yellow Einstein strip -->
       <div class="staffBrandStrip" aria-hidden="true">
         <img class="staffBrandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
       </div>    
 
       <header class="topbar">
-      <!-- ✅ Mobile hamburger (shows only on phone) -->
+      <!-- Mobile hamburger (shows only on phone) -->
       <button
         class="hamburgerBtn"
         type="button"
@@ -286,7 +286,7 @@
             </div>
         
             <div v-if="it.customizations && isItemOpen(o.id, it.id)" class="itemDetails">
-             <!-- ✅ FOOD (keep this first) -->
+             <!-- FOOD (keep this first) -->
             <div v-if="!isDrink(it.name) && it.customizations.bagel">
               <span class="detailLabel">Bagel:</span>
               <span class="detailValue">{{ titleCase(it.customizations.bagel) }}</span>
@@ -311,7 +311,7 @@
               <span class="detailValue">{{ titleCase(it.customizations.notes) }}</span>
             </div>            
 
-            <!-- ✅ DRINKS -->
+            <!-- DRINKS -->
             <div v-if="isDrink(it.name) && it.customizations.milk">
               <span class="detailLabel">Milk:</span>
               <span class="detailValue">{{ titleCase(it.customizations.milk) }}</span>
@@ -456,7 +456,7 @@ function isDrink(name: string) {
   )
 }
 
-// ✅ Mobile staff drawer
+// Mobile staff drawer
 const staffMobileNavOpen = ref(false)
 function openStaffMobileNav() {
   staffMobileNavOpen.value = true
@@ -583,7 +583,7 @@ async function checkStaffUsername() {
       return
     }
 
-    // ✅ username exists
+    // username exists
     staffResetChecked.value = true
     staffResetMsg.value = "" // clear errors
   } catch (e) {
@@ -621,7 +621,7 @@ async function resetStaffPassword() {
       return
     }
 
-    // ✅ success message
+    // success message
     staffResetMsg.value = "Password reset! Now log in."
 
     // clear fields + return to Step A
@@ -735,7 +735,7 @@ async function fetchOrders() {
   try {
     const api = useApi()
 
-    // ✅ change this path if your backend is different:
+    // change this path if your backend is different:
     // if you mounted it as app.use("/api/orders", router) => "/api/orders"
     // if you mounted it as app.use("/orders", router) => "/orders"
     const res = await api.get("/api/orders")
@@ -786,14 +786,14 @@ async function moveOrder(order: DbOrder) {
   }
 }
 
-// ✅ Fetch when staff opens Orders tab
+// Fetch when staff opens Orders tab
 watch(activeTab, async (tab) => {
   if (tab === "orders") {
     await fetchOrders()
   }
 })
 
-// ✅ optional: also fetch once if page loads already on orders
+// optional: also fetch once if page loads already on orders
 onMounted(async () => {
   if (activeTab.value === "orders") {
     await fetchOrders()
@@ -1457,7 +1457,7 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
 .staffMobileBrand {
   display: none;
 }
-/* ✅ full-width yellow strip ONLY on mobile */
+/* full-width yellow strip ONLY on mobile */
 .staffBrandStrip {
   display: none; /* default off */
 }
@@ -1471,7 +1471,7 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
   }
 }
 @media (max-width: 720px) {
-  /* ✅ make the login card feel like your other mobile cards */
+  /* make the login card feel like your other mobile cards */
   .staffLoginCard {
     margin: 0 auto;
     width: 100%;
@@ -1482,7 +1482,7 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
     box-sizing: border-box;
   }
 
-  /* ✅ shrink header spacing */
+  /* shrink header spacing */
   .staffLoginHeader {
     gap: 10px;
     margin-bottom: 4px;
@@ -1497,7 +1497,7 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
     width: 64px;            /* smaller logo on phone */
   }
 
-  /* ✅ inputs look tighter like food/drinks */
+  /* inputs look tighter like food/drinks */
   .input {
     padding: 11px 12px;
     border-radius: 14px;
@@ -1509,32 +1509,32 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
     margin-top: 2px;
   }
 
-  /* ✅ button size matches mobile style */
+  /* button size matches mobile style */
   .primaryBtn {
     padding: 12px;
     border-radius: 14px;
     font-size: 15px;
   }
 
-  /* ✅ forgot password row tighter */
+  /* forgot password row tighter */
   .muted {
     font-size: 13px;
     margin-top: 4px;
   }
-  /* ✅ stop centering everything on mobile */
+  /* stop centering everything on mobile */
   .loginPage {
     display: block;
     place-items: unset;
     padding: 14px;
   }
 
-  /* ✅ make the yellow strip full width like other pages */
+  /* make the yellow strip full width like other pages */
   .brandStrip {
     width: calc(100% + 28px);
     margin: -14px -14px 14px; /* pull to edges, then add spacing below */
   }
 
-  /* ✅ keep the card centered and not too wide */
+  /* keep the card centered and not too wide */
   .staffLoginCard {
     margin: 0 auto;
     width: 100%;
@@ -1658,5 +1658,128 @@ const orderedGroupKeys = computed(() => Object.keys(availabilityGroups.value))
     margin-bottom: 6px;
     font-weight: 1100;     /* keep brand strong */
   }
+}
+
+:global(html.dark) .loginPage {
+  background:
+    radial-gradient(circle at top left, rgba(244, 179, 22, 0.06), transparent 30%),
+    linear-gradient(180deg, #181311 0%, #221916 100%) !important;
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .staffLoginCard {
+  background: #2b2420 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+:global(html.dark) .staffLoginTitle,
+:global(html.dark) .loginPage label {
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .input {
+  background: #f8f6f3 !important;
+  color: #2b1f15 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+:global(html.dark) .input::placeholder {
+  color: #766b63 !important;
+}
+
+:global(html.dark) .primaryBtn {
+  background: linear-gradient(90deg, #5a3a2b, #704531) !important;
+  color: #fff7ee !important;
+  border: none !important;
+}
+
+:global(html.dark) .primaryBtn:hover {
+  background: linear-gradient(90deg, #684131, #7d4d38) !important;
+}
+
+:global(html.dark) .muted {
+  color: #c7bbb0 !important;
+  opacity: 1 !important;
+}
+
+:global(html.dark) .linkBtn {
+  color: #9c684a !important;
+}
+
+:global(html.dark) .resetBox {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .errorText {
+  color: #ff8d8d !important;
+}
+
+/* logged-in staff page improvements too */
+:global(html.dark) .staffTag {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .staffNavBtn {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .staffNavBtn.active {
+  border-color: rgba(244, 179, 22, 0.55) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+:global(html.dark) .ghostBtn,
+:global(html.dark) .staffAccountMenu,
+:global(html.dark) .modal,
+:global(html.dark) .colHeader,
+:global(html.dark) .availGroupTitle {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .col,
+:global(html.dark) .availGroup {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .orderCard,
+:global(html.dark) .availItemBtn,
+:global(html.dark) .miniBtn,
+:global(html.dark) .xBtn {
+  background: #2b2420 !important;
+  color: #fff7ee !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .itemDetails {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .menuItem {
+  color: #fff7ee !important;
+}
+
+:global(html.dark) .menuItem:hover {
+  background: rgba(244, 179, 22, 0.14) !important;
+}
+
+:global(html.dark) .menuDivider {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(html.dark) .modalHeader,
+:global(html.dark) .modalFooter,
+:global(html.dark) .sectionHeader,
+:global(html.dark) .colHeader {
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 </style>
