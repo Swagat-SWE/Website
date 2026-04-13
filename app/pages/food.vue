@@ -348,7 +348,7 @@
           </li>
         </ul>
 
-        <button class="checkoutBtn" type="button" @click="goToCheckout">
+        <button class="checkoutBtn" type="button" :disabled="cart.length === 0" @click="goToCheckout">
           Checkout
         </button>
       </aside>
@@ -1186,6 +1186,12 @@ const Other = ref([
 
 .checkoutBtn:hover {
   background: #ffbe21;
+}
+
+.checkoutBtn:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
 }
 
 /* ===== Mini Brand Strip (desktop hidden) ===== */

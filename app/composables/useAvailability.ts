@@ -1,81 +1,117 @@
-// app/composables/useAvailability.ts
+import { MENU_ITEMS } from "../data/menu";
+
 type Status = "green" | "red";
 type AvailabilityState = Record<string, Status>;
+
+const idToName = Object.fromEntries(MENU_ITEMS.map((item) => [item.id, item.name]));
+const nameToId = Object.fromEntries(MENU_ITEMS.map((item) => [item.name, item.id]));
+
+function getMenuKeys(key: string) {
+  if (!key) return { id: undefined, name: undefined };
+
+  if (idToName[key]) {
+    return { id: key, name: idToName[key] };
+  }
+
+  if (nameToId[key]) {
+    return { id: nameToId[key], name: key };
+  }
+
+  return { id: undefined, name: key };
+}
 
 export function useAvailability() {
   const state = useState<AvailabilityState>("availability", () => ({}));
 
-// ✅ Load once (client only) — do it in a safe lifecycle way
-if (process.client) {
-  queueMicrotask(() => {
-    const raw = localStorage.getItem("availability");
-    if (raw) {
-      try {
-        state.value = JSON.parse(raw);
-      } catch {
-        // ignore bad storage
+  // ✅ Load once (client only) — do it in a safe lifecycle way
+  if (process.client) {
+    queueMicrotask(() => {
+      const raw = localStorage.getItem("availability");
+      if (raw) {
+        try {
+          const persisted = JSON.parse(raw) as AvailabilityState;
+          const normalized: AvailabilityState = {};
+
+          for (const [k, status] of Object.entries(persisted)) {
+            const { id, name } = getMenuKeys(k);
+
+            if (name) normalized[name] = status;
+            if (id) normalized[id] = status;
+            if (!name && !id) normalized[k] = status;
+          }
+
+          state.value = normalized;
+        } catch {
+          // ignore bad storage
+        }
       }
-    }
-  });
-}
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key !== "availability" || !event.newValue) return;
+
+      try {
+        const persisted = JSON.parse(event.newValue) as AvailabilityState;
+        const normalized: AvailabilityState = {};
+
+        for (const [k, status] of Object.entries(persisted)) {
+          const { id, name } = getMenuKeys(k);
+
+          if (name) normalized[name] = status;
+          if (id) normalized[id] = status;
+          if (!name && !id) normalized[k] = status;
+        }
+
+        state.value = normalized;
+      } catch {
+        // ignore bad storage event
+      }
+    });
+  }
 
   function save() {
     if (!process.client) return;
     localStorage.setItem("availability", JSON.stringify(state.value));
   }
 
-  // ✅ Normalize key: if "Farm House Egg Sandwich" doesn't exist,
-  // try to find the matching id key (bs1) OR the reverse.
-  function normalizeKey(key: string): string {
-    if (!key) return key;
-
-    // If the exact key exists, use it
-    if (key in state.value) return key;
-
-    // Try to find by ID -> NAME (if key looks like an id)
-    // Example: bs1 => find any stored NAME that maps? (fallback scan)
-    // Try find by NAME -> ID (if key is a name)
-    const entries = Object.entries(state.value);
-
-    // If key is NAME, see if there is an ID key stored that matches by pattern
-    // Since we don't have your menu mapping here, we do a safe scan:
-    // If name is missing but id exists, you'll pass id from staff anyway.
-    // The real fix is storing BOTH keys whenever we set status (below).
-    return key;
-  }
-
   function getStatus(key: string): Status {
-    const k = normalizeKey(key);
-    return state.value[k] ?? "green";
+    const { id, name } = getMenuKeys(key);
+
+    if (name && state.value[name]) {
+      return state.value[name];
+    }
+
+    if (id && state.value[id]) {
+      return state.value[id];
+    }
+
+    if (state.value[key]) {
+      return state.value[key];
+    }
+
+    return "green";
   }
 
   function isAvailable(key: string) {
     return getStatus(key) !== "red";
   }
 
-  // ✅ IMPORTANT: store BOTH the key you passed AND the "other key"
-  // so Food (name) and Staff (id) stay connected.
-  //
-  // This requires ONE small assumption:
-  // - If key looks like an id (starts with bs/l/c/s/o + digits), it's probably an id.
-  // - If not, it's probably a name.
-  function setStatus(key: string, status: Status, otherKey?: string) {
+  function setStatus(key: string, status: Status) {
     if (!key) return;
 
-    state.value[key] = status;
+    const { id, name } = getMenuKeys(key);
 
-    // If caller gives the other key, store it too
-    if (otherKey) {
-      state.value[otherKey] = status;
-    }
+    if (name) state.value[name] = status;
+    if (id) state.value[id] = status;
+
+    if (!name && !id) state.value[key] = status;
 
     save();
   }
 
-  // ✅ Toggle supports an optional "otherKey" too
-  function toggle(key: string, otherKey?: string) {
+  function toggle(key: string) {
     const next: Status = getStatus(key) === "red" ? "green" : "red";
-    setStatus(key, next, otherKey);
+    setStatus(key, next);
   }
 
   function resetAll() {
