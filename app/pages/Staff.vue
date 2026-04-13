@@ -228,12 +228,12 @@
                 v-for="it in availabilityGroups[groupKey]"
                 :key="it.id"
                 class="availItemBtn"
-                :class="availability.getStatus(it.name)"
-                @click="availability.toggle(it.name)"
+                :class="availability.getStatus(it.id)"
+                @click="availability.toggle(it.id)"
               >
                 <div>{{ it.name }}</div>
                 <div class="availItemStatus">
-                  {{ availability.getStatus(it.name) === "red" ? "Unavailable" : "Available" }}
+                  {{ availability.getStatus(it.id) === "red" ? "Unavailable" : "Available" }}
                 </div>
               </button>
             </div>
