@@ -1241,7 +1241,7 @@ function removeFromCart(index) {
   }
 
   .main {
-    padding: 6px 6px 44px;
+    padding: 14px 14px 44px;
   }
 
   .title {

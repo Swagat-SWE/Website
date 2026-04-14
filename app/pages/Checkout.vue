@@ -1421,9 +1421,7 @@ function saveEdit() {
   background: #f6e28a;
   border-bottom: 1px solid rgba(75, 52, 41, 0.15);
 
-  position: sticky;
-  top: 0;
-  z-index: 200;
+  position: relative; /* or just remove position entirely */
 }
 
 .brandStripLogo {
