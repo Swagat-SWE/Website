@@ -1,8 +1,21 @@
 <!-- app/pages/checkout.vue -->
 <template>
   <div class="page">
-    <!-- Left Sidebar (matches home) -->
-    <aside class="sidebar">
+  <!-- MOBILE BANNER (ONLY MOBILE) -->
+<div class="brandStrip" aria-hidden="true">
+  <img class="brandStripLogo" src="/Logo.png" alt="Einstein Bros Logo" />
+</div>
+
+  <!-- Mobile overlay -->
+  <div
+    v-if="mobileNavOpen"
+    class="mobileOverlay"
+    @click="closeMobileNav"
+    aria-hidden="true"
+  />
+  
+  <!-- Sidebar -->
+  <aside class="sidebar" :class="{ open: mobileNavOpen }">
       <div class="sidebarTop">
         <NuxtLink to="/" class="logoLink" aria-label="Main Page">
           <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
@@ -19,13 +32,18 @@
 
     <!-- Main -->
     <main class="main">
-      <header class="topbar">
-        <h1 class="title">CHECKOUT</h1>
-
-        <button class="cartBtn" type="button" @click="navigateTo('/')">
-          ← Back
-        </button>
-      </header>
+    <header class="topbar">
+      <!-- Mobile hamburger -->
+      <button class="hamburgerBtn" @click="openMobileNav">
+        ☰
+      </button>
+    
+      <h1 class="title">CHECKOUT</h1>
+    
+      <button class="cartBtn" @click="navigateTo('/')">
+        ← Back
+      </button>
+    </header>
 
       <!-- Ordering overlay -->
       <div v-if="isOrdering" class="verifyOverlay" role="status" aria-live="polite">
@@ -304,6 +322,16 @@
 </template>
 
 <script setup>
+const mobileNavOpen = ref(false);
+
+function openMobileNav() {
+  mobileNavOpen.value = true;
+}
+
+function closeMobileNav() {
+  mobileNavOpen.value = false;
+}
+
 import { computed, ref, watch } from "vue";
 import { useApi } from "../composables/useApi"; // if path differs, adjust
 
@@ -720,6 +748,12 @@ function saveEdit() {
 </script>
 
 <style scoped>
+
+/* default = hidden on desktop */
+.brandStrip {
+  display: none;
+}
+
 :root {
   --cream: #f6f0e8;
   --cream2: #fbf8f3;
@@ -1267,40 +1301,136 @@ function saveEdit() {
   .page {
     grid-template-columns: 1fr;
   }
-  .main {
-    padding: 14px 14px 44px;
+
+  /* ===== MOBILE DRAWER ===== */
+  .mobileOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;
   }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(320px, 88vw);
+    z-index: 100;
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.18);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .hamburgerBtn {
+    display: inline-flex;
+    border: 1px solid rgba(75, 52, 41, 0.14);
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main {
+    padding: 14px;
+  }
+
   .layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 14px;
   }
+
+  /* ===== CART ITEM = CARD STYLE (LIKE FOOD ITEMS) ===== */
   .cartRow {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 14px;
     border-radius: 18px;
-    background: rgba(75, 52, 41, 0.035);
+    background: #fff;
+    box-shadow: var(--cardShadow);
   }
-  .qtyBtn {
-    width: 40px;
-    height: 40px;
-    border-radius: 14px;
-    font-size: 18px;
+
+  /* top section */
+  .qtyCol {
+    order: 3;
+    justify-content: center;
   }
-  .qtyNum {
-    width: 22px;
+
+  .imgCol {
+    order: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .infoCol {
+    order: 2;
+  }
+
+  .totalCol {
+    order: 4;
+    text-align: center;
+  }
+
+  .thumb {
+    width: 90px;
+    height: 90px;
+    border-radius: 16px;
+  }
+
+  .name {
     font-size: 16px;
   }
-  .thumb {
-    width: 86px;
-    height: 86px;
-    border-radius: 18px;
-  }
+
   .lineTotal {
     font-size: 18px;
   }
+
   .priceEach {
     display: none;
   }
+
+  /* ===== SUMMARY (STICKY LIKE REAL APPS) ===== */
+  .summary {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-radius: 18px;
+    padding-bottom: 16px;
+  }
+
+  .primaryBtn {
+    font-size: 16px;
+    padding: 16px;
+  }
+
+/* ===== MOBILE YELLOW BANNER ===== */
+.brandStrip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 12px 0;
+  background: #f6e28a;
+  border-bottom: 1px solid rgba(75, 52, 41, 0.15);
+
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.brandStripLogo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
 }
 </style>

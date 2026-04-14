@@ -1227,7 +1227,7 @@ const Other = ref([
   }
 
   .main {
-    padding: 14px 14px 44px;
+    padding: 6px 6px 44px;
   }
 
   .title {

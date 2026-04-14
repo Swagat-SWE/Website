@@ -31,9 +31,6 @@
       </div>
 
       <nav class="nav">
-        <NuxtLink to="/" class="logoLink" aria-label="Main Page" @click="closeMobileNav">
-          <img src="/Logo.png" alt="Einstein Bros Logo" class="logoImg" />
-        </NuxtLink>
         <NuxtLink class="navItem" to="/" @click="closeMobileNav">Main Page</NuxtLink>
         <NuxtLink class="navItem" to="/food" @click="closeMobileNav">Food Menu</NuxtLink>
         <NuxtLink class="navItem" to="/drinks" @click="closeMobileNav">Drinks Menu</NuxtLink>
@@ -568,6 +565,11 @@ function removeFromCart(index) {
 
 @media (min-width: 721px) {
   .sidebarTop {
+    display: flex;
+    margin-bottom: 14px;
+  }
+
+  .drawerCloseBtn {
     display: none;
   }
 }
@@ -1239,7 +1241,7 @@ function removeFromCart(index) {
   }
 
   .main {
-    padding: 14px 14px 44px;
+    padding: 6px 6px 44px;
   }
 
   .title {

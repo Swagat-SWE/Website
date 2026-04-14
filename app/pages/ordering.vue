@@ -363,7 +363,14 @@ function reorder(order) {
     const category = resolveCategory(oldItem.name, custom)
     const unitPrice = centsToDollars(oldItem.unitPrice)
 
-    const existing = cart.value.find((x) => x.name === oldItem.name);
+    const existing = cart.value.find((x) => {
+      const sameName = x.name === oldItem.name
+      const samePrice = Number(x.priceEach || 0) === unitPrice
+      const sameCustom =
+        JSON.stringify(x.custom || null) === JSON.stringify(custom || null)
+
+      return sameName && samePrice && sameCustom
+    })
 
     if (existing) {
       existing.qty += oldItem.quantity
@@ -382,7 +389,6 @@ function reorder(order) {
   }
 
   navigateTo("/checkout")
-  localStorage.setItem("cart", JSON.stringify(cart.value))
 }
 </script>
 
@@ -622,6 +628,17 @@ function reorder(order) {
 }
 
 @media (max-width: 768px) {
+
+  .headerRight {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .receivedBtn {
+    margin-top: 110px;   /* pushes it up slightly */
+    align-self: flex-start; /* or center */
+  }
+
   .page {
     padding: 18px;
   }
