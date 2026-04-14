@@ -670,7 +670,7 @@ function setStatus(i) {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(520px, 40%) 1fr; /* belt grows with screen */
+  grid-template-columns: minmax(250px, 40%) 1fr; /* belt grows with screen */
   gap: 24px;
   align-items: stretch; /* makes sidePanel match belt height */
 }
