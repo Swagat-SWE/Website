@@ -955,6 +955,9 @@ function saveEdit() {
   gap: 18px;
   align-items: start;
 }
+.hamburgerBtn {
+  display: none;
+}
 
 .card {
   background: #fff;
