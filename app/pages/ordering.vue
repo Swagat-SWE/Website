@@ -363,14 +363,7 @@ function reorder(order) {
     const category = resolveCategory(oldItem.name, custom)
     const unitPrice = centsToDollars(oldItem.unitPrice)
 
-    const existing = cart.value.find((x) => {
-      const sameName = x.name === oldItem.name
-      const samePrice = Number(x.priceEach || 0) === unitPrice
-      const sameCustom =
-        JSON.stringify(x.custom || null) === JSON.stringify(custom || null)
-
-      return sameName && samePrice && sameCustom
-    })
+    const existing = cart.value.find((x) => x.name === oldItem.name);
 
     if (existing) {
       existing.qty += oldItem.quantity
@@ -389,6 +382,7 @@ function reorder(order) {
   }
 
   navigateTo("/checkout")
+  localStorage.setItem("cart", JSON.stringify(cart.value))
 }
 </script>
 
