@@ -394,7 +394,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, onMounted, watch } from "vue";
 
 function brandLogoSrc(brand) {
   // You will upload these images into /public/brands/
@@ -432,6 +432,27 @@ function sleep(ms) {
 
 const cards = useState("cards", () => []);
 const defaultCardId = useState("defaultCardId", () => null);
+
+onMounted(() => {
+  const savedCards = localStorage.getItem("cards");
+  const savedDefault = localStorage.getItem("defaultCardId");
+
+  if (savedCards) {
+    cards.value = JSON.parse(savedCards);
+  }
+
+  if (savedDefault) {
+    defaultCardId.value = savedDefault;
+  }
+});
+
+watch(cards, (newCards) => {
+  localStorage.setItem("cards", JSON.stringify(newCards));
+}, { deep: true });
+
+watch(defaultCardId, (id) => {
+  localStorage.setItem("defaultCardId", id || "");
+});
 
 const defaultCard = computed(() => {
   if (!cards.value.length) return null;

@@ -438,6 +438,20 @@ async function placeOrder() {
 
 const cards = useState("cards", () => []);
 const defaultCardId = useState("defaultCardId", () => null);
+// LOAD cards from localStorage on refresh
+if (import.meta.client) {
+  const savedCards = localStorage.getItem("cards");
+  const savedDefault = localStorage.getItem("defaultCardId");
+
+  if (savedCards) {
+    cards.value = JSON.parse(savedCards);
+  }
+
+  if (savedDefault) {
+    defaultCardId.value = savedDefault;
+  }
+}
+
 
 const defaultCard = computed(() => {
   if (!cards.value.length) return null;
@@ -462,7 +476,23 @@ watch(
   },
   { deep: true, immediate: true }
 );
+// SAVE cards
+watch(
+  () => cards.value,
+  (newCards) => {
+    if (!import.meta.client) return;
+    localStorage.setItem("cards", JSON.stringify(newCards || []));
+  },
+  { deep: true, immediate: true }
+);
 
+// SAVE default card
+watch(defaultCardId, (newId) => {
+  if (!import.meta.client) return;
+  if (newId) {
+    localStorage.setItem("defaultCardId", newId);
+  }
+});
 function itemCategory(item) {
   return item.category || item.type || "other";
 }
