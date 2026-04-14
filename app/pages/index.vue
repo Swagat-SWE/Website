@@ -331,16 +331,21 @@ function goOrders() {
   closeAccountMenu();
   navigateTo("/ordering");
 }
+
 function goTracking() {
   closeAccountMenu();
 
   const lastOrderNumber = localStorage.getItem("lastOrderNumber");
 
-  if (lastOrderNumber) {
-    navigateTo(`/Tracking?orderNumber=${lastOrderNumber}`);
-  } else {
+  // ✅ If NO order number → go to empty state
+  if (!lastOrderNumber) {
+    localStorage.setItem("trackingState", "empty");
     navigateTo("/Tracking");
+    return;
   }
+
+  // ✅ If order exists → go with order
+  navigateTo(`/Tracking?orderNumber=${lastOrderNumber}`);
 }
 
 async function logout() {
