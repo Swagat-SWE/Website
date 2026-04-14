@@ -19,6 +19,17 @@
 
     <!-- Main -->
     <main class="main">
+    <!-- EMPTY STATE -->
+    <div v-if="!orderNumber || received" class="emptyState">
+      <div class="emptyBox">
+        <div class="emptyTitle">No Current Order</div>
+        <div class="emptySubtitle">Nothing is being prepared right now</div>
+      </div>
+    </div>
+  
+    <!-- MAIN CONTENT -->
+    <template v-else-if="orderNumber && !received">
+
       <header class="topbar">
         <div>
           <h1 class="title">TRACKING</h1>
@@ -235,6 +246,16 @@
           <!-- RIGHT: text panel -->
           <div class="sidePanel">
             <div class="current">
+            <Transition name="status">
+              <button
+                v-if="statusIndex === 3 && !received"
+                class="receivedBtn movableReceived"
+                @click="handleReceived"
+              >
+                Received
+              </button>
+            </Transition>
+
               <Transition name="status" mode="out-in">
                 <div class="statusWrap" :key="steps[statusIndex].key">
                   <div class="bigStatus">
@@ -252,6 +273,7 @@
           </div>
         </div>
       </section>
+      </template>
     </main>
   </div>
 </template>
@@ -259,6 +281,20 @@
 <script setup>
 import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue"
 import { useRoute } from "vue-router"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+
+function handleReceived() {
+  received.value = true
+
+  if (pollTimer) clearInterval(pollTimer)
+
+  router.replace('/tracking')
+
+  orderStatus.value = 0
+
+}
 
 /**
  * Shared status across pages.
@@ -267,6 +303,7 @@ import { useRoute } from "vue-router"
  */
 
 const orderStatus = ref(0)
+const received = ref(false)
 
 const steps = [
   { key: "ordered", label: "Ordered", desc: "We got it. You’re officially in the system." },
@@ -411,6 +448,116 @@ function setStatus(i) {
   --yellow: #f4b316;
   --orange: #f4a51c;
   --cardShadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+.movableReceived {
+  position: relative; /* IMPORTANT: enables movement */
+  
+  /* 🔥 CONTROL THESE 4 VALUES */
+  left: 0px;   /* move left/right */
+  top: 500px;    /* move up/down */
+
+  transform: translate(0px, 0px); /* extra fine tuning */
+
+  /* optional styling so you can see it clearly */
+  z-index: 999;
+}
+.receivedBtn.movableReceived {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 🔥 CORE SIZE (square feel) */
+  min-width: 110px;
+  height: 45px;
+
+  padding: 0 14px;
+
+  /* shape */
+  border-radius: 10px;
+
+  /* typography */
+  font-size: 25px;
+  font-weight: 1000;
+  letter-spacing: 0.3px;
+  line-height: 1;
+
+  /* cleaner modern color (less “harsh orange”) */
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(124, 58, 237, 0.25);
+
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+  user-select: none;
+}
+
+/* hover */
+.receivedBtn.movableReceived:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 24px rgba(0, 0, 0, 0.22),
+    0 6px 14px rgba(124, 58, 237, 0.35);
+  filter: brightness(1.05);
+}
+
+/* click */
+.receivedBtn.movableReceived:active {
+  transform: scale(0.96);
+  box-shadow:
+    0 8px 14px rgba(0, 0, 0, 0.18);
+}
+
+.emptyState {
+  min-height: 70vh; /* 🔥 takes most of the page */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.emptyBox {
+  padding: 60px 40px;
+  border-radius: 24px;
+
+  /* soft modern background */
+  background: linear-gradient(
+    135deg,
+    rgba(79, 70, 229, 0.08),
+    rgba(124, 58, 237, 0.06),
+    rgba(244, 179, 22, 0.05)
+  );
+
+  border: 1px solid rgba(75, 52, 41, 0.12);
+
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+
+  max-width: 600px;
+  width: 90%;
+}
+
+.emptyTitle {
+  font-size: 42px;
+  font-weight: 1000;
+  letter-spacing: 0.5px;
+
+  color: #3b2a22;
+
+  margin-bottom: 14px;
+}
+
+.emptySubtitle {
+  font-size: 18px;
+  font-weight: 700;
+  opacity: 0.7;
+  color: #3b2a22;
 }
 
 .page {
