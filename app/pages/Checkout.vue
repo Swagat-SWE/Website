@@ -1402,8 +1402,7 @@ function saveEdit() {
 
   /* ===== SUMMARY (STICKY LIKE REAL APPS) ===== */
   .summary {
-    position: sticky;
-    bottom: 0;
+    position: static; /* or just delete position entirely */
     background: #fff;
     border-radius: 18px;
     padding-bottom: 16px;

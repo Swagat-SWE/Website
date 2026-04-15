@@ -295,6 +295,10 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 
+function isAvailable(name) {
+  return true; // for now everything is available
+}
+
 /** Mobile nav drawer */
 const mobileNavOpen = ref(false);
 function openMobileNav() {
@@ -368,7 +372,7 @@ const selectedDrink = ref(null);
 
 function openSizeModal(drink) {
     // block if staff marked it unavailable (by NAME)
-  if (!isAvailable(item.name)) return;
+  if (!isAvailable(drink.name)) return;
 
   // No sizes -> add directly
   if (!drink.sizes || drink.sizes.length === 0) {
