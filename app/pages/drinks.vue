@@ -110,8 +110,11 @@
 
         <div class="tileGrid">
           <article v-for="item in hotDrinks" :key="item.id" class="tileCard">
-            <div class="tileImg">
+            <div class="tileImg" :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
+                Currently unavailable
+              </div>
             </div>
 
             <div class="tileFooter">
@@ -137,8 +140,11 @@
 
         <div class="tileGrid">
           <article v-for="item in coldDrinks" :key="item.id" class="tileCard">
-            <div class="tileImg">
+            <div class="tileImg"  :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
+                Currently unavailable
+              </div>
             </div>
 
             <div class="tileFooter">
@@ -164,8 +170,11 @@
 
         <div class="tileGrid">
           <article v-for="item in TeaAndSmoothies" :key="item.id" class="tileCard">
-            <div class="tileImg">
+            <div class="tileImg"  :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
+                Currently unavailable
+              </div>
             </div>
 
             <div class="tileFooter">
@@ -191,8 +200,11 @@
 
         <div class="tileGrid">
           <article v-for="item in bottledDrinks" :key="item.id" class="tileCard">
-            <div class="tileImg">
+            <div class="tileImg"  :class="{ tileDisabled: !isAvailable(item.name) }">
               <img :src="item.img" :alt="item.name" />
+              <div v-if="!isAvailable(item.name)" class="unavailableOverlay">
+                Currently unavailable
+              </div>
             </div>
 
             <div class="tileFooter">
@@ -355,6 +367,9 @@ const showSizeModal = ref(false);
 const selectedDrink = ref(null);
 
 function openSizeModal(drink) {
+    // block if staff marked it unavailable (by NAME)
+  if (!isAvailable(item.name)) return;
+
   // No sizes -> add directly
   if (!drink.sizes || drink.sizes.length === 0) {
     const existing = cart.value.find(
@@ -1463,6 +1478,20 @@ const bottledDrinks = ref([
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
 }
+
+.unavailableOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  text-align: center;
+  font-weight: 1000;
+  color: #b00020;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(4px);
+}
+
   .modalOverlay {
     align-items: flex-end;        /* push sheet to bottom */
     padding: 12px;               /* smaller outer padding */
