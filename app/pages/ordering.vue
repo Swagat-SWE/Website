@@ -389,6 +389,7 @@ function reorder(order) {
 
   navigateTo("/checkout")
 }
+
 </script>
 
 <style scoped>
