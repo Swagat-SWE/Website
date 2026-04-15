@@ -358,35 +358,34 @@ function reorder(order) {
   if (!order?.items?.length) return
 
   for (const oldItem of order.items) {
-    const custom = oldItem.customizations ?? null
+    const custom =
+      oldItem.customizations && typeof oldItem.customizations === "object"
+        ? { ...oldItem.customizations }
+        : null
+
     const img = IMAGE_BY_NAME[oldItem.name] || ""
     const category = resolveCategory(oldItem.name, custom)
+
     const unitPrice = centsToDollars(oldItem.unitPrice)
 
-    const existing = cart.value.find((x) => {
-      const sameName = x.name === oldItem.name
-      const samePrice = Number(x.priceEach || 0) === unitPrice
-      const sameCustom =
-        JSON.stringify(x.custom || null) === JSON.stringify(custom || null)
+    const priceEach =
+      oldItem.quantity > 0
+        ? centsToDollars(oldItem.lineTotal) / oldItem.quantity
+        : unitPrice
 
-      return sameName && samePrice && sameCustom
+    cart.value.push({
+      id: `reorder-${oldItem.id}-${Date.now()}`,
+      category,
+      name: oldItem.name,
+      qty: Number(oldItem.quantity) || 1,
+      img,
+      basePrice: priceEach,
+      priceEach: priceEach,
+      custom,
     })
-
-    if (existing) {
-      existing.qty += oldItem.quantity
-    } else {
-      cart.value.push({
-        id: `reorder-${oldItem.id}`,
-        category,
-        name: oldItem.name,
-        qty: oldItem.quantity,
-        img,
-        basePrice: unitPrice,
-        priceEach: unitPrice,
-        custom,
-      })
-    }
   }
+
+  localStorage.setItem("cart", JSON.stringify(cart.value))
 
   navigateTo("/checkout")
 }
